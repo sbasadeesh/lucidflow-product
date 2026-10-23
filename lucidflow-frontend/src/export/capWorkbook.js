@@ -130,7 +130,7 @@ export function buildCapWorkbook(ExcelJS, report, logoBuffer) {
   workbook.creator = "LucidFlow";
 
   const sheet = workbook.addWorksheet("Corrective action plan", {
-    views: [{ state: "frozen", ySplit: HEADER_ROW, showGridLines: false }],
+    views: [{ state: "frozen", xSplit: 3, ySplit: false }],
   });
 
   setColumnWidths(sheet);
