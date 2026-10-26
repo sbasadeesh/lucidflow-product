@@ -1,0 +1,91 @@
+{
+  "scanId": "scan-1792650926261",
+  "url": "http://www.starhealth.in/",
+  "status": "completed",
+  "startedAt": "2026-10-22T06:35:26.261Z",
+  "finishedAt": "2026-10-22T06:35:43.173Z",
+  "durationMs": 16912,
+  "states": 1,
+  "interactions": 0,
+  "interactionBreakdown": {
+    "clicks": 0,
+    "hovers": 0,
+    "fieldsFilled": 0,
+    "selections": 0,
+    "dialogsHandled": 0
+  },
+  "fieldsFilled": 0,
+  "stepsVisited": 1,
+  "popupsHandled": 0,
+  "navLinksChecked": 0,
+  "message": "Done",
+  "screenshotUrl": "/screenshots/full-1792650926261.png",
+  "elementScreenshotUrl": "/screenshots/element-1792650926261.png",
+  "elementScreenshots": [
+    {
+      "label": "body",
+      "url": "/screenshots/element-1792650926261.png"
+    }
+  ],
+  "selectorCropUrl": null,
+  "stoppedBeforeSensitiveField": false,
+  "sensitiveField": null,
+  "dropdowns": {
+    "handled": 0,
+    "skipped": 0
+  },
+  "navigationCheck": [],
+  "actionLog": [
+    {
+      "action": "Opening http://www.starhealth.in/",
+      "time": "2026-10-22T06:35:26.723Z"
+    },
+    {
+      "action": "Loaded URL: http://www.starhealth.in/",
+      "time": "2026-10-22T06:35:29.442Z"
+    },
+    {
+      "action": "Page title: Access Denied",
+      "time": "2026-10-22T06:35:29.488Z"
+    },
+    {
+      "action": "Popups / cookie banners cleared",
+      "time": "2026-10-22T06:35:31.955Z"
+    },
+    {
+      "action": "Page fully loaded (lazy content scrolled in)",
+      "time": "2026-10-22T06:35:36.542Z"
+    },
+    {
+      "action": "Full page captured in 1 screens",
+      "time": "2026-10-22T06:35:42.181Z"
+    },
+    {
+      "action": "Full-page screenshot saved (before any interaction)",
+      "time": "2026-10-22T06:35:42.182Z",
+      "filename": "full-1792650926261.png"
+    },
+    {
+      "action": "Navigation guard ON - staying on this URL",
+      "time": "2026-10-22T06:35:42.189Z"
+    },
+    {
+      "action": "Nav bar pass finished: 0 link(s) checked",
+      "time": "2026-10-22T06:35:42.206Z"
+    },
+    {
+      "action": "Dropdown pass finished: 0 filled, 0 skipped",
+      "time": "2026-10-22T06:35:42.217Z"
+    },
+    {
+      "action": "Quote button pass finished",
+      "time": "2026-10-22T06:35:42.227Z"
+    },
+    {
+      "action": "Element screenshot saved",
+      "time": "2026-10-22T06:35:43.037Z",
+      "filename": "element-1792650926261.png",
+      "selector": "body"
+    }
+  ]
+}

@@ -1,0 +1,1040 @@
+{
+  "scanId": "scan-1792998448922",
+  "url": "https://www.newindia.co.in/",
+  "status": "completed",
+  "startedAt": "2026-10-26T07:07:28.922Z",
+  "finishedAt": "2026-10-26T07:12:19.375Z",
+  "durationMs": 290453,
+  "states": 21,
+  "interactions": 66,
+  "interactionBreakdown": {
+    "clicks": 46,
+    "hovers": 20,
+    "fieldsFilled": 0,
+    "selections": 0,
+    "dialogsHandled": 0
+  },
+  "fieldsFilled": 0,
+  "stepsVisited": 1,
+  "popupsHandled": 0,
+  "navLinksChecked": 42,
+  "stabilizer": {
+    "enabled": true,
+    "masked": 0,
+    "settled": true,
+    "maskSelectors": [
+      "[data-volatile]"
+    ],
+    "maskMode": "mask"
+  },
+  "message": "Done",
+  "screenshotUrl": "/screenshots/full-1792998448922.png",
+  "elementScreenshotUrl": "/screenshots/element-1792998448922.png",
+  "elementScreenshots": [
+    {
+      "label": "top of page",
+      "url": "/screenshots/element-1792998448922.png"
+    }
+  ],
+  "selectorCropUrl": null,
+  "stoppedBeforeSensitiveField": false,
+  "sensitiveField": null,
+  "dropdowns": {
+    "handled": 0,
+    "skipped": 0
+  },
+  "navigationCheck": [
+    {
+      "menu": "Search",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Language Translator",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Login",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Skip to main content",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "About Us",
+      "item": "Overview",
+      "result": "URL changed",
+      "url": "https://www.newindia.co.in/about-us"
+    },
+    {
+      "menu": "About Us",
+      "item": "Profile",
+      "result": "URL changed",
+      "url": "https://www.newindia.co.in/company-profile"
+    },
+    {
+      "menu": "About Us",
+      "item": "Management",
+      "result": "URL changed",
+      "url": "https://www.newindia.co.in/management"
+    },
+    {
+      "menu": "About Us",
+      "item": "Financials",
+      "result": "URL changed",
+      "url": "https://www.newindia.co.in/company-financials"
+    },
+    {
+      "menu": "About Us",
+      "item": "Workforce",
+      "result": "URL changed",
+      "url": "https://www.newindia.co.in/workforce"
+    },
+    {
+      "menu": "About Us",
+      "item": "Intermediary",
+      "result": "URL changed",
+      "url": "https://www.newindia.co.in/intermediary"
+    },
+    {
+      "menu": "About Us",
+      "item": "Investors",
+      "result": "URL changed",
+      "url": "https://www.newindia.co.in/investors"
+    },
+    {
+      "menu": "About Us",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Products",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "ICAI Members Portal",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "ICSI Portal",
+      "result": "new tab",
+      "url": "https://icsi.newindia.co.in/Account/frmCSCustomerLogin.aspx"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "Axis Bank Customers",
+      "result": "new tab",
+      "url": "https://icsi.newindia.co.in/Account/frmCSCustomerLogin.aspx"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "ICMAI Portal",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/portal/citiBank.html#/home"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "PMSBY Customer Portal",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "PMFBY",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/portal/citiBank.html#/home"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "Digilocker Portal",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/portal/citiBank.html#/home"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "Tele Marketing Portal",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "Surety Bond Portal",
+      "result": "new tab",
+      "url": "https://suretybond.newindia.co.in/"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "Credit Insurance",
+      "result": "new tab",
+      "url": "https://suretybond.newindia.co.in/"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "Paripoorna Mediclaim Ayush Bima(For CGHS Members ONLY)",
+      "result": "new tab",
+      "url": "https://suretybond.newindia.co.in/"
+    },
+    {
+      "menu": "Corporate Links",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Quick Help",
+      "item": "Verify Your Policy",
+      "result": "new tab",
+      "url": "https://samyati.newindia.co.in/"
+    },
+    {
+      "menu": "Quick Help",
+      "item": "Intimate a Motor Claim",
+      "result": "new tab",
+      "url": "chrome-error://chromewebdata/"
+    },
+    {
+      "menu": "Quick Help",
+      "item": "Check Payment Status",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima"
+    },
+    {
+      "menu": "Quick Help",
+      "item": "Marine Cargo Claim Intimation",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/portal/qrDetails"
+    },
+    {
+      "menu": "Quick Help",
+      "item": "Policy Feedback",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/portal/policyFeedbackGen"
+    },
+    {
+      "menu": "Quick Help",
+      "item": "Quick Payment",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/portal/quickRenewPost/payment"
+    },
+    {
+      "menu": "Quick Help",
+      "item": "Quick Renewal",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/portal/quickRenewPost/renewal"
+    },
+    {
+      "menu": "Quick Help",
+      "item": "Health Claim Details Search",
+      "result": "URL changed",
+      "url": "https://www.newindia.co.in/quick-help/utr-search-health"
+    },
+    {
+      "menu": "Quick Help",
+      "item": "ABHA",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/portal/abha"
+    },
+    {
+      "menu": "Quick Help",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Surveyor Management",
+      "item": "Application Form for empanelment_SMP_26-27",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/portal/abha"
+    },
+    {
+      "menu": "Surveyor Management",
+      "item": "Notice Inviting Applications For Empanelment Of Surveyors",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima"
+    },
+    {
+      "menu": "Surveyor Management",
+      "item": "Final List Of Surveyors Qualified Under SMP Exercise 2024-25",
+      "result": "new tab",
+      "url": "https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima"
+    },
+    {
+      "menu": "Surveyor Management",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Our Offices",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Contact Us",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    },
+    {
+      "menu": "Contact",
+      "item": "Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)",
+      "result": "URL unchanged",
+      "url": "https://www.newindia.co.in/"
+    }
+  ],
+  "actionLog": [
+    {
+      "action": "Opening https://www.newindia.co.in/",
+      "time": "2026-10-26T07:07:29.341Z"
+    },
+    {
+      "action": "Loaded URL: https://www.newindia.co.in/",
+      "time": "2026-10-26T07:07:46.826Z"
+    },
+    {
+      "action": "Page title: The New India Assurance (India's Premier Multinational General Insurance Company)",
+      "time": "2026-10-26T07:07:46.837Z"
+    },
+    {
+      "action": "Popups / cookie banners cleared",
+      "time": "2026-10-26T07:07:50.087Z"
+    },
+    {
+      "action": "Page fully loaded (lazy content scrolled in)",
+      "time": "2026-10-26T07:09:09.610Z"
+    },
+    {
+      "action": "Stabilizer: 0 element(s) masked, page settled",
+      "time": "2026-10-26T07:09:14.434Z"
+    },
+    {
+      "action": "Full page captured in 10 screens",
+      "time": "2026-10-26T07:09:32.078Z"
+    },
+    {
+      "action": "Full-page screenshot saved (before any interaction)",
+      "time": "2026-10-26T07:09:32.078Z",
+      "filename": "full-1792998448922.png"
+    },
+    {
+      "action": "Navigation guard ON - staying on this URL",
+      "time": "2026-10-26T07:09:32.081Z"
+    },
+    {
+      "action": "Nav 1: \"Search\" - hovering",
+      "time": "2026-10-26T07:09:32.112Z"
+    },
+    {
+      "action": "Nav 1: dropdown opened with 1 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:09:33.198Z"
+    },
+    {
+      "action": "Nav 1.1: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:09:33.206Z"
+    },
+    {
+      "action": "Nav 1.1: URL unchanged",
+      "time": "2026-10-26T07:09:35.227Z"
+    },
+    {
+      "action": "Nav 2: \"Language Translator\" - hovering",
+      "time": "2026-10-26T07:09:36.054Z"
+    },
+    {
+      "action": "Nav 2: dropdown opened with 1 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:09:37.103Z"
+    },
+    {
+      "action": "Nav 2.1: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:09:37.106Z"
+    },
+    {
+      "action": "Nav 2.1: URL unchanged",
+      "time": "2026-10-26T07:09:39.216Z"
+    },
+    {
+      "action": "Nav 3: \"Login\" - hovering",
+      "time": "2026-10-26T07:09:40.102Z"
+    },
+    {
+      "action": "Nav 3: dropdown opened with 1 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:09:41.168Z"
+    },
+    {
+      "action": "Nav 3.1: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:09:41.174Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closing it",
+      "time": "2026-10-26T07:09:41.953Z"
+    },
+    {
+      "action": "Nav 3.1: URL unchanged",
+      "time": "2026-10-26T07:09:43.231Z"
+    },
+    {
+      "action": "Nav 4: \"Skip to main content\" - hovering",
+      "time": "2026-10-26T07:09:44.016Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closing it",
+      "time": "2026-10-26T07:09:44.948Z"
+    },
+    {
+      "action": "Nav 4: dropdown opened with 1 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:09:45.143Z"
+    },
+    {
+      "action": "Nav 4.1: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:09:45.146Z"
+    },
+    {
+      "action": "Nav 4.1: URL unchanged",
+      "time": "2026-10-26T07:09:47.179Z"
+    },
+    {
+      "action": "Nav 5: \"About Us\" - hovering",
+      "time": "2026-10-26T07:09:47.971Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closing it",
+      "time": "2026-10-26T07:09:48.823Z"
+    },
+    {
+      "action": "Nav 5: dropdown opened with 8 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:09:49.169Z"
+    },
+    {
+      "action": "Nav 5.1: \"Overview\" - clicking",
+      "time": "2026-10-26T07:09:49.172Z"
+    },
+    {
+      "action": "Nav 5.1: URL changed to https://www.newindia.co.in/about-us",
+      "time": "2026-10-26T07:09:51.180Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-10-26T07:09:54.926Z"
+    },
+    {
+      "action": "Nav 5: hovering \"About Us\" again",
+      "time": "2026-10-26T07:09:54.926Z"
+    },
+    {
+      "action": "Nav 5.2: \"Profile\" - clicking",
+      "time": "2026-10-26T07:09:55.984Z"
+    },
+    {
+      "action": "Nav 5.2: URL changed to https://www.newindia.co.in/company-profile",
+      "time": "2026-10-26T07:09:58.123Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-10-26T07:10:01.617Z"
+    },
+    {
+      "action": "Nav 5: hovering \"About Us\" again",
+      "time": "2026-10-26T07:10:01.617Z"
+    },
+    {
+      "action": "Nav 5.3: \"Management\" - clicking",
+      "time": "2026-10-26T07:10:02.683Z"
+    },
+    {
+      "action": "Nav 5.3: URL changed to https://www.newindia.co.in/management",
+      "time": "2026-10-26T07:10:04.780Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-10-26T07:10:07.972Z"
+    },
+    {
+      "action": "Nav 5: hovering \"About Us\" again",
+      "time": "2026-10-26T07:10:07.972Z"
+    },
+    {
+      "action": "Nav 5.4: \"Financials\" - clicking",
+      "time": "2026-10-26T07:10:09.039Z"
+    },
+    {
+      "action": "Nav 5.4: URL changed to https://www.newindia.co.in/company-financials",
+      "time": "2026-10-26T07:10:11.136Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-10-26T07:10:14.586Z"
+    },
+    {
+      "action": "Nav 5: hovering \"About Us\" again",
+      "time": "2026-10-26T07:10:14.587Z"
+    },
+    {
+      "action": "Nav 5.5: \"Workforce\" - clicking",
+      "time": "2026-10-26T07:10:15.652Z"
+    },
+    {
+      "action": "Nav 5.5: URL changed to https://www.newindia.co.in/workforce",
+      "time": "2026-10-26T07:10:17.714Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-10-26T07:10:21.150Z"
+    },
+    {
+      "action": "Nav 5: hovering \"About Us\" again",
+      "time": "2026-10-26T07:10:21.150Z"
+    },
+    {
+      "action": "Nav 5.6: \"Intermediary\" - clicking",
+      "time": "2026-10-26T07:10:22.209Z"
+    },
+    {
+      "action": "Nav 5.6: URL changed to https://www.newindia.co.in/intermediary",
+      "time": "2026-10-26T07:10:24.315Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-10-26T07:10:27.784Z"
+    },
+    {
+      "action": "Nav 5: hovering \"About Us\" again",
+      "time": "2026-10-26T07:10:27.785Z"
+    },
+    {
+      "action": "Nav 5.7: \"Investors\" - clicking",
+      "time": "2026-10-26T07:10:28.854Z"
+    },
+    {
+      "action": "Nav 5.7: URL changed to https://www.newindia.co.in/investors",
+      "time": "2026-10-26T07:10:31.002Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-10-26T07:10:34.505Z"
+    },
+    {
+      "action": "Nav 5: hovering \"About Us\" again",
+      "time": "2026-10-26T07:10:34.505Z"
+    },
+    {
+      "action": "Nav 5.8: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:10:35.569Z"
+    },
+    {
+      "action": "Nav 5.8: URL unchanged",
+      "time": "2026-10-26T07:10:37.608Z"
+    },
+    {
+      "action": "Nav 6: \"Products\" - hovering",
+      "time": "2026-10-26T07:10:38.414Z"
+    },
+    {
+      "action": "Nav 6: dropdown opened with 1 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:10:39.524Z"
+    },
+    {
+      "action": "Nav 6.1: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:10:39.527Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closing it",
+      "time": "2026-10-26T07:10:39.776Z"
+    },
+    {
+      "action": "Nav 6.1: URL unchanged",
+      "time": "2026-10-26T07:10:41.602Z"
+    },
+    {
+      "action": "Nav 7: \"Corporate Links\" - hovering",
+      "time": "2026-10-26T07:10:42.407Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closing it",
+      "time": "2026-10-26T07:10:43.271Z"
+    },
+    {
+      "action": "Nav 7: dropdown opened with 12 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:10:43.479Z"
+    },
+    {
+      "action": "Nav 7.1: \"ICAI Members Portal\" - clicking",
+      "time": "2026-10-26T07:10:43.484Z"
+    },
+    {
+      "action": "Nav 7.1: opened a new tab (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closed",
+      "time": "2026-10-26T07:10:45.539Z"
+    },
+    {
+      "action": "Nav 7.2: \"ICSI Portal\" - clicking",
+      "time": "2026-10-26T07:10:45.542Z"
+    },
+    {
+      "action": "New tab opened by the site (https://icai.newindia.co.in/Account/Home) -> closing it",
+      "time": "2026-10-26T07:10:45.784Z"
+    },
+    {
+      "action": "New tab opened by the site (https://icsi.newindia.co.in/Account/frmCSCustomerLogin.aspx) -> closing it",
+      "time": "2026-10-26T07:10:47.266Z"
+    },
+    {
+      "action": "Nav 7.2: opened a new tab (https://icsi.newindia.co.in/Account/frmCSCustomerLogin.aspx) -> closed",
+      "time": "2026-10-26T07:10:47.648Z"
+    },
+    {
+      "action": "Nav 7.3: \"Axis Bank Customers\" - clicking",
+      "time": "2026-10-26T07:10:47.659Z"
+    },
+    {
+      "action": "Nav 7.3: opened a new tab (https://icsi.newindia.co.in/Account/frmCSCustomerLogin.aspx) -> closed",
+      "time": "2026-10-26T07:10:49.720Z"
+    },
+    {
+      "action": "Nav 7.4: \"ICMAI Portal\" - clicking",
+      "time": "2026-10-26T07:10:49.724Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/citiBank.html#/home) -> closing it",
+      "time": "2026-10-26T07:10:50.077Z"
+    },
+    {
+      "action": "Nav 7.4: opened a new tab (https://www.newindia.co.in/portal/citiBank.html#/home) -> closed",
+      "time": "2026-10-26T07:10:51.750Z"
+    },
+    {
+      "action": "Nav 7.5: \"PMSBY Customer Portal\" - clicking",
+      "time": "2026-10-26T07:10:51.756Z"
+    },
+    {
+      "action": "Nav 7.5: URL unchanged",
+      "time": "2026-10-26T07:10:53.891Z"
+    },
+    {
+      "action": "Nav 7.6: \"PMFBY\" - clicking",
+      "time": "2026-10-26T07:10:53.902Z"
+    },
+    {
+      "action": "Nav 7.6: opened a new tab (https://www.newindia.co.in/portal/citiBank.html#/home) -> closed",
+      "time": "2026-10-26T07:10:55.954Z"
+    },
+    {
+      "action": "Nav 7.7: \"Digilocker Portal\" - clicking",
+      "time": "2026-10-26T07:10:55.959Z"
+    },
+    {
+      "action": "Nav 7.7: opened a new tab (https://www.newindia.co.in/portal/citiBank.html#/home) -> closed",
+      "time": "2026-10-26T07:10:58.042Z"
+    },
+    {
+      "action": "Nav 7.8: \"Tele Marketing Portal\" - clicking",
+      "time": "2026-10-26T07:10:58.050Z"
+    },
+    {
+      "action": "New tab opened by the site (https://icmai.newindia.co.in/Account/frmCSCustomerLogin.aspx) -> closing it",
+      "time": "2026-10-26T07:10:59.340Z"
+    },
+    {
+      "action": "Nav 7.8: URL unchanged",
+      "time": "2026-10-26T07:11:00.087Z"
+    },
+    {
+      "action": "Nav 7.9: \"Surety Bond Portal\" - clicking",
+      "time": "2026-10-26T07:11:00.098Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/PMFBY/pmfby.html) -> closing it",
+      "time": "2026-10-26T07:11:01.532Z"
+    },
+    {
+      "action": "New tab opened by the site (https://accounts.digilocker.gov.in/signin/smart_v2/abb272d641b144e0756ad26e699d5020--en) -> closing it",
+      "time": "2026-10-26T07:11:01.615Z"
+    },
+    {
+      "action": "New tab opened by the site (https://suretybond.newindia.co.in/) -> closing it",
+      "time": "2026-10-26T07:11:02.084Z"
+    },
+    {
+      "action": "Nav 7.9: opened a new tab (https://suretybond.newindia.co.in/) -> closed",
+      "time": "2026-10-26T07:11:02.111Z"
+    },
+    {
+      "action": "Nav 7.10: \"Credit Insurance\" - clicking",
+      "time": "2026-10-26T07:11:02.114Z"
+    },
+    {
+      "action": "Nav 7.10: opened a new tab (https://suretybond.newindia.co.in/) -> closed",
+      "time": "2026-10-26T07:11:04.183Z"
+    },
+    {
+      "action": "Nav 7.11: \"Paripoorna Mediclaim Ayush Bima(For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:11:04.188Z"
+    },
+    {
+      "action": "Nav 7.11: opened a new tab (https://suretybond.newindia.co.in/) -> closed",
+      "time": "2026-10-26T07:11:06.258Z"
+    },
+    {
+      "action": "Nav 7.12: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:11:06.265Z"
+    },
+    {
+      "action": "Nav 7.12: URL unchanged",
+      "time": "2026-10-26T07:11:08.328Z"
+    },
+    {
+      "action": "Nav 8: \"Quick Help\" - hovering",
+      "time": "2026-10-26T07:11:09.150Z"
+    },
+    {
+      "action": "Nav 8: dropdown opened with 10 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:11:10.207Z"
+    },
+    {
+      "action": "Nav 8.1: \"Verify Your Policy\" - clicking",
+      "time": "2026-10-26T07:11:10.211Z"
+    },
+    {
+      "action": "New tab opened by the site (https://samyati.newindia.co.in/) -> closing it",
+      "time": "2026-10-26T07:11:11.051Z"
+    },
+    {
+      "action": "Nav 8.1: opened a new tab (https://samyati.newindia.co.in/) -> closed",
+      "time": "2026-10-26T07:11:12.235Z"
+    },
+    {
+      "action": "Nav 8.2: \"Intimate a Motor Claim\" - clicking",
+      "time": "2026-10-26T07:11:12.238Z"
+    },
+    {
+      "action": "New tab opened by the site () -> closing it",
+      "time": "2026-10-26T07:11:13.357Z"
+    },
+    {
+      "action": "New tab opened by the site (chrome-error://chromewebdata/) -> closing it",
+      "time": "2026-10-26T07:11:13.621Z"
+    },
+    {
+      "action": "Nav 8.2: opened a new tab (chrome-error://chromewebdata/) -> closed",
+      "time": "2026-10-26T07:11:14.290Z"
+    },
+    {
+      "action": "Nav 8.3: \"Check Payment Status\" - clicking",
+      "time": "2026-10-26T07:11:14.295Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/landing.html) -> closing it",
+      "time": "2026-10-26T07:11:15.319Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closing it",
+      "time": "2026-10-26T07:11:15.769Z"
+    },
+    {
+      "action": "Nav 8.3: opened a new tab (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closed",
+      "time": "2026-10-26T07:11:16.318Z"
+    },
+    {
+      "action": "Nav 8.4: \"Marine Cargo Claim Intimation\" - clicking",
+      "time": "2026-10-26T07:11:16.324Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/checkPaymentStatus) -> closing it",
+      "time": "2026-10-26T07:11:17.610Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/qrDetails) -> closing it",
+      "time": "2026-10-26T07:11:17.625Z"
+    },
+    {
+      "action": "Nav 8.4: opened a new tab (https://www.newindia.co.in/portal/qrDetails) -> closed",
+      "time": "2026-10-26T07:11:18.379Z"
+    },
+    {
+      "action": "Nav 8.5: \"Policy Feedback\" - clicking",
+      "time": "2026-10-26T07:11:18.383Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/intimateClaim) -> closing it",
+      "time": "2026-10-26T07:11:18.585Z"
+    },
+    {
+      "action": "New tab opened by the site (chrome-error://chromewebdata/) -> closing it",
+      "time": "2026-10-26T07:11:19.784Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/policyFeedbackGen) -> closing it",
+      "time": "2026-10-26T07:11:20.016Z"
+    },
+    {
+      "action": "Nav 8.5: opened a new tab (https://www.newindia.co.in/portal/policyFeedbackGen) -> closed",
+      "time": "2026-10-26T07:11:20.415Z"
+    },
+    {
+      "action": "Nav 8.6: \"Quick Payment\" - clicking",
+      "time": "2026-10-26T07:11:20.418Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/quickRenewPost/payment) -> closing it",
+      "time": "2026-10-26T07:11:21.925Z"
+    },
+    {
+      "action": "Nav 8.6: opened a new tab (https://www.newindia.co.in/portal/quickRenewPost/payment) -> closed",
+      "time": "2026-10-26T07:11:22.458Z"
+    },
+    {
+      "action": "Nav 8.7: \"Quick Renewal\" - clicking",
+      "time": "2026-10-26T07:11:22.461Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/quickRenewPost/renewal) -> closing it",
+      "time": "2026-10-26T07:11:23.958Z"
+    },
+    {
+      "action": "Nav 8.7: opened a new tab (https://www.newindia.co.in/portal/quickRenewPost/renewal) -> closed",
+      "time": "2026-10-26T07:11:24.487Z"
+    },
+    {
+      "action": "Nav 8.8: \"Health Claim Details Search\" - clicking",
+      "time": "2026-10-26T07:11:24.489Z"
+    },
+    {
+      "action": "Nav 8.8: URL changed to https://www.newindia.co.in/quick-help/utr-search-health",
+      "time": "2026-10-26T07:11:26.515Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-10-26T07:11:36.626Z"
+    },
+    {
+      "action": "Nav 8: hovering \"Quick Help\" again",
+      "time": "2026-10-26T07:11:36.626Z"
+    },
+    {
+      "action": "Nav 8.9: \"ABHA\" - clicking",
+      "time": "2026-10-26T07:11:38.893Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/abha) -> closing it",
+      "time": "2026-10-26T07:11:40.749Z"
+    },
+    {
+      "action": "Nav 8.9: opened a new tab (https://www.newindia.co.in/portal/abha) -> closed",
+      "time": "2026-10-26T07:11:40.947Z"
+    },
+    {
+      "action": "Nav 8.10: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:11:40.950Z"
+    },
+    {
+      "action": "Nav 8.10: URL unchanged",
+      "time": "2026-10-26T07:11:42.996Z"
+    },
+    {
+      "action": "Nav 9: \"Surveyor Management\" - hovering",
+      "time": "2026-10-26T07:11:43.818Z"
+    },
+    {
+      "action": "Nav 9: dropdown opened with 4 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:11:44.952Z"
+    },
+    {
+      "action": "Nav 9.1: \"Application Form for empanelment_SMP_26-27\" - clicking",
+      "time": "2026-10-26T07:11:44.966Z"
+    },
+    {
+      "action": "Nav 9.1: opened a new tab (https://www.newindia.co.in/portal/abha) -> closed",
+      "time": "2026-10-26T07:11:47.123Z"
+    },
+    {
+      "action": "Nav 9.2: \"Notice Inviting Applications For Empanelment Of Surveyors\" - clicking",
+      "time": "2026-10-26T07:11:47.132Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closing it",
+      "time": "2026-10-26T07:11:48.580Z"
+    },
+    {
+      "action": "Nav 9.2: opened a new tab (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closed",
+      "time": "2026-10-26T07:11:49.205Z"
+    },
+    {
+      "action": "Nav 9.3: \"Final List Of Surveyors Qualified Under SMP Exercise 2024-25\" - clicking",
+      "time": "2026-10-26T07:11:49.212Z"
+    },
+    {
+      "action": "Nav 9.3: opened a new tab (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closed",
+      "time": "2026-10-26T07:11:51.271Z"
+    },
+    {
+      "action": "Nav 9.4: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:11:51.278Z"
+    },
+    {
+      "action": "Nav 9.4: URL unchanged",
+      "time": "2026-10-26T07:11:53.343Z"
+    },
+    {
+      "action": "New tab opened by the site () -> closing it",
+      "time": "2026-10-26T07:11:53.791Z"
+    },
+    {
+      "action": "Nav 10: \"Our Offices\" - hovering",
+      "time": "2026-10-26T07:11:54.400Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closing it",
+      "time": "2026-10-26T07:11:55.192Z"
+    },
+    {
+      "action": "New tab opened by the site () -> closing it",
+      "time": "2026-10-26T07:11:55.809Z"
+    },
+    {
+      "action": "Nav 10: dropdown opened with 1 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:11:55.832Z"
+    },
+    {
+      "action": "Nav 10.1: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:11:55.837Z"
+    },
+    {
+      "action": "Nav 10.1: URL unchanged",
+      "time": "2026-10-26T07:11:57.894Z"
+    },
+    {
+      "action": "New tab opened by the site () -> closing it",
+      "time": "2026-10-26T07:11:58.425Z"
+    },
+    {
+      "action": "Nav 11: \"Contact Us\" - hovering",
+      "time": "2026-10-26T07:11:58.675Z"
+    },
+    {
+      "action": "Nav 11: dropdown opened with 1 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:11:59.829Z"
+    },
+    {
+      "action": "Nav 11.1: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:11:59.918Z"
+    },
+    {
+      "action": "Nav 11.1: URL unchanged",
+      "time": "2026-10-26T07:12:02.103Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closing it",
+      "time": "2026-10-26T07:12:02.285Z"
+    },
+    {
+      "action": "Nav 12: \"Contact\" - hovering",
+      "time": "2026-10-26T07:12:02.934Z"
+    },
+    {
+      "action": "Nav 12: dropdown opened with 1 link(s), URL unchanged so far",
+      "time": "2026-10-26T07:12:04.018Z"
+    },
+    {
+      "action": "Nav 12.1: \"Paripoorna Mediclaim Ayush Bima (For CGHS Members ONLY)\" - clicking",
+      "time": "2026-10-26T07:12:04.032Z"
+    },
+    {
+      "action": "Nav 12.1: URL unchanged",
+      "time": "2026-10-26T07:12:06.126Z"
+    },
+    {
+      "action": "Nav bar pass finished: 42 link(s) checked",
+      "time": "2026-10-26T07:12:07.034Z"
+    },
+    {
+      "action": "Dropdown pass finished: 0 filled, 0 skipped",
+      "time": "2026-10-26T07:12:07.043Z"
+    },
+    {
+      "action": "Quote button 1: \"Buy Now\" - clicking",
+      "time": "2026-10-26T07:12:07.063Z"
+    },
+    {
+      "action": "Page tried to navigate away -> cancelled, staying on this URL",
+      "time": "2026-10-26T07:12:07.451Z"
+    },
+    {
+      "action": "Quote button 1: \"Buy Now\" would open another page -> cancelled, moving to next",
+      "time": "2026-10-26T07:12:08.463Z"
+    },
+    {
+      "action": "Quote button 2: \"Renew Policy\" - clicking",
+      "time": "2026-10-26T07:12:08.476Z"
+    },
+    {
+      "action": "Quote button 2: opened, URL unchanged, no fields found",
+      "time": "2026-10-26T07:12:09.900Z"
+    },
+    {
+      "action": "Quote button 3: \"Paripoorna Mediclaim Ayush Bima (Premium\" - clicking",
+      "time": "2026-10-26T07:12:10.709Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closing it",
+      "time": "2026-10-26T07:12:11.598Z"
+    },
+    {
+      "action": "Quote button 3: opened, URL unchanged, no fields found",
+      "time": "2026-10-26T07:12:12.162Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/quickRenewPost/renewal) -> closing it",
+      "time": "2026-10-26T07:12:12.326Z"
+    },
+    {
+      "action": "Quote button 4: \"Buy Yuva Bharat Health Insurance\" - clicking",
+      "time": "2026-10-26T07:12:13.063Z"
+    },
+    {
+      "action": "New tab opened by the site (https://paripoornamediclaimayushbima.netlify.app/) -> closing it",
+      "time": "2026-10-26T07:12:14.195Z"
+    },
+    {
+      "action": "Quote button 4: opened, URL unchanged, no fields found",
+      "time": "2026-10-26T07:12:14.465Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/health-insurance/paripoorna-ayush-bima) -> closing it",
+      "time": "2026-10-26T07:12:14.585Z"
+    },
+    {
+      "action": "Quote button pass finished",
+      "time": "2026-10-26T07:12:15.247Z"
+    },
+    {
+      "action": "Stabilizer: 0 element(s) masked, page settled",
+      "time": "2026-10-26T07:12:17.730Z"
+    },
+    {
+      "action": "Element screenshot saved (layout of the top of the page)",
+      "time": "2026-10-26T07:12:18.537Z",
+      "filename": "element-1792998448922.png"
+    },
+    {
+      "action": "Stabilizer: 0 element(s) masked, page settled",
+      "time": "2026-10-26T07:12:19.099Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.newindia.co.in/portal/Quote.html?product=NGQ1YzViZDc1MjhmNzFhOWJlZmRhMDBjYTBmOTlkYmQ6OjYxZGEwNDQ3YmQ1ZGU3MzZiNzEwMWJhZTQyZWIxOTE1OjpXYkpEb2xabjBTSzBxeVUvR01wYTBnPT0&smFlag=SMYU) -> closing it",
+      "time": "2026-10-26T07:12:19.106Z"
+    }
+  ]
+}
