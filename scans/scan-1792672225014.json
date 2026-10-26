@@ -1,0 +1,34 @@
+{
+  "scanId": "scan-1792672225014",
+  "url": "https://www.adityabirlahealthinsurance.com/",
+  "status": "failed",
+  "startedAt": "2026-10-22T12:30:25.014Z",
+  "finishedAt": "2026-10-22T12:31:15.748Z",
+  "durationMs": 50734,
+  "states": 1,
+  "interactions": 0,
+  "interactionBreakdown": {
+    "clicks": 0,
+    "hovers": 0,
+    "fieldsFilled": 0,
+    "selections": 0,
+    "dialogsHandled": 0
+  },
+  "fieldsFilled": 0,
+  "stepsVisited": 1,
+  "popupsHandled": 0,
+  "navLinksChecked": 0,
+  "stabilizer": {
+    "enabled": true
+  },
+  "error": "Screenshot automation failed",
+  "details": "page.evaluate: Target page, context or browser has been closed",
+  "elementScreenshots": [],
+  "navigationCheck": [],
+  "actionLog": [
+    {
+      "action": "Opening https://www.adityabirlahealthinsurance.com/",
+      "time": "2026-10-22T12:30:53.840Z"
+    }
+  ]
+}

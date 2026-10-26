@@ -1,0 +1,506 @@
+{
+  "scanId": "scan-1792996688770",
+  "url": "https://www.acko.com/",
+  "status": "completed",
+  "startedAt": "2026-10-26T06:38:08.771Z",
+  "finishedAt": "2026-10-26T06:39:58.587Z",
+  "durationMs": 109817,
+  "states": 6,
+  "interactions": 45,
+  "interactionBreakdown": {
+    "clicks": 25,
+    "hovers": 20,
+    "fieldsFilled": 0,
+    "selections": 0,
+    "dialogsHandled": 0
+  },
+  "fieldsFilled": 0,
+  "stepsVisited": 6,
+  "popupsHandled": 0,
+  "navLinksChecked": 20,
+  "stabilizer": {
+    "enabled": true,
+    "masked": 0,
+    "settled": true,
+    "maskSelectors": [
+      "[data-volatile]"
+    ],
+    "maskMode": "mask"
+  },
+  "message": "Done",
+  "screenshotUrl": "/screenshots/full-1792996688770.png",
+  "elementScreenshotUrl": "/screenshots/element-1792996688770.png",
+  "elementScreenshots": [
+    {
+      "label": "body",
+      "url": "/screenshots/element-1792996688770.png"
+    }
+  ],
+  "selectorCropUrl": null,
+  "stoppedBeforeSensitiveField": false,
+  "sensitiveField": null,
+  "dropdowns": {
+    "handled": 0,
+    "skipped": 0
+  },
+  "navigationCheck": [
+    {
+      "menu": "Enterprise",
+      "item": "Enterprise",
+      "result": "new tab",
+      "url": ""
+    },
+    {
+      "menu": "Support",
+      "item": "Support",
+      "result": "new tab",
+      "url": "https://www.acko.com/contact-us/"
+    },
+    {
+      "menu": "Renew health insurance",
+      "item": "Renew health insurance",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Renew car insurance",
+      "item": "Renew car insurance",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Renew bike insurance",
+      "item": "Renew bike insurance",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Renew life insurance",
+      "item": "Renew life insurance",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Login and renew policy",
+      "item": "Login and renew policy",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "File a claim",
+      "item": "File a claim",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Track a claim",
+      "item": "Track a claim",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "English",
+      "item": "English",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Kannada",
+      "item": "Kannada",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Tamil",
+      "item": "Tamil",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Hindi",
+      "item": "Hindi",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Car insurance",
+      "item": "Car insurance",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Comprehensive car insurance",
+      "item": "Comprehensive car insurance",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Third party car insurance",
+      "item": "Third party car insurance",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Own damage car insurance",
+      "item": "Own damage car insurance",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Zero depreciation car insurance",
+      "item": "Zero depreciation car insurance",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "About Us",
+      "item": "About Us",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    },
+    {
+      "menu": "Careers",
+      "item": "Careers",
+      "result": "URL unchanged",
+      "url": "https://www.acko.com/"
+    }
+  ],
+  "actionLog": [
+    {
+      "action": "Opening https://www.acko.com/",
+      "time": "2026-10-26T06:38:09.266Z"
+    },
+    {
+      "action": "Loaded URL: https://www.acko.com/",
+      "time": "2026-10-26T06:38:12.983Z"
+    },
+    {
+      "action": "Page title: ACKO Insurance | Buy Car, Bike, Health, Term & Travel Insurance Online",
+      "time": "2026-10-26T06:38:13.007Z"
+    },
+    {
+      "action": "Popups / cookie banners cleared",
+      "time": "2026-10-26T06:38:16.128Z"
+    },
+    {
+      "action": "Page fully loaded (lazy content scrolled in)",
+      "time": "2026-10-26T06:38:30.930Z"
+    },
+    {
+      "action": "Stabilizer: 0 element(s) masked, page settled",
+      "time": "2026-10-26T06:38:34.641Z"
+    },
+    {
+      "action": "Full page captured in 5 screens",
+      "time": "2026-10-26T06:38:42.127Z"
+    },
+    {
+      "action": "Full-page screenshot saved (before any interaction)",
+      "time": "2026-10-26T06:38:42.127Z",
+      "filename": "full-1792996688770.png"
+    },
+    {
+      "action": "Navigation guard ON - staying on this URL",
+      "time": "2026-10-26T06:38:42.130Z"
+    },
+    {
+      "action": "Nav 1: \"Enterprise\" - hovering",
+      "time": "2026-10-26T06:38:42.174Z"
+    },
+    {
+      "action": "Nav 1: \"Enterprise\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:38:43.266Z"
+    },
+    {
+      "action": "Nav 1: opened a new tab () -> closed",
+      "time": "2026-10-26T06:38:45.097Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.acko.com/gi/enterprise/?utm_source=direct&utm_medium=homepage) -> closing it",
+      "time": "2026-10-26T06:38:45.293Z"
+    },
+    {
+      "action": "Nav 2: \"Support\" - hovering",
+      "time": "2026-10-26T06:38:45.328Z"
+    },
+    {
+      "action": "Nav 2: \"Support\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:38:46.417Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.acko.com/contact-us/) -> closing it",
+      "time": "2026-10-26T06:38:47.898Z"
+    },
+    {
+      "action": "Nav 2: opened a new tab (https://www.acko.com/contact-us/) -> closed",
+      "time": "2026-10-26T06:38:48.118Z"
+    },
+    {
+      "action": "Nav 3: \"Renew health insurance\" - hovering",
+      "time": "2026-10-26T06:38:48.138Z"
+    },
+    {
+      "action": "Nav 3: \"Renew health insurance\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:38:49.205Z"
+    },
+    {
+      "action": "Nav 3: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:38:50.804Z"
+    },
+    {
+      "action": "Nav 4: \"Renew car insurance\" - hovering",
+      "time": "2026-10-26T06:38:51.539Z"
+    },
+    {
+      "action": "Nav 4: \"Renew car insurance\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:38:52.596Z"
+    },
+    {
+      "action": "Nav 4: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:38:54.208Z"
+    },
+    {
+      "action": "Nav 5: \"Renew bike insurance\" - hovering",
+      "time": "2026-10-26T06:38:54.950Z"
+    },
+    {
+      "action": "Nav 5: \"Renew bike insurance\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:38:56.015Z"
+    },
+    {
+      "action": "Nav 5: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:38:57.630Z"
+    },
+    {
+      "action": "Nav 6: \"Renew life insurance\" - hovering",
+      "time": "2026-10-26T06:38:58.354Z"
+    },
+    {
+      "action": "Nav 6: \"Renew life insurance\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:38:59.407Z"
+    },
+    {
+      "action": "Nav 6: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:01.005Z"
+    },
+    {
+      "action": "Nav 7: \"Login and renew policy\" - hovering",
+      "time": "2026-10-26T06:39:01.800Z"
+    },
+    {
+      "action": "Nav 7: \"Login and renew policy\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:02.866Z"
+    },
+    {
+      "action": "Nav 7: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:04.450Z"
+    },
+    {
+      "action": "Nav 8: \"File a claim\" - hovering",
+      "time": "2026-10-26T06:39:05.195Z"
+    },
+    {
+      "action": "Nav 8: \"File a claim\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:06.284Z"
+    },
+    {
+      "action": "Nav 8: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:07.891Z"
+    },
+    {
+      "action": "Nav 9: \"Track a claim\" - hovering",
+      "time": "2026-10-26T06:39:08.619Z"
+    },
+    {
+      "action": "Nav 9: \"Track a claim\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:09.736Z"
+    },
+    {
+      "action": "Nav 9: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:11.368Z"
+    },
+    {
+      "action": "Nav 10: \"English\" - hovering",
+      "time": "2026-10-26T06:39:12.133Z"
+    },
+    {
+      "action": "Nav 10: \"English\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:13.203Z"
+    },
+    {
+      "action": "Nav 10: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:14.813Z"
+    },
+    {
+      "action": "Nav 11: \"Kannada\" - hovering",
+      "time": "2026-10-26T06:39:15.545Z"
+    },
+    {
+      "action": "Nav 11: \"Kannada\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:16.602Z"
+    },
+    {
+      "action": "Nav 11: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:18.196Z"
+    },
+    {
+      "action": "Nav 12: \"Tamil\" - hovering",
+      "time": "2026-10-26T06:39:18.943Z"
+    },
+    {
+      "action": "Nav 12: \"Tamil\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:19.990Z"
+    },
+    {
+      "action": "Nav 12: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:21.603Z"
+    },
+    {
+      "action": "Nav 13: \"Hindi\" - hovering",
+      "time": "2026-10-26T06:39:22.334Z"
+    },
+    {
+      "action": "Nav 13: \"Hindi\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:23.409Z"
+    },
+    {
+      "action": "Nav 13: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:25.026Z"
+    },
+    {
+      "action": "Nav 14: \"Car insurance\" - hovering",
+      "time": "2026-10-26T06:39:25.795Z"
+    },
+    {
+      "action": "Nav 14: \"Car insurance\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:26.873Z"
+    },
+    {
+      "action": "Nav 14: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:28.489Z"
+    },
+    {
+      "action": "Nav 15: \"Comprehensive car insurance\" - hovering",
+      "time": "2026-10-26T06:39:29.249Z"
+    },
+    {
+      "action": "Nav 15: \"Comprehensive car insurance\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:30.326Z"
+    },
+    {
+      "action": "Nav 15: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:31.913Z"
+    },
+    {
+      "action": "Nav 16: \"Third party car insurance\" - hovering",
+      "time": "2026-10-26T06:39:32.675Z"
+    },
+    {
+      "action": "Nav 16: \"Third party car insurance\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:33.755Z"
+    },
+    {
+      "action": "Nav 16: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:35.383Z"
+    },
+    {
+      "action": "Nav 17: \"Own damage car insurance\" - hovering",
+      "time": "2026-10-26T06:39:36.144Z"
+    },
+    {
+      "action": "Nav 17: \"Own damage car insurance\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:37.196Z"
+    },
+    {
+      "action": "Nav 17: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:38.817Z"
+    },
+    {
+      "action": "Nav 18: \"Zero depreciation car insurance\" - hovering",
+      "time": "2026-10-26T06:39:39.530Z"
+    },
+    {
+      "action": "Nav 18: \"Zero depreciation car insurance\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:40.590Z"
+    },
+    {
+      "action": "Nav 18: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:42.187Z"
+    },
+    {
+      "action": "Nav 19: \"About Us\" - hovering",
+      "time": "2026-10-26T06:39:42.946Z"
+    },
+    {
+      "action": "Nav 19: \"About Us\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:44.025Z"
+    },
+    {
+      "action": "Nav 19: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:45.636Z"
+    },
+    {
+      "action": "Nav 20: \"Careers\" - hovering",
+      "time": "2026-10-26T06:39:46.358Z"
+    },
+    {
+      "action": "Nav 20: \"Careers\" - nothing on hover, clicking",
+      "time": "2026-10-26T06:39:47.425Z"
+    },
+    {
+      "action": "Nav 20: URL unchanged, no dropdown links or fields found",
+      "time": "2026-10-26T06:39:49.046Z"
+    },
+    {
+      "action": "Nav bar pass finished: 20 link(s) checked",
+      "time": "2026-10-26T06:39:49.736Z"
+    },
+    {
+      "action": "Dropdown pass finished: 0 filled, 0 skipped",
+      "time": "2026-10-26T06:39:49.744Z"
+    },
+    {
+      "action": "Quote button pass finished",
+      "time": "2026-10-26T06:39:49.752Z"
+    },
+    {
+      "action": "Continue/Next clicked",
+      "time": "2026-10-26T06:39:49.928Z",
+      "step": 2
+    },
+    {
+      "action": "Continue/Next clicked",
+      "time": "2026-10-26T06:39:51.311Z",
+      "step": 3
+    },
+    {
+      "action": "Continue/Next clicked",
+      "time": "2026-10-26T06:39:52.691Z",
+      "step": 4
+    },
+    {
+      "action": "Continue/Next clicked",
+      "time": "2026-10-26T06:39:54.074Z",
+      "step": 5
+    },
+    {
+      "action": "Continue/Next clicked",
+      "time": "2026-10-26T06:39:55.440Z",
+      "step": 6
+    },
+    {
+      "action": "Stabilizer: 0 element(s) masked, page settled",
+      "time": "2026-10-26T06:39:57.734Z"
+    },
+    {
+      "action": "Element screenshot saved",
+      "time": "2026-10-26T06:39:57.957Z",
+      "filename": "element-1792996688770.png",
+      "selector": "body"
+    },
+    {
+      "action": "Stabilizer: 0 element(s) masked, page settled",
+      "time": "2026-10-26T06:39:58.436Z"
+    }
+  ]
+}

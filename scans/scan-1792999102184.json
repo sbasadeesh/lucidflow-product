@@ -1,0 +1,34 @@
+{
+  "scanId": "scan-1792999102184",
+  "url": "https://www.policybazaar.com/",
+  "status": "failed",
+  "startedAt": "2026-10-26T07:18:22.184Z",
+  "finishedAt": "2026-10-26T07:18:22.669Z",
+  "durationMs": 485,
+  "states": 1,
+  "interactions": 0,
+  "interactionBreakdown": {
+    "clicks": 0,
+    "hovers": 0,
+    "fieldsFilled": 0,
+    "selections": 0,
+    "dialogsHandled": 0
+  },
+  "fieldsFilled": 0,
+  "stepsVisited": 1,
+  "popupsHandled": 0,
+  "navLinksChecked": 0,
+  "stabilizer": {
+    "enabled": true
+  },
+  "error": "Screenshot automation failed",
+  "details": "page.goto: net::ERR_HTTP2_PROTOCOL_ERROR at https://www.policybazaar.com/\nCall log:\n\u001b[2m  - navigating to \"https://www.policybazaar.com/\", waiting until \"domcontentloaded\"\u001b[22m\n",
+  "elementScreenshots": [],
+  "navigationCheck": [],
+  "actionLog": [
+    {
+      "action": "Opening https://www.policybazaar.com/",
+      "time": "2026-10-26T07:18:22.563Z"
+    }
+  ]
+}
