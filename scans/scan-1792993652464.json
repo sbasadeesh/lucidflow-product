@@ -1,0 +1,38 @@
+{
+  "scanId": "scan-1792993652464",
+  "url": "https://www.icicilombard.com/",
+  "status": "blocked",
+  "startedAt": "2026-10-26T05:47:32.464Z",
+  "finishedAt": "2026-10-26T05:47:38.194Z",
+  "durationMs": 5730,
+  "states": 1,
+  "interactions": 0,
+  "interactionBreakdown": {
+    "clicks": 0,
+    "hovers": 0,
+    "fieldsFilled": 0,
+    "selections": 0,
+    "dialogsHandled": 0
+  },
+  "fieldsFilled": 0,
+  "stepsVisited": 1,
+  "popupsHandled": 0,
+  "navLinksChecked": 0,
+  "stabilizer": {
+    "enabled": true
+  },
+  "message": "The site blocked the scan on the first page load",
+  "screenshotUrl": null,
+  "elementScreenshotUrl": null,
+  "elementScreenshots": [],
+  "actionLog": [
+    {
+      "action": "Opening https://www.icicilombard.com/",
+      "time": "2026-10-26T05:47:32.810Z"
+    },
+    {
+      "action": "The site refused the first page load (\"Access Denied\") -> nothing to scan. Try https:// in the URL, or ask the site owner to allow your IP.",
+      "time": "2026-10-26T05:47:38.080Z"
+    }
+  ]
+}
