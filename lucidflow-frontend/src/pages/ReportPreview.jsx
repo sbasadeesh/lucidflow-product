@@ -1,18 +1,27 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Topbar from "../components/Topbar.jsx";
 import { getPages, Sheet } from "../components/ReportPages.jsx";
 import NoScan from "../components/NoScan.jsx";
 import { buildReport } from "../data.js";
 import { getScan } from "../scanStore.js";
 import { downloadCap, downloadPdf } from "../export/downloads.js";
+import mock from "../mock/mock_payload.json";
 
 export default function ReportPreview() {
   const navigate = useNavigate();
   const [i, setI] = useState(0);
   const [opts, setOpts] = useState({ screenshots: true, appendix: true, language: "English" });
+
+    // Dev only: ?mock=<scenario id> shows the report from src/mock/mock_payload.json
+  const [params] = useSearchParams();
+  const mockId = import.meta.env.DEV ? params.get("mock") : null;
+  const mockReport = mockId
+    ? (mock.scenarios.find((s) => s.id === mockId) ?? mock.scenarios[0]).report
+    : null;
+
   const scan = getScan();
-  const report = scan ? buildReport(scan) : null;
+  const report = mockReport ?? (scan ? buildReport(scan) : null);
   if (!report) return <NoScan />;
   const pages = getPages(report);
 
