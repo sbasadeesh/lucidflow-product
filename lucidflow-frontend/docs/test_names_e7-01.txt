@@ -1,0 +1,11 @@
+E7-01 report layout against mock payload: test names
+
+AC1: Mock payload renders with no errors
+1. Given the mock payload with one finding, when the report preview opens, then the report renders with no errors
+2. Given the mock payload with three findings, when the report preview opens, then every page renders in the right order: cover, summary, findings, CAP register, about
+
+AC2: Empty AI slots still look right
+3. Given a mock payload with empty text fields, when the report preview opens, then every page still shows its headings and layout with no broken or missing sections
+
+Edge case
+4. Given a mock payload with very long text, when a finding page renders, then the text stays inside the page and does not touch the footer
