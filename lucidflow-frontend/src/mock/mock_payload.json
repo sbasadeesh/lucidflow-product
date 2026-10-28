@@ -1,0 +1,985 @@
+{
+  "schema_version": 1,
+  "note": "Each scenario.report has the same shape that buildReport(scan) returns, so getPages(report) can render it before the engine is ready. Issue date comes from the clock in code; tests must freeze it. pages = 1 + 1 + N + N + 1 (cover, summary, N finding pages, N CAP pages, about). Needs REPORT.capRowsPerPage = 1 in config.js.",
+  "scenarios": [
+    {
+      "id": "S1-one-finding",
+      "description": "Today's real case: Single Page URL, 1 finding.",
+      "input": {
+        "mode": "pages",
+        "urls": ["https://www.royalsundaram.in/claims"]
+      },
+      "report": {
+        "title": "Dark Pattern Assessment Report",
+        "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
+        "client": "royalsundaram.in",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page)",
+        "id": "LF-ROYALSUNDARAM-2026-001",
+        "version": "V1.0",
+        "date": "26th October 2026",
+        "stats": [
+          {
+            "value": 1,
+            "label": "Pages / screens assessed"
+          },
+          {
+            "value": 1,
+            "label": "Potential findings"
+          },
+          {
+            "value": 0,
+            "label": "High / critical"
+          },
+          {
+            "value": 0,
+            "label": "Revalidated closed"
+          }
+        ],
+        "distribution": [
+          {
+            "name": "Nagging",
+            "count": 1
+          }
+        ],
+        "severitySplit": {
+          "Critical": 0,
+          "High": 0,
+          "Medium": 1,
+          "Observed": 0
+        },
+        "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "themes": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+          "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
+        ],
+        "findings": [
+          {
+            "id": "FINDING-001",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "MEDIUM",
+            "pattern": "NAGGING",
+            "effort": "MEDIUM EFFORT",
+            "owner": "Product / UX / Compliance",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          }
+        ],
+        "cap": [
+          {
+            "id": "CAP-001",
+            "findingRef": "F-001",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "Nagging",
+            "severity": "MEDIUM",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Product / UX / Compliance",
+            "due": "[Date]",
+            "status": "OPEN"
+          }
+        ]
+      },
+      "expected": {
+        "renders_without_errors": true,
+        "total_pdf_pages": 5,
+        "page_order": ["cover", "summary", "finding-001", "cap-register-1", "about"],
+        "finding_pages": 1,
+        "cap_pages": 1,
+        "high_critical": 0,
+        "pattern_distribution": [
+          {
+            "name": "Nagging",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "S2-three-findings",
+      "description": "3 findings on the one scanned page; MEDIUM and OBSERVED.",
+      "input": {
+        "mode": "pages",
+        "urls": ["https://www.royalsundaram.in/claims"]
+      },
+      "report": {
+        "title": "Dark Pattern Assessment Report",
+        "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
+        "client": "royalsundaram.in",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page)",
+        "id": "LF-ROYALSUNDARAM-2026-001",
+        "version": "V1.0",
+        "date": "26th October 2026",
+        "stats": [
+          {
+            "value": 1,
+            "label": "Pages / screens assessed"
+          },
+          {
+            "value": 3,
+            "label": "Potential findings"
+          },
+          {
+            "value": 0,
+            "label": "High / critical"
+          },
+          {
+            "value": 0,
+            "label": "Revalidated closed"
+          }
+        ],
+        "distribution": [
+          {
+            "name": "Nagging",
+            "count": 1
+          },
+          {
+            "name": "Forced Action",
+            "count": 1
+          },
+          {
+            "name": "False Urgency",
+            "count": 1
+          }
+        ],
+        "severitySplit": {
+          "Critical": 0,
+          "High": 0,
+          "Medium": 2,
+          "Observed": 1
+        },
+        "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "themes": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+          "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
+        ],
+        "findings": [
+          {
+            "id": "FINDING-001",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "MEDIUM",
+            "pattern": "NAGGING",
+            "effort": "MEDIUM EFFORT",
+            "owner": "Product / UX / Compliance",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          },
+          {
+            "id": "FINDING-002",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "MEDIUM",
+            "pattern": "FORCED ACTION",
+            "effort": "MEDIUM EFFORT",
+            "owner": "Product / UX / Legal",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          },
+          {
+            "id": "FINDING-003",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "OBSERVED",
+            "pattern": "FALSE URGENCY",
+            "effort": "LOW EFFORT",
+            "owner": "Marketing / Product / Compliance",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          }
+        ],
+        "cap": [
+          {
+            "id": "CAP-001",
+            "findingRef": "F-001",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "Nagging",
+            "severity": "MEDIUM",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Product / UX / Compliance",
+            "due": "[Date]",
+            "status": "OPEN"
+          },
+          {
+            "id": "CAP-002",
+            "findingRef": "F-002",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "Forced Action",
+            "severity": "MEDIUM",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Product / UX / Legal",
+            "due": "[Date]",
+            "status": "OPEN"
+          },
+          {
+            "id": "CAP-003",
+            "findingRef": "F-003",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "False Urgency",
+            "severity": "OBSERVED",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Marketing / Product / Compliance",
+            "due": "[Date]",
+            "status": "OPEN"
+          }
+        ]
+      },
+      "expected": {
+        "renders_without_errors": true,
+        "total_pdf_pages": 9,
+        "page_order": [
+          "cover",
+          "summary",
+          "finding-001",
+          "finding-002",
+          "finding-003",
+          "cap-register-1",
+          "cap-register-2",
+          "cap-register-3",
+          "about"
+        ],
+        "finding_pages": 3,
+        "cap_pages": 3,
+        "high_critical": 0,
+        "pattern_distribution": [
+          {
+            "name": "Nagging",
+            "count": 1
+          },
+          {
+            "name": "Forced Action",
+            "count": 1
+          },
+          {
+            "name": "False Urgency",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "S3-many-findings",
+      "description": "8 findings on the one page; all 4 severities; 8 finding pages + 8 CAP pages.",
+      "input": {
+        "mode": "pages",
+        "urls": ["https://www.royalsundaram.in/claims"]
+      },
+      "report": {
+        "title": "Dark Pattern Assessment Report",
+        "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
+        "client": "royalsundaram.in",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page)",
+        "id": "LF-ROYALSUNDARAM-2026-001",
+        "version": "V1.0",
+        "date": "26th October 2026",
+        "stats": [
+          {
+            "value": 1,
+            "label": "Pages / screens assessed"
+          },
+          {
+            "value": 8,
+            "label": "Potential findings"
+          },
+          {
+            "value": 2,
+            "label": "High / critical"
+          },
+          {
+            "value": 0,
+            "label": "Revalidated closed"
+          }
+        ],
+        "distribution": [
+          {
+            "name": "Nagging",
+            "count": 3
+          },
+          {
+            "name": "Forced Action",
+            "count": 3
+          },
+          {
+            "name": "False Urgency",
+            "count": 1
+          },
+          {
+            "name": "Drip Pricing",
+            "count": 1
+          }
+        ],
+        "severitySplit": {
+          "Critical": 1,
+          "High": 1,
+          "Medium": 4,
+          "Observed": 2
+        },
+        "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "themes": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+          "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
+        ],
+        "findings": [
+          {
+            "id": "FINDING-001",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "MEDIUM",
+            "pattern": "NAGGING",
+            "effort": "MEDIUM EFFORT",
+            "owner": "Product / UX / Compliance",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          },
+          {
+            "id": "FINDING-002",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "MEDIUM",
+            "pattern": "FORCED ACTION",
+            "effort": "MEDIUM EFFORT",
+            "owner": "Product / UX / Legal",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          },
+          {
+            "id": "FINDING-003",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "HIGH",
+            "pattern": "FORCED ACTION",
+            "effort": "LOW EFFORT",
+            "owner": "Product / Compliance",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          },
+          {
+            "id": "FINDING-004",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "MEDIUM",
+            "pattern": "NAGGING",
+            "effort": "MEDIUM EFFORT",
+            "owner": "Product / UX / Advertising Team",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          },
+          {
+            "id": "FINDING-005",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "OBSERVED",
+            "pattern": "FORCED ACTION",
+            "effort": "MEDIUM EFFORT",
+            "owner": "Product / UX / Legal",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          },
+          {
+            "id": "FINDING-006",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "OBSERVED",
+            "pattern": "FALSE URGENCY",
+            "effort": "LOW EFFORT",
+            "owner": "Marketing / Product / Compliance",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          },
+          {
+            "id": "FINDING-007",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "CRITICAL",
+            "pattern": "DRIP PRICING",
+            "effort": "HIGH EFFORT",
+            "owner": "Product / Legal",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          },
+          {
+            "id": "FINDING-008",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "MEDIUM",
+            "pattern": "NAGGING",
+            "effort": "MEDIUM EFFORT",
+            "owner": "Product / UX / Advertising Team",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "fix": [
+              "Lorem ipsum dolor sit amet consectetur.",
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud.",
+              "Duis aute irure dolor in reprehenderit."
+            ]
+          }
+        ],
+        "cap": [
+          {
+            "id": "CAP-001",
+            "findingRef": "F-001",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "Nagging",
+            "severity": "MEDIUM",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Product / UX / Compliance",
+            "due": "[Date]",
+            "status": "OPEN"
+          },
+          {
+            "id": "CAP-002",
+            "findingRef": "F-002",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "Forced Action",
+            "severity": "MEDIUM",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Product / UX / Legal",
+            "due": "[Date]",
+            "status": "OPEN"
+          },
+          {
+            "id": "CAP-003",
+            "findingRef": "F-003",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "Forced Action",
+            "severity": "HIGH",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Product / Compliance",
+            "due": "[Date]",
+            "status": "OPEN"
+          },
+          {
+            "id": "CAP-004",
+            "findingRef": "F-004",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "Nagging",
+            "severity": "MEDIUM",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Product / UX / Advertising Team",
+            "due": "[Date]",
+            "status": "OPEN"
+          },
+          {
+            "id": "CAP-005",
+            "findingRef": "F-005",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "Forced Action",
+            "severity": "OBSERVED",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Product / UX / Legal",
+            "due": "[Date]",
+            "status": "OPEN"
+          },
+          {
+            "id": "CAP-006",
+            "findingRef": "F-006",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "False Urgency",
+            "severity": "OBSERVED",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Marketing / Product / Compliance",
+            "due": "[Date]",
+            "status": "OPEN"
+          },
+          {
+            "id": "CAP-007",
+            "findingRef": "F-007",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "Drip Pricing",
+            "severity": "CRITICAL",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Product / Legal",
+            "due": "[Date]",
+            "status": "OPEN"
+          },
+          {
+            "id": "CAP-008",
+            "findingRef": "F-008",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "Nagging",
+            "severity": "MEDIUM",
+            "rootCause": "Lorem ipsum dolor sit amet consectetur.",
+            "action": [
+              "Sed do eiusmod tempor incididunt ut labore.",
+              "Ut enim ad minim veniam quis nostrud."
+            ],
+            "owner": "Product / UX / Advertising Team",
+            "due": "[Date]",
+            "status": "OPEN"
+          }
+        ]
+      },
+      "expected": {
+        "renders_without_errors": true,
+        "total_pdf_pages": 19,
+        "page_order": [
+          "cover",
+          "summary",
+          "finding-001",
+          "finding-002",
+          "finding-003",
+          "finding-004",
+          "finding-005",
+          "finding-006",
+          "finding-007",
+          "finding-008",
+          "cap-register-1",
+          "cap-register-2",
+          "cap-register-3",
+          "cap-register-4",
+          "cap-register-5",
+          "cap-register-6",
+          "cap-register-7",
+          "cap-register-8",
+          "about"
+        ],
+        "finding_pages": 8,
+        "cap_pages": 8,
+        "high_critical": 2,
+        "pattern_distribution": [
+          {
+            "name": "Nagging",
+            "count": 3
+          },
+          {
+            "name": "Forced Action",
+            "count": 3
+          },
+          {
+            "name": "False Urgency",
+            "count": 1
+          },
+          {
+            "name": "Drip Pricing",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "S4-zero-findings",
+      "description": "Page scanned, nothing found.",
+      "input": {
+        "mode": "pages",
+        "urls": ["https://www.royalsundaram.in/claims"]
+      },
+      "report": {
+        "title": "Dark Pattern Assessment Report",
+        "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
+        "client": "royalsundaram.in",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page)",
+        "id": "LF-ROYALSUNDARAM-2026-001",
+        "version": "V1.0",
+        "date": "26th October 2026",
+        "stats": [
+          {
+            "value": 1,
+            "label": "Pages / screens assessed"
+          },
+          {
+            "value": 0,
+            "label": "Potential findings"
+          },
+          {
+            "value": 0,
+            "label": "High / critical"
+          },
+          {
+            "value": 0,
+            "label": "Revalidated closed"
+          }
+        ],
+        "distribution": [],
+        "severitySplit": {
+          "Critical": 0,
+          "High": 0,
+          "Medium": 0,
+          "Observed": 0
+        },
+        "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "themes": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+          "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
+        ],
+        "findings": [],
+        "cap": []
+      },
+      "expected": {
+        "renders_without_errors": true,
+        "total_pdf_pages": 3,
+        "page_order": ["cover", "summary", "about"],
+        "finding_pages": 0,
+        "cap_pages": 0,
+        "high_critical": 0,
+        "pattern_distribution": [],
+        "open_question": "0 findings: no CAP page (current getPages) or a 'no findings' page? Not decided."
+      }
+    },
+    {
+      "id": "S5-empty-text-fields",
+      "description": "E7-01 criteria 2: every text field empty (posture, evidence, why, fix, root cause, action). Layout must still look right.",
+      "input": {
+        "mode": "pages",
+        "urls": ["https://www.royalsundaram.in/claims"]
+      },
+      "report": {
+        "title": "Dark Pattern Assessment Report",
+        "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
+        "client": "royalsundaram.in",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page)",
+        "id": "LF-ROYALSUNDARAM-2026-001",
+        "version": "V1.0",
+        "date": "26th October 2026",
+        "stats": [
+          {
+            "value": 1,
+            "label": "Pages / screens assessed"
+          },
+          {
+            "value": 1,
+            "label": "Potential findings"
+          },
+          {
+            "value": 0,
+            "label": "High / critical"
+          },
+          {
+            "value": 0,
+            "label": "Revalidated closed"
+          }
+        ],
+        "distribution": [
+          {
+            "name": "Nagging",
+            "count": 1
+          }
+        ],
+        "severitySplit": {
+          "Critical": 0,
+          "High": 0,
+          "Medium": 1,
+          "Observed": 0
+        },
+        "posture": "",
+        "themes": ["", "", ""],
+        "findings": [
+          {
+            "id": "FINDING-001",
+            "title": "royalsundaram.in",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims",
+            "severity": "MEDIUM",
+            "pattern": "NAGGING",
+            "effort": "MEDIUM EFFORT",
+            "owner": "Product / UX / Compliance",
+            "evidence": "",
+            "why": "",
+            "fix": []
+          }
+        ],
+        "cap": [
+          {
+            "id": "CAP-001",
+            "findingRef": "F-001",
+            "finding": "royalsundaram.in",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims",
+            "pattern": "Nagging",
+            "severity": "MEDIUM",
+            "rootCause": "",
+            "action": [],
+            "owner": "Product / UX / Compliance",
+            "due": "[Date]",
+            "status": "OPEN"
+          }
+        ]
+      },
+      "expected": {
+        "renders_without_errors": true,
+        "total_pdf_pages": 5,
+        "page_order": ["cover", "summary", "finding-001", "cap-register-1", "about"],
+        "finding_pages": 1,
+        "cap_pages": 1,
+        "high_critical": 0,
+        "pattern_distribution": [
+          {
+            "name": "Nagging",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "S6-long-text",
+      "description": "Very long text, 8 fix bullets, long URL and owner. Layout must not break.",
+      "input": {
+        "mode": "pages",
+        "urls": [
+          "https://www.royalsundaram.in/claims/health-insurance/cashless-claim-request-form?utm_source=website&utm_medium=banner&utm_campaign=renewal-offer-2026&session=abcdef0123456789abcdef0123456789&ref=homepage-top-nav"
+        ]
+      },
+      "report": {
+        "title": "Dark Pattern Assessment Report",
+        "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
+        "client": "royalsundaram.in",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page)",
+        "id": "LF-ROYALSUNDARAM-2026-001",
+        "version": "V1.0",
+        "date": "26th October 2026",
+        "stats": [
+          {
+            "value": 1,
+            "label": "Pages / screens assessed"
+          },
+          {
+            "value": 1,
+            "label": "Potential findings"
+          },
+          {
+            "value": 0,
+            "label": "High / critical"
+          },
+          {
+            "value": 0,
+            "label": "Revalidated closed"
+          }
+        ],
+        "distribution": [
+          {
+            "name": "Nagging",
+            "count": 1
+          }
+        ],
+        "severitySplit": {
+          "Critical": 0,
+          "High": 0,
+          "Medium": 1,
+          "Observed": 0
+        },
+        "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "themes": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+          "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
+        ],
+        "findings": [
+          {
+            "id": "FINDING-001",
+            "title": "royalsundaram.in - Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+            "screenshot": "/mock-shot.png",
+            "url": "https://www.royalsundaram.in/claims/health-insurance/cashless-claim-request-form?utm_source=website&utm_medium=banner&utm_campaign=renewal-offer-2026&session=abcdef0123456789abcdef0123456789&ref=homepage-top-nav",
+            "severity": "MEDIUM",
+            "pattern": "NAGGING",
+            "effort": "MEDIUM EFFORT",
+            "owner": "Product / UX / Legal / Compliance / Advertising Team / Marketing",
+            "evidence": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+            "why": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
+            "fix": [
+              "Lorem ipsum 1: Lorem ipsum dolor sit amet consectetur. Sed do eiusmod tempor incididunt ut labore.",
+              "Lorem ipsum 2: Sed do eiusmod tempor incididunt ut labore. Ut enim ad minim veniam quis nostrud.",
+              "Lorem ipsum 3: Ut enim ad minim veniam quis nostrud. Duis aute irure dolor in reprehenderit.",
+              "Lorem ipsum 4: Duis aute irure dolor in reprehenderit. Lorem ipsum dolor sit amet consectetur.",
+              "Lorem ipsum 5: Lorem ipsum dolor sit amet consectetur. Sed do eiusmod tempor incididunt ut labore.",
+              "Lorem ipsum 6: Sed do eiusmod tempor incididunt ut labore. Ut enim ad minim veniam quis nostrud.",
+              "Lorem ipsum 7: Ut enim ad minim veniam quis nostrud. Duis aute irure dolor in reprehenderit.",
+              "Lorem ipsum 8: Duis aute irure dolor in reprehenderit. Lorem ipsum dolor sit amet consectetur."
+            ]
+          }
+        ],
+        "cap": [
+          {
+            "id": "CAP-001",
+            "findingRef": "F-001",
+            "finding": "royalsundaram.in - Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+            "company": "royalsundaram.in",
+            "url": "https://www.royalsundaram.in/claims/health-insurance/cashless-claim-request-form?utm_source=website&utm_medium=banner&utm_campaign=renewal-offer-2026&session=abcdef0123456789abcdef0123456789&ref=homepage-top-nav",
+            "pattern": "Nagging",
+            "severity": "MEDIUM",
+            "rootCause": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
+            "action": [
+              "Lorem ipsum 1: Lorem ipsum dolor sit amet consectetur.",
+              "Lorem ipsum 2: Sed do eiusmod tempor incididunt ut labore.",
+              "Lorem ipsum 3: Ut enim ad minim veniam quis nostrud.",
+              "Lorem ipsum 4: Duis aute irure dolor in reprehenderit.",
+              "Lorem ipsum 5: Lorem ipsum dolor sit amet consectetur.",
+              "Lorem ipsum 6: Sed do eiusmod tempor incididunt ut labore."
+            ],
+            "owner": "Product / UX / Legal / Compliance / Advertising Team / Marketing",
+            "due": "[Date]",
+            "status": "OPEN"
+          }
+        ]
+      },
+      "expected": {
+        "renders_without_errors": true,
+        "total_pdf_pages": 5,
+        "page_order": ["cover", "summary", "finding-001", "cap-register-1", "about"],
+        "finding_pages": 1,
+        "cap_pages": 1,
+        "high_critical": 0,
+        "pattern_distribution": [
+          {
+            "name": "Nagging",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ]
+}

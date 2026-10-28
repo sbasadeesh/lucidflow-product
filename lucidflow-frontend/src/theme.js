@@ -31,8 +31,8 @@ export const theme = {
     h3: "14pt",
     h2: "16pt",
     stat: "18pt",
-    title: "20pt",
-    display: "24pt",
+    title: "24pt",
+    display: "35pt",
   },
 };
 

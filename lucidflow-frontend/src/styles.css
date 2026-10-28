@@ -505,6 +505,8 @@ body {
   font-family: var(--font-family);
   font-size: var(--fs-l);
   line-height: 1.45;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9pt;
 }
 .preview .sheet {
   zoom: 0.62;
@@ -521,6 +523,9 @@ body {
 }
 .s-body {
   flex: 1;
+  margin-bottom: 14mm; /* space kept for the footer */
+  min-height: 0;
+  overflow: hidden; /* anything longer is cut, never touches footer */
 }
 .s-foot {
   position: absolute;
@@ -553,6 +558,7 @@ body {
   margin: 0 0 8px;
   font-size: var(--fs-title);
   line-height: 1.2;
+  line-height: 1.25;
 }
 .sub {
   margin: 18px 0 8px;
@@ -687,7 +693,7 @@ body {
   font-size: var(--fs-m);
 }
 .dbar {
-  height: 8px;
+  height: 10px;
   background: var(--track);
 }
 .dbar i {
@@ -885,4 +891,131 @@ select option {
 }
 .cap-table li {
   margin-bottom: 2px;
+}
+
+
+/* ===== report page spacing (matches the reference pages) ===== */
+/* `.sheet p { margin: 4px 0 }` was overriding p-rules like .tagline, .scope-label, .para.
+   The rules below use `.sheet .x` so they win. Paste this block at the END of styles.css. */
+
+/* every page */
+.s-foot { 
+  bottom: 3mm; 
+}
+.label-red { 
+  margin-bottom: 12px; 
+}
+.big-label { 
+  margin-bottom: 6px; 
+}
+.sheet .eyebrow { 
+  margin: 0 0 6px; 
+}
+
+/* cover */
+.cover .eyebrow {
+  margin-top: 28mm;
+}
+.cover-title {
+  margin: 20mm 0 22px;
+}
+.sheet .tagline {
+  margin: 8px 0 20mm;
+}
+.prep {
+  margin: 18px 0;
+  padding: 20px 18px 24px;
+}
+.prep p {
+  margin: 0 0 14px;
+}
+.sheet .scope-label {
+  margin: 30px 0 8px;
+}
+.scope {
+  margin-bottom: 28px;
+}
+.cover-tag {
+  bottom: 40mm;
+}
+
+/* summary */
+.stats-row { 
+  margin: 27px 0 14px; 
+}
+.stats-row b { 
+  margin-bottom: 6px; 
+}
+.dist { 
+  grid-template-columns: 150px 1fr 24px; margin: 0; padding: 8px 0; 
+}
+.dist + .sub { 
+  margin-top: 10px; 
+
+}
+.themes > div { 
+  padding: 15px 12px 16px; 
+}
+
+/* finding */
+.sheet .scanned { 
+  margin: 4px 0; 
+}
+.grid4 { 
+  margin: 38px 0 21px; 
+}
+.grid4 > div { 
+  padding: 7px 10px 9px; 
+}
+.shot { 
+  min-height: 81mm; 
+}
+.card-red { 
+  padding: 14px 14px 16px; 
+}
+.card-red p { 
+  margin: 0; 
+}
+.grid-shot { 
+  margin-bottom: 20px; 
+}
+.grid-two > div p { 
+  margin: 0; 
+}
+
+/* CAP register */
+.sheet .para { 
+  margin: 10px 0 18px; 
+}
+.cap-table th { 
+  padding: 9px 8px; white-space: nowrap; 
+}
+.cap-table td { 
+  padding: 16px 8px; vertical-align: middle; line-height: 1.4; 
+}
+.cap-table td:first-child {
+   white-space: nowrap; 
+  }
+
+/* about page */
+.about .para { 
+  margin: 12px 0; line-height: 1.45; 
+}
+.about .title + .para { 
+  margin-top: 8px; 
+}
+.about .sub { 
+  margin-top: 6px; 
+}
+.about .cat-table th { 
+  padding: 2px 6px; 
+}
+.about .cat-table td { 
+  padding: 2px 6px; 
+}
+.shot-img {
+  width: 100%;
+  height: 81mm;
+  object-fit: cover;
+  border: 1px solid var(--border);
 }

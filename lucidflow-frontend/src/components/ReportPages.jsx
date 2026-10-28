@@ -1,16 +1,43 @@
 import { ABOUT, CATEGORIES, PRIORITY_THEMES } from "../data.js";
 import { REPORT } from "../config.js";
+import { useLayoutEffect, useRef } from "react";
 
 const FOOTER_URL = "https://ww1.sbainfo.in/lucidflow";
 
 // One A4 page: logo top right, footer with page number
+// If the content is taller than the page, it shrinks to fit (never cut, never touches the footer)
 export function Sheet({ n, children }) {
+  const body = useRef(null);
+  const inner = useRef(null);
+
+  useLayoutEffect(() => {
+    const box = body.current;
+    const content = inner.current;
+    const fits = () => box.scrollHeight <= box.clientHeight;
+
+    content.style.zoom = 1;
+    if (fits()) return; // fits already, nothing to do
+
+    // find the biggest size that still fits (between 60% and 100%)
+    let low = 0.6;
+    let high = 1;
+    for (let i = 0; i < 8; i++) {
+      const mid = (low + high) / 2;
+      content.style.zoom = mid;
+      if (fits()) low = mid;
+      else high = mid;
+    }
+    content.style.zoom = low;
+  });
+
   return (
     <div className="sheet">
       <div className="s-head">
         <img src="/logo.png" alt="LucidFlow" />
       </div>
-      <div className="s-body">{children}</div>
+      <div className="s-body" ref={body}>
+        <div ref={inner}>{children}</div>
+      </div>
       <div className="s-foot">
         <span>LucidFlow™ | SBA Info Solutions Pvt Ltd | {FOOTER_URL}</span>
         <span>Page {n}</span>
@@ -60,7 +87,7 @@ function Cover({ r }) {
 
 function Summary({ r }) {
   const colors = ["var(--text)", "var(--secondary)", "var(--secondary)", "var(--success)"];
-  const max = Math.max(...r.distribution.map((d) => d.count), 1);
+  
 
   return (
     <div>
@@ -77,11 +104,11 @@ function Summary({ r }) {
       </div>
 
       <h3 className="sub">Pattern distribution</h3>
-      {r.distribution.map((d) => (
+          {r.distribution.map((d) => (
         <div className="dist" key={d.name}>
           <span>{d.name}</span>
           <div className="dbar">
-            <i style={{ width: `${(d.count / max) * 100}%` }} />
+            <i style={{ width: `${Math.min(d.count * REPORT.barUnitPct, 100)}%` }} />
           </div>
           <b>{d.count}</b>
         </div>
@@ -95,10 +122,10 @@ function Summary({ r }) {
 
       <h3 className="sub">Priority themes</h3>
       <div className="grid3 themes">
-        {PRIORITY_THEMES.map((t) => (
+        {PRIORITY_THEMES.map((t, i) => (
           <div key={t.title}>
             <span className="label-red">{t.title}</span>
-            <p>{t.text}</p>
+            <p>{r.themes?.[i] || t.text}</p>
           </div>
         ))}
       </div>
@@ -133,7 +160,11 @@ function Finding({ f }) {
       </div>
 
       <div className="grid-shot">
-        <div className="shot">Screenshot</div>
+        {f.screenshot ? (
+          <img src={f.screenshot} alt={`Screenshot of ${f.url}`} className="shot-img" />
+        ) : (
+          <div className="shot">Screenshot placeholder</div>
+        )}
         <div className="card-red">
           <span className="label-red">EVIDENCE-LED FINDING</span>
           <p>{f.evidence}</p>
@@ -241,10 +272,40 @@ function CapRegister({ rows, first }) {
   );
 }
 
+// Rows are added to a page until it is full, then a new page starts
+const LINE_MM = 4; // height of one text line
+const ROW_PAD_MM = 8.5; // top + bottom padding of one row
+
+const countLines = (text, charsPerLine) =>
+  Math.max(1, Math.ceil(String(text ?? "").length / charsPerLine));
+
+function rowHeight(c) {
+  const lines = Math.max(
+    countLines(`${c.findingRef} (${c.pattern})`, 21), // Finding column
+    countLines(c.rootCause, 21), // Root cause column
+    c.action.reduce((sum, a) => sum + countLines(a, 30), 0), // Action column
+    countLines(c.owner, 12), // Owner column
+  );
+  return lines * LINE_MM + ROW_PAD_MM;
+}
+
 function capPages(r) {
   const groups = [];
-  for (let i = 0; i < r.cap.length; i += REPORT.capRowsPerPage)
-    groups.push(r.cap.slice(i, i + REPORT.capRowsPerPage));
+  let page = [];
+  let used = 0;
+
+  r.cap.forEach((c) => {
+    const h = rowHeight(c);
+    if (page.length > 0 && used + h > REPORT.capBodyMm) {
+      groups.push(page);
+      page = [];
+      used = 0;
+    }
+    page.push(c);
+    used += h;
+  });
+  if (page.length > 0) groups.push(page);
+
   return groups.map((g, i) => <CapRegister key={`cap-${i}`} rows={g} first={i === 0} />);
 }
 
