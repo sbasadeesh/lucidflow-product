@@ -693,7 +693,7 @@ body {
   font-size: var(--fs-m);
 }
 .dbar {
-  height: 8px;
+  height: 10px;
   background: var(--track);
 }
 .dbar i {

@@ -2,6 +2,7 @@ import { render, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import mock from "../mock/mock_payload.json";
 import { getPages, Sheet } from "./ReportPages.jsx";
+import { buildReport } from "../data.js";
 
 const reportOf = (id) => mock.scenarios.find((s) => s.id === id).report;
 
@@ -109,5 +110,61 @@ describe("Report layout against the mock payload", () => {
 
     // the footer is its own block, outside the page body
     expect(body.contains(foot)).toBe(false);
+  });
+});
+
+
+describe("Assessment PDF (E7-02)", () => {
+  // AC1
+  it("Given a payload with findings, when the report is generated, then the PDF has cover, summary, scope and findings pages in that order", () => {
+    const report = reportOf("S2-three-findings");
+    const n = report.findings.length;
+    const { container } = renderReport(report);
+    const sheets = sheetsOf(container);
+    const kinds = sheets.map(kindOf);
+
+    expect(kinds.slice(0, 2)).toEqual(["cover", "summary"]);
+    // scope sits on the cover
+    expect(within(sheets[0]).getByText("Assessment scope")).toBeInTheDocument();
+    expect(within(sheets[0]).getByText(report.scope)).toBeInTheDocument();
+    expect(kinds.slice(2, 2 + n)).toEqual(Array(n).fill("finding"));
+  });
+
+  // AC2
+  it("Given findings, when the report is generated, then each finding page shows its evidence and its screenshot", () => {
+    const report = reportOf("S2-three-findings");
+    const n = report.findings.length;
+    const { container } = renderReport(report);
+    const sheets = sheetsOf(container).slice(2, 2 + n);
+
+    expect(sheets).toHaveLength(n);
+    sheets.forEach((sheet, i) => {
+      const f = report.findings[i];
+      expect(within(sheet).getByText("EVIDENCE-LED FINDING")).toBeInTheDocument();
+      expect(sheet).toHaveTextContent(f.evidence);
+      expect(within(sheet).getByAltText(`Screenshot of ${f.url}`)).toHaveAttribute(
+        "src",
+        f.screenshot,
+      );
+    });
+  });
+
+  // Developer note
+  it('Given a one page scan with N findings, when the report is generated, then the scope line reads "1 page, N states"', () => {
+    const scan = { mode: "pages", urls: ["https://www.royalsundaram.in/claims"] };
+    expect(buildReport(scan).scope).toBe("royalsundaram.in (1 page, 1 state)");
+
+    // mock with 3 findings shows 3 states
+    expect(reportOf("S2-three-findings").scope).toMatch(/\(1 page, 3 states\)$/);
+  });
+
+  // Edge case
+  it('Given a payload with no findings, when the report is generated, then the scope line reads "1 page, 0 states"', () => {
+    const report = reportOf("S4-zero-findings");
+    const { container } = renderReport(report);
+    const cover = sheetsOf(container)[0];
+
+    expect(report.findings).toHaveLength(0);
+    expect(within(cover).getByText(/\(1 page, 0 states\)$/)).toBeInTheDocument();
   });
 });

@@ -7,18 +7,14 @@
       "description": "Today's real case: Single Page URL, 1 finding.",
       "input": {
         "mode": "pages",
-        "urls": [
-          "https://www.royalsundaram.in/claims"
-        ]
+        "urls": ["https://www.royalsundaram.in/claims"]
       },
       "report": {
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": [
-          "royalsundaram.in"
-        ],
-        "scope": "royalsundaram.in (1 page)",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page, 1 state)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
         "date": "26th October 2026",
@@ -53,11 +49,16 @@
           "Observed": 0
         },
         "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "themes": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+          "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
+        ],
         "findings": [
           {
             "id": "FINDING-001",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "MEDIUM",
             "pattern": "NAGGING",
@@ -96,13 +97,7 @@
       "expected": {
         "renders_without_errors": true,
         "total_pdf_pages": 5,
-        "page_order": [
-          "cover",
-          "summary",
-          "finding-001",
-          "cap-register-1",
-          "about"
-        ],
+        "page_order": ["cover", "summary", "finding-001", "cap-register-1", "about"],
         "finding_pages": 1,
         "cap_pages": 1,
         "high_critical": 0,
@@ -119,18 +114,14 @@
       "description": "3 findings on the one scanned page; MEDIUM and OBSERVED.",
       "input": {
         "mode": "pages",
-        "urls": [
-          "https://www.royalsundaram.in/claims"
-        ]
+        "urls": ["https://www.royalsundaram.in/claims"]
       },
       "report": {
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": [
-          "royalsundaram.in"
-        ],
-        "scope": "royalsundaram.in (1 page)",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page, 3 states)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
         "date": "26th October 2026",
@@ -173,11 +164,16 @@
           "Observed": 1
         },
         "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "themes": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+          "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
+        ],
         "findings": [
           {
             "id": "FINDING-001",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "MEDIUM",
             "pattern": "NAGGING",
@@ -195,7 +191,7 @@
           {
             "id": "FINDING-002",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "MEDIUM",
             "pattern": "FORCED ACTION",
@@ -213,7 +209,7 @@
           {
             "id": "FINDING-003",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "OBSERVED",
             "pattern": "FALSE URGENCY",
@@ -321,18 +317,14 @@
       "description": "8 findings on the one page; all 4 severities; 8 finding pages + 8 CAP pages.",
       "input": {
         "mode": "pages",
-        "urls": [
-          "https://www.royalsundaram.in/claims"
-        ]
+        "urls": ["https://www.royalsundaram.in/claims"]
       },
       "report": {
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": [
-          "royalsundaram.in"
-        ],
-        "scope": "royalsundaram.in (1 page)",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page, 8 states)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
         "date": "26th October 2026",
@@ -379,11 +371,16 @@
           "Observed": 2
         },
         "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "themes": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+          "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
+        ],
         "findings": [
           {
             "id": "FINDING-001",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "MEDIUM",
             "pattern": "NAGGING",
@@ -401,7 +398,7 @@
           {
             "id": "FINDING-002",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "MEDIUM",
             "pattern": "FORCED ACTION",
@@ -419,7 +416,7 @@
           {
             "id": "FINDING-003",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "HIGH",
             "pattern": "FORCED ACTION",
@@ -437,7 +434,7 @@
           {
             "id": "FINDING-004",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "MEDIUM",
             "pattern": "NAGGING",
@@ -455,7 +452,7 @@
           {
             "id": "FINDING-005",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "OBSERVED",
             "pattern": "FORCED ACTION",
@@ -473,7 +470,7 @@
           {
             "id": "FINDING-006",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "OBSERVED",
             "pattern": "FALSE URGENCY",
@@ -491,7 +488,7 @@
           {
             "id": "FINDING-007",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "CRITICAL",
             "pattern": "DRIP PRICING",
@@ -509,7 +506,7 @@
           {
             "id": "FINDING-008",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "MEDIUM",
             "pattern": "NAGGING",
@@ -716,18 +713,14 @@
       "description": "Page scanned, nothing found.",
       "input": {
         "mode": "pages",
-        "urls": [
-          "https://www.royalsundaram.in/claims"
-        ]
+        "urls": ["https://www.royalsundaram.in/claims"]
       },
       "report": {
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": [
-          "royalsundaram.in"
-        ],
-        "scope": "royalsundaram.in (1 page)",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page, 0 states)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
         "date": "26th October 2026",
@@ -757,17 +750,18 @@
           "Observed": 0
         },
         "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "themes": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+          "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
+        ],
         "findings": [],
         "cap": []
       },
       "expected": {
         "renders_without_errors": true,
         "total_pdf_pages": 3,
-        "page_order": [
-          "cover",
-          "summary",
-          "about"
-        ],
+        "page_order": ["cover", "summary", "about"],
         "finding_pages": 0,
         "cap_pages": 0,
         "high_critical": 0,
@@ -780,18 +774,14 @@
       "description": "E7-01 criteria 2: every text field empty (posture, evidence, why, fix, root cause, action). Layout must still look right.",
       "input": {
         "mode": "pages",
-        "urls": [
-          "https://www.royalsundaram.in/claims"
-        ]
+        "urls": ["https://www.royalsundaram.in/claims"]
       },
       "report": {
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": [
-          "royalsundaram.in"
-        ],
-        "scope": "royalsundaram.in (1 page)",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page, 1 state)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
         "date": "26th October 2026",
@@ -826,11 +816,12 @@
           "Observed": 0
         },
         "posture": "",
+        "themes": ["", "", ""],
         "findings": [
           {
             "id": "FINDING-001",
             "title": "royalsundaram.in",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims",
             "severity": "MEDIUM",
             "pattern": "NAGGING",
@@ -861,13 +852,7 @@
       "expected": {
         "renders_without_errors": true,
         "total_pdf_pages": 5,
-        "page_order": [
-          "cover",
-          "summary",
-          "finding-001",
-          "cap-register-1",
-          "about"
-        ],
+        "page_order": ["cover", "summary", "finding-001", "cap-register-1", "about"],
         "finding_pages": 1,
         "cap_pages": 1,
         "high_critical": 0,
@@ -892,10 +877,8 @@
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": [
-          "royalsundaram.in"
-        ],
-        "scope": "royalsundaram.in (1 page)",
+        "clients": ["royalsundaram.in"],
+        "scope": "royalsundaram.in (1 page, 1 state)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
         "date": "26th October 2026",
@@ -930,11 +913,16 @@
           "Observed": 0
         },
         "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "themes": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+          "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
+        ],
         "findings": [
           {
             "id": "FINDING-001",
             "title": "royalsundaram.in - Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-             "screenshot": "/mock-shot.png",
+            "screenshot": "/mock-shot.png",
             "url": "https://www.royalsundaram.in/claims/health-insurance/cashless-claim-request-form?utm_source=website&utm_medium=banner&utm_campaign=renewal-offer-2026&session=abcdef0123456789abcdef0123456789&ref=homepage-top-nav",
             "severity": "MEDIUM",
             "pattern": "NAGGING",
@@ -981,13 +969,7 @@
       "expected": {
         "renders_without_errors": true,
         "total_pdf_pages": 5,
-        "page_order": [
-          "cover",
-          "summary",
-          "finding-001",
-          "cap-register-1",
-          "about"
-        ],
+        "page_order": ["cover", "summary", "finding-001", "cap-register-1", "about"],
         "finding_pages": 1,
         "cap_pages": 1,
         "high_critical": 0,

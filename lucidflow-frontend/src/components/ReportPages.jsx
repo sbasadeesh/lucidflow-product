@@ -87,7 +87,7 @@ function Cover({ r }) {
 
 function Summary({ r }) {
   const colors = ["var(--text)", "var(--secondary)", "var(--secondary)", "var(--success)"];
-  const max = Math.max(...r.distribution.map((d) => d.count), 1);
+  
 
   return (
     <div>
@@ -104,11 +104,11 @@ function Summary({ r }) {
       </div>
 
       <h3 className="sub">Pattern distribution</h3>
-      {r.distribution.map((d) => (
+          {r.distribution.map((d) => (
         <div className="dist" key={d.name}>
           <span>{d.name}</span>
           <div className="dbar">
-            <i style={{ width: `${(d.count / max) * 100}%` }} />
+            <i style={{ width: `${Math.min(d.count * REPORT.barUnitPct, 100)}%` }} />
           </div>
           <b>{d.count}</b>
         </div>
@@ -122,10 +122,10 @@ function Summary({ r }) {
 
       <h3 className="sub">Priority themes</h3>
       <div className="grid3 themes">
-        {PRIORITY_THEMES.map((t) => (
+        {PRIORITY_THEMES.map((t, i) => (
           <div key={t.title}>
             <span className="label-red">{t.title}</span>
-            <p>{t.text}</p>
+            <p>{r.themes?.[i] || t.text}</p>
           </div>
         ))}
       </div>
