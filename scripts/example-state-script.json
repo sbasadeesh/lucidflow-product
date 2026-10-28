@@ -1,0 +1,21 @@
+{
+  "name": "Open modal, toggle, expand",
+  "url": "https://your-site.example/page",
+  "maxStates": 10,
+  "steps": [
+    { "action": "capture", "name": "initial" },
+
+    { "action": "click",   "selector": "#open-modal" },
+    { "action": "wait",    "selector": "#modal", "state": "visible" },
+    { "action": "capture", "name": "modal open" },
+    { "action": "click",   "selector": "#close-modal" },
+
+    { "action": "click",   "selector": "#toggle" },
+    { "action": "capture", "name": "toggled on" },
+
+    { "action": "click",   "selector": "#expand" },
+    { "action": "type",    "selector": "#name", "text": "Test User" },
+    { "action": "wait",    "ms": 500 },
+    { "action": "capture", "name": "expanded" }
+  ]
+}
