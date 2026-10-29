@@ -1,4 +1,5 @@
 import { COLORS, FONT_NAME } from "./excelTheme.js";
+import { CAP_AI_PLACEHOLDER } from "../config.js";
 
 const HEADER_ROW = 12; // logo + title block sit above this row
 const FIRST_COLUMN = 2; // column A is a narrow margin
@@ -17,13 +18,9 @@ export const CAP_COLUMNS = [
     value: (c) => ({ text: c.url, hyperlink: c.url }),
     link: true,
   },
-  { header: "Root cause", width: 38, value: (c) => c.rootCause },
-  {
-    header: "Corrective action",
-    width: 44,
-    value: (c) => c.action.map((a) => `• ${a}`).join("\n"),
-  },
-  { header: "Owner", width: 26, value: (c) => c.owner },
+  { header: "Root cause", width: 38, value: () => CAP_AI_PLACEHOLDER.rootCause },
+  { header: "Corrective action", width: 44, value: () => CAP_AI_PLACEHOLDER.action },
+  { header: "Assigne", width: 26, value: (c) => c.owner },
   { header: "Due date", width: 11, value: () => "" },
   { header: "Status", width: 9, value: (c) => c.status, status: true },
   { header: "Revalidation result", width: 17, value: () => "Not started" },
@@ -45,12 +42,7 @@ const font = (overrides = {}) => ({
   ...overrides,
 });
 
-// Rough row height so wrapped text (corrective action bullets) is not cut off
-function estimateRowHeight(cap) {
-  const lines = cap.action.reduce((sum, a) => sum + Math.ceil(a.length / 40), 0);
-  return Math.max(30, lines * 12 + 6);
-}
-
+const ROW_HEIGHT = 30; // placeholder text wraps to 2 lines
 // ---------- sheet sections ----------
 
 function setColumnWidths(sheet) {
@@ -114,7 +106,7 @@ function styleDataCell(cell, col) {
 function addDataRows(sheet, caps) {
   caps.forEach((cap, i) => {
     const row = sheet.getRow(HEADER_ROW + 1 + i);
-    row.height = estimateRowHeight(cap);
+        row.height = ROW_HEIGHT;
 
     CAP_COLUMNS.forEach((col, c) => {
       const cell = row.getCell(FIRST_COLUMN + c);

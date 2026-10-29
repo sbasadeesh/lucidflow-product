@@ -48,3 +48,10 @@ export const REPORT = {
   capBodyMm: 195, // table height available on one CAP page (mm)
    barUnitPct: 12, // bar width for one finding (% of the bar track)
 };
+
+// CAP Excel: Root cause and Corrective action are AI columns.
+// They show this placeholder text until the AI is connected.
+export const CAP_AI_PLACEHOLDER = {
+  rootCause: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  action: "Sed do eiusmod tempor incididunt ut labore et dolore.",
+};
