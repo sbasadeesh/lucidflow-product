@@ -1,0 +1,16 @@
+E7-05 Cautious wording check
+
+1. Given a report, then it contains "potential"
+   RED: change WORDING.required "potential" to "hypothetical"
+
+2. Given a report, then it does not contain "violation" or "non-compliant"
+   RED: add the word "violation" to a mock posture text
+
+3. Given a text with a forbidden word, then the check reports that word
+   RED: set WORDING.forbidden to []
+
+4. Given every mock scenario and a real scan, then the PDF report text passes the wording check
+   RED: add "non-compliant" to ABOUT in data.js
+
+5. Given every mock scenario, then the CAP Excel text passes the wording check
+   RED: change "Turn potential findings" in the capWorkbook title block
