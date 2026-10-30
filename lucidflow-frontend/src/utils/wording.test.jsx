@@ -13,11 +13,12 @@ const reportOf = (s) => s.report ?? s;
 
 // PDF text = ella pages oda text
 function pdfTextOf(report) {
-  const pages = getPages(report);
   const { container } = render(
     <>
-      {pages.map((p, i) => (
-        <Sheet key={i} report={report} page={p} index={i} total={pages.length} />
+      {getPages(report).map((page, i) => (
+        <Sheet key={i} n={i + 1}>
+          {page}
+        </Sheet>
       ))}
     </>
   );
