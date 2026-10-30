@@ -20,7 +20,7 @@ export const CAP_COLUMNS = [
   },
   { header: "Root cause", width: 38, value: () => CAP_AI_PLACEHOLDER.rootCause },
   { header: "Corrective action", width: 44, value: () => CAP_AI_PLACEHOLDER.action },
-  { header: "Assigne", width: 26, value: (c) => c.owner },
+  { header: "Owner", width: 26, value: (c) => c.owner },
   { header: "Due date", width: 11, value: () => "" },
   { header: "Status", width: 9, value: (c) => c.status, status: true },
   { header: "Revalidation result", width: 17, value: () => "Not started" },
