@@ -55,3 +55,8 @@ export const CAP_AI_PLACEHOLDER = {
   rootCause: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   action: "Sed do eiusmod tempor incididunt ut labore et dolore.",
 };
+
+export const WORDING = {
+  required: ["potential"],
+  forbidden: ["violation", "non-compliant"],
+};
