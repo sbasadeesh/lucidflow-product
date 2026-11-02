@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "note": "Each scenario.report has the same shape that buildReport(scan) returns, so getPages(report) can render it before the engine is ready. Issue date comes from the clock in code; tests must freeze it. pages = 1 + 1 + N + N + 1 (cover, summary, N finding pages, N CAP pages, about). Needs REPORT.capRowsPerPage = 1 in config.js.",
+  "note": "Each scenario.report has the same shape that buildReport(scan) returns, so getPages(report) can render it before the engine is ready. Issue date comes from the clock in code; tests must freeze it. Page count is cover + summary + one page per finding + CAP pages from space-based row heights (REPORT.capBodyMm) + about. It is not one CAP page per finding.",
   "scenarios": [
     {
       "id": "S1-one-finding",
@@ -281,7 +281,7 @@
       },
       "expected": {
         "renders_without_errors": true,
-        "total_pdf_pages": 9,
+        "total_pdf_pages": 7,
         "page_order": [
           "cover",
           "summary",
@@ -289,12 +289,10 @@
           "finding-002",
           "finding-003",
           "cap-register-1",
-          "cap-register-2",
-          "cap-register-3",
           "about"
         ],
         "finding_pages": 3,
-        "cap_pages": 3,
+        "cap_pages": 1,
         "high_critical": 0,
         "pattern_distribution": [
           {
@@ -314,7 +312,7 @@
     },
     {
       "id": "S3-many-findings",
-      "description": "8 findings on the one page; all 4 severities; 8 finding pages + 8 CAP pages.",
+      "description": "8 findings; all 4 severities; 8 finding pages. CAP rows share pages by measured row height (2 CAP pages at the current capBodyMm).",
       "input": {
         "mode": "pages",
         "urls": ["https://www.royalsundaram.in/claims"]
@@ -663,7 +661,7 @@
       },
       "expected": {
         "renders_without_errors": true,
-        "total_pdf_pages": 19,
+        "total_pdf_pages": 13,
         "page_order": [
           "cover",
           "summary",
@@ -677,16 +675,10 @@
           "finding-008",
           "cap-register-1",
           "cap-register-2",
-          "cap-register-3",
-          "cap-register-4",
-          "cap-register-5",
-          "cap-register-6",
-          "cap-register-7",
-          "cap-register-8",
           "about"
         ],
         "finding_pages": 8,
-        "cap_pages": 8,
+        "cap_pages": 2,
         "high_critical": 2,
         "pattern_distribution": [
           {
