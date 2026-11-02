@@ -1,0 +1,46 @@
+E7-05 Cautious wording check
+Run: npm run test:run -- src/utils/wording.test.jsx
+
+-------------------------------------------------------------------
+1. Given a report, then it contains "potential"
+-------------------------------------------------------------------
+RED  : src/config.js -> WORDING.required: ["potential"] -> ["hypothetical"]
+       Result: this test fails (also tests 4 and 5 fail, same rule)
+GREEN: git restore src/config.js
+       Result: all 5 tests pass
+
+-------------------------------------------------------------------
+2. Given a report, then it does not contain "violation" or "non-compliant"
+-------------------------------------------------------------------
+RED  : src/mock/mock_payload.json -> scenario S2-three-findings, "posture":
+       add the word "violation" to the text
+       Result: this test fails (test 4 fails too, S2 is in the loop)
+GREEN: git restore src/mock/mock_payload.json
+       Result: all 5 tests pass
+
+-------------------------------------------------------------------
+3. Given a text with a forbidden word, then the check reports that word
+-------------------------------------------------------------------
+RED  : src/config.js -> WORDING.forbidden: ["violation", "non-compliant"] -> []
+       Result: only this test fails (the checker no longer finds the words)
+GREEN: git restore src/config.js
+       Result: all 5 tests pass
+
+-------------------------------------------------------------------
+4. Given every mock scenario and a real scan, then the PDF report text passes
+   the wording check
+-------------------------------------------------------------------
+RED  : src/mock/mock_payload.json -> scenario S4-zero-findings, "posture":
+       add the word "violation"
+       Result: only this test fails (only S4 has it, test 2 uses S2)
+GREEN: git restore src/mock/mock_payload.json
+       Result: all 5 tests pass
+
+-------------------------------------------------------------------
+5. Given every mock scenario, then the CAP Excel text passes the wording check
+-------------------------------------------------------------------
+RED  : src/config.js -> CAP_AI_PLACEHOLDER.rootCause:
+       "Lorem ipsum dolor sit amet, ..." -> "This is a violation ..."
+       Result: only this test fails (the Excel Root cause cell now has the word)
+GREEN: git restore src/config.js
+       Result: all 5 tests pass
