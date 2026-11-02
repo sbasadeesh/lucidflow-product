@@ -1,0 +1,54 @@
+{
+  "schema_version": "v3.0",
+  "schema_id": "https://lucidflow.local/schema/v3.0/common-report-cap-payload.schema.json",
+  "detection_results": [
+    "yes",
+    "no",
+    "could_not_assess"
+  ],
+  "finding_statuses": [
+    "candidate",
+    "confirmed",
+    "rejected",
+    "observed"
+  ],
+  "provisional_severity_values": [
+    "LOW",
+    "MEDIUM",
+    "HIGH",
+    "CRITICAL",
+    "OBSERVED"
+  ],
+  "severity_approval": "Provisional. DI has not approved these severity values.",
+  "include_responsible_business_appendix": false,
+  "taxonomy_section_title": "What are dark patterns?",
+  "taxonomy_patterns": [
+    "False Urgency",
+    "Basket Sneaking",
+    "Confirm Shaming",
+    "Forced Action",
+    "Subscription Trap",
+    "Interface Interference",
+    "Bait and Switch",
+    "Drip Pricing",
+    "Disguised Advertisement",
+    "Nagging",
+    "Trick Wording",
+    "SaaS Billing / Unsolicited Billing",
+    "Rogue Malware / Scareware"
+  ],
+  "kpi_fields": [
+    "total_findings",
+    "confirmed_findings",
+    "candidate_findings",
+    "rejected_findings",
+    "by_severity",
+    "by_category",
+    "by_pattern"
+  ],
+  "status_count_fields": {
+    "confirmed": "confirmed_findings",
+    "candidate": "candidate_findings",
+    "rejected": "rejected_findings"
+  }
+}
