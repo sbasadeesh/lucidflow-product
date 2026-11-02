@@ -45,4 +45,6 @@ export const SCAN = {
 export const REPORT = {
   maxFindings: 4,
   capRowsPerPage: 5,
+  capBodyMm: 195, // table height available on one CAP page (mm)
+   barUnitPct: 12, // bar width for one finding (% of the bar track)
 };
