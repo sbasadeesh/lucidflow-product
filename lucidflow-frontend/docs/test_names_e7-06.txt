@@ -1,0 +1,22 @@
+E7-06 Executive summary slot
+Run: npm run test:run -- src/components/ExecutiveSummary.test.jsx
+
+1. Given any payload, then the KPI counts equal the counts in its findings
+   RED  : src/data.js -> stats "Potential findings": findings.length -> findings.length + 1
+   GREEN: git restore src/data.js
+
+2. Given any payload, then the pattern distribution and severity split equal the counts in its findings
+   RED  : src/data.js -> severitySplit: replace the count with 0
+   GREEN: git restore src/data.js
+
+3. Given a payload, then the summary shows the severity split
+   RED  : src/components/ReportPages.jsx -> comment out the "Severity split" line
+   GREEN: git restore src/components/ReportPages.jsx
+
+4. Given empty AI text, then the posture and the three theme descriptions show placeholder text
+   RED  : ReportPages.jsx -> r.posture || SUMMARY_AI_PLACEHOLDER.posture  ->  r.posture
+   GREEN: git restore src/components/ReportPages.jsx
+
+5. Given AI text in the payload, then the summary shows that text, not the placeholder
+   RED  : ReportPages.jsx -> always show SUMMARY_AI_PLACEHOLDER.posture
+   GREEN: git restore src/components/ReportPages.jsx

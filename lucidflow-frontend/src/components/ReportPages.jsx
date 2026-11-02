@@ -1,5 +1,5 @@
 import { ABOUT, CATEGORIES, PRIORITY_THEMES } from "../data.js";
-import { REPORT } from "../config.js";
+import { REPORT, SEVERITY_ORDER, SUMMARY_AI_PLACEHOLDER } from "../config";
 import { useLayoutEffect, useRef } from "react";
 
 const FOOTER_URL = "https://ww1.sbainfo.in/lucidflow";
@@ -87,7 +87,6 @@ function Cover({ r }) {
 
 function Summary({ r }) {
   const colors = ["var(--text)", "var(--secondary)", "var(--secondary)", "var(--success)"];
-  
 
   return (
     <div>
@@ -104,7 +103,7 @@ function Summary({ r }) {
       </div>
 
       <h3 className="sub">Pattern distribution</h3>
-          {r.distribution.map((d) => (
+      {r.distribution.map((d) => (
         <div className="dist" key={d.name}>
           <span>{d.name}</span>
           <div className="dbar">
@@ -113,11 +112,15 @@ function Summary({ r }) {
           <b>{d.count}</b>
         </div>
       ))}
+      <p className="sev-split">
+        <b>Severity split</b>{" "}
+        {SEVERITY_ORDER.map((s) => `${s} ${r.severitySplit?.[s] ?? 0}`).join(" · ")}
+      </p>
 
       <h3 className="sub">Executive assessment</h3>
       <div className="prep">
         <span className="label-red">OVERALL POSTURE</span>
-        <p>{r.posture}</p>
+        <p>{r.posture || SUMMARY_AI_PLACEHOLDER.posture}</p>
       </div>
 
       <h3 className="sub">Priority themes</h3>
@@ -125,7 +128,7 @@ function Summary({ r }) {
         {PRIORITY_THEMES.map((t, i) => (
           <div key={t.title}>
             <span className="label-red">{t.title}</span>
-            <p>{r.themes?.[i] || t.text}</p>
+            <p>{r.themes?.[i] || SUMMARY_AI_PLACEHOLDER.theme}</p>
           </div>
         ))}
       </div>

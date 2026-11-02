@@ -1,5 +1,5 @@
 import { padId, titleCase } from "./utils/format.js";
-import { REPORT } from "./config.js";
+import { REPORT, SEVERITY_ORDER } from "./config";
 
 export const recentScans = [
   {
@@ -156,15 +156,15 @@ export function buildReport(scan) {
     counts[name] = (counts[name] || 0) + 1;
   });
 
-  const names =
-    hosts.length > 1 ? `${hosts.slice(0, -1).join(", ")} and ${hosts[hosts.length - 1]}` : hosts[0];
+  // E7-06: count findings by severity (all counts come from code)
+  const countSeverity = (...names) => findings.filter((f) => names.includes(f.severity)).length;
 
   return {
     title: "Dark Pattern Assessment Report",
     tagline: "Automated Scanning. Continuous governance. Evidence-led findings.",
     client: hosts.join(", "),
     clients: hosts,
-        scope: isDomain
+    scope: isDomain
       ? `${hosts[0]} (whole domain)`
       : hosts
           .map((h) => {
@@ -178,11 +178,17 @@ export function buildReport(scan) {
     stats: [
       { value: assessed, label: "Pages / screens assessed" },
       { value: findings.length, label: "Potential findings" },
-      { value: findings.filter((f) => f.severity === "HIGH").length, label: "High / critical" },
+      { value: countSeverity("HIGH", "CRITICAL"), label: "High / critical" }, // E7-06
       { value: 0, label: "Revalidated closed" },
     ],
     distribution: Object.entries(counts).map(([name, count]) => ({ name, count })),
-    posture: `The assessment of ${names} identified dark-pattern concerns including forced action and nagging. These patterns influence how users interact with the journey, accept terms and provide personal information.`,
+    // E7-06: severity split, counted from the findings
+    severitySplit: Object.fromEntries(
+      SEVERITY_ORDER.map((s) => [s, countSeverity(s.toUpperCase())]),
+    ),
+    // E7-06: AI text slots stay empty until the AI is connected (the summary shows placeholder text)
+    posture: "",
+    themes: ["", "", ""],
     findings,
     // Corrective action plan register (PDF + Excel)
     cap: findings.map((f, i) => ({

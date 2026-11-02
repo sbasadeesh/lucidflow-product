@@ -1019,3 +1019,8 @@ select option {
   object-fit: cover;
   border: 1px solid var(--border);
 }
+
+.sev-split {
+  font-size: 8pt;
+  margin-top: 3mm;
+}
