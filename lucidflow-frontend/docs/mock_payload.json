@@ -1,0 +1,67 @@
+{
+  "_comment": "Mock payload for the LucidFlow frontend (Single Page URL mode). URLs come from the test files; report data comes from the generated PDF and XLSX.",
+  "generatedOn": "2026-10-22",
+  "mode": "pages",
+  "testInputs": {
+    "validPageUrls": [
+      "https://www.royalsundaram.in/copyright",
+      "https://www.royalsundaram.in/disclaimer",
+      "https://www.royalsundaram.in/claims"
+    ],
+    "rejectedBareDomain": "https://www.royalsundaram.in",
+    "rejectedNotAUrl": "abc",
+    "emptyInput": "",
+    "duplicateInput": "https://a.com/x, https://a.com/x",
+    "otherFixtures": ["https://a.com/x", "https://a.com", "https://b.com"]
+  },
+  "scanRequest": {
+    "mode": "pages",
+    "urls": ["https://www.bajajgeneralinsurance.com/customer-signin.html"]
+  },
+  "report": {
+    "reportId": "LF-BAJAJGENERALINSURANCE-2026-001",
+    "preparedFor": "bajajgeneralinsurance.com",
+    "issueDate": "22 October 2026",
+    "version": "V1.0",
+    "pagesScanned": 1,
+    "pageScanned": "https://www.bajajgeneralinsurance.com/customer-signin.html",
+    "findings": [
+      {
+        "id": "F-001",
+        "pattern": "Nagging",
+        "severity": "MEDIUM",
+        "effort": "MEDIUM EFFORT",
+        "owner": "Product / UX / Compliance",
+        "page": "https://www.bajajgeneralinsurance.com/customer-signin.html"
+      }
+    ],
+    "correctiveActions": [
+      {
+        "capId": "CAP-001",
+        "findingId": "F-001",
+        "rootCause": "The advertisement overlay is triggered on a timer and is not suppressed after the user dismisses it.",
+        "owner": "Product / UX / Compliance",
+        "dueDate": null,
+        "status": "OPEN",
+        "revalidationResult": "Not started"
+      }
+    ]
+  },
+  "files": {
+    "pdf": {
+      "path": "proof/outputs/LucidFlow-demo.pdf",
+      "pages": 5,
+      "sizeBytes": 252538,
+      "theme": { "primary": "#000000", "secondary": "#E7000B", "text": "#FFFFFF", "font": "Arial", "sizes": "8/9/10 pt" }
+    },
+    "xlsx": {
+      "path": "proof/outputs/LF-BAJAJGENERALINSURANCE-2026-001-CAP.xlsx",
+      "sheet": "Corrective action plan",
+      "headerRow": 12,
+      "columns": 14,
+      "rows": 1,
+      "sizeBytes": 145783
+    }
+  },
+  "reportOptions": { "note": "UI only for now; not sent to any backend" }
+}
