@@ -1,0 +1,20 @@
+{
+  "name": "New India Assurance - Why Choose accordion",
+  "url": "https://www.newindia.co.in",
+  "maxStates": 8,
+  "steps": [
+    { "action": "capture", "name": "home" },
+
+    { "action": "click",   "selector": "text=\"Range of Products\"" },
+    { "action": "capture", "name": "range of products open" },
+
+    { "action": "click",   "selector": "text=\"Network of Offices\"" },
+    { "action": "capture", "name": "network of offices open" },
+
+    { "action": "click",   "selector": "text=\"Trustworthiness\"" },
+    { "action": "capture", "name": "trustworthiness open" },
+
+    { "action": "click",   "selector": "text=\"Reputation\"" },
+    { "action": "capture", "name": "reputation open again" }
+  ]
+}

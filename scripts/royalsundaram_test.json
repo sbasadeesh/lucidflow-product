@@ -1,0 +1,20 @@
+{
+  "name": "Royal Sundaram - nav dropdown menus",
+  "url": "https://www.royalsundaram.in/",
+  "maxStates": 4,
+  "steps": [
+    { "action": "capture", "name": "home" },
+
+    { "action": "hover",   "selector": "text=\"Products\"" },
+    { "action": "wait",    "ms": 800 },
+    { "action": "capture", "name": "products menu" },
+
+    { "action": "hover",   "selector": "text=\"Claims\"" },
+    { "action": "wait",    "ms": 800 },
+    { "action": "capture", "name": "claims menu" },
+
+    { "action": "hover",   "selector": "text=\"Support\"" },
+    { "action": "wait",    "ms": 800 },
+    { "action": "capture", "name": "support menu" }
+  ]
+}
