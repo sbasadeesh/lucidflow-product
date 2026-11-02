@@ -60,3 +60,13 @@ export const WORDING = {
   required: ["potential"],
   forbidden: ["violation", "non-compliant"],
 };
+
+export const SEVERITY_ORDER = ["Medium", "Observed", "High", "Critical"];
+
+// AI text slots. Shown until the AI is connected.
+export const SUMMARY_AI_PLACEHOLDER = {
+  posture:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  theme:
+    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+};
