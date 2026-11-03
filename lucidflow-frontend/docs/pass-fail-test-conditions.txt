@@ -1,0 +1,86 @@
+PASS AND FAIL CONDITION FOR EACH TEST
+Format:  PASS when = what the code does right.  FAIL when = the code change that makes it red.
+
+======================================================================
+urlUtils.test.js - Page URLs (src/urlUtils.js)
+======================================================================
+1. accepts a single page URL
+   PASS when: "https://www.royalsundaram.in/copyright" gives ok=true and url = same address.
+   FAIL when: url is built wrongly, e.g. url: isRoot ? u.origin : u.origin + u.pathname + u.search
+              changed to url: u.origin  (path lost).
+
+2. accepts several URLs separated by commas
+   PASS when: 3 comma-separated URLs give 3 items, all ok=true.
+   FAIL when: text.split(/[\s,]+/) changed to text.split(/\s+/) (comma no longer splits),
+              or url: u.origin (all 3 collapse into one).
+
+3. rejects a bare domain
+   PASS when: "https://www.royalsundaram.in" gives ok=false and the error mentions "domain".
+   FAIL when: if (mode === "pages" && isRoot) { is removed or made "&& false".
+
+4. rejects text that is not a URL
+   PASS when: "abc" gives ok=false.
+   FAIL when: both the TLD check and the isRoot check are removed (removing only the TLD
+              check does NOT fail it - "abc" is still rejected as a bare domain).
+
+5. returns nothing for empty input
+   PASS when: "" gives [].
+   FAIL when: .filter(Boolean) is removed (empty string becomes an item).
+
+6. removes duplicate URLs
+   PASS when: "https://a.com/x, https://a.com/x" gives 1 item.
+   FAIL when: if (seen.has(key)) continue; is removed or commented out.
+
+======================================================================
+theme.test.js (src/theme.js, src/styles.css)
+======================================================================
+1. every colour token is a hex value
+   PASS when: all tokens look like #rrggbb.   FAIL when: muted: "#9a9a9a" -> "grey".
+2. brand colours: primary black, text white, secondary red
+   PASS when: #000000 / #ffffff / #e7000b.    FAIL when: secondary: "#e7000b" -> "#ff0000".
+3. font is Arial, sizes 8, 9, 10 pt
+   PASS when: family starts with Arial and s/m/l = 8pt/9pt/10pt.
+   FAIL when: family -> "Verdana, ..." or m: "9pt" -> "11pt".
+4. every token becomes a CSS variable
+   PASS when: cssVars() has --secondary, --border-strong, --fs-m, --font-family with theme values.
+   FAIL when: a colour or size value is changed (see 2 and 3), or the toKebab rename is broken.
+5. changing a token changes its CSS variable
+   PASS when: applyTheme(root, newTheme) sets --secondary to the new value.
+   FAIL when: the root.style.setProperty line in applyTheme is removed or commented out.
+6. Excel export gets the matching ARGB colour  (needs excelTheme.js - not verified)
+   PASS when: "#e7000b" gives "FFE7000B".   FAIL when: the "FF" prefix or hex conversion is changed.
+7. no colour hard-coded outside the theme file
+   PASS when: no #hex in styles.css or other source.   FAIL when: var(--primary) -> #000000 in styles.css.
+8. no font family or pt size hard-coded in the style sheet
+   PASS when: styles.css has no "Arial" or "NNpt".   FAIL when: var(--fs-l) -> 10pt.
+9. every var(--token) used is defined by the theme
+   PASS when: each var(--x) in styles.css exists in cssVars().
+   FAIL when: var(--text) -> var(--does-not-exist), or a token is deleted from theme.js.
+
+======================================================================
+Layout.test.jsx (src/Layout.jsx)
+======================================================================
+1-7. Given page /, /new-scan, /reports, /reports/ready, /history, /schedule, /settings -> logo, sidebar, top bar show
+   PASS when: Layout renders aside.sidebar, the logo image and the top bar on that route.
+   FAIL when: <aside className="sidebar"> or <Topbar /> or the logo <img> is removed from Layout.jsx.
+8. sidebar lists Home, New scan, Reports, History, Schedule, Settings
+   PASS when: all 6 labels are in NAV_LINKS.   FAIL when: one item is deleted from NAV_LINKS or renamed.
+9. logo is the approved image file
+   PASS when: src is "/logo.png" and alt is "LucidFlow - Every Click Flawless. Every Journey Compliant."
+   FAIL when: src or alt is changed.
+10. Reports link is highlighted on Reports
+   PASS when: NavLink gets the active class on /reports.
+   FAIL when: the active class logic is removed; or end={l.to === "/"} is removed
+              (then Home stays highlighted on every page - wrong).
+E.1 unknown address opens Home inside the same shell
+   PASS when: the router has a fallback route to Home.   FAIL when: that fallback is removed (App.jsx).
+
+======================================================================
+Home.test.jsx
+======================================================================
+See the earlier Home mutation document (A-F). Example: mutation A gave 3 failed | 3 passed.
+After you remove the Whole-domain tests, 6 tests remain and all must be green.
+
+======================================================================
+Not automated: 1280 px layout. PASS = no horizontal scrollbar at 1280 px; FAIL = page scrolls sideways.
+======================================================================
