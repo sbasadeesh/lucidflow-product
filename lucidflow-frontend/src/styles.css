@@ -1024,3 +1024,37 @@ select option {
   font-size: 8pt;
   margin-top: 3mm;
 }
+.settings-body {
+  display: flex;
+  gap: 16px;
+}
+
+.settings-menu {
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+  gap: 4px;
+}
+
+.settings-item {
+  padding: 10px 12px;
+  border-left: 3px solid transparent;
+  color: inherit;
+  text-decoration: none;
+}
+
+.settings-item.active {
+  border-left-color: var(--primary, #ff2d2d);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.settings-panel {
+  flex: 1;
+  min-height: 300px;
+  padding: 16px;
+}
+
+.planned {
+  color: #aaa;
+  font-style: italic;
+}

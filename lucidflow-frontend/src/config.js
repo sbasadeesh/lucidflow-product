@@ -70,3 +70,14 @@ export const SUMMARY_AI_PLACEHOLDER = {
   theme:
     "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
 };
+
+export const PLANNED_LABEL = "Planned for a later phase";
+
+export const SETTINGS_SECTIONS = [
+  { label: "Profile", to: "/settings/profile" },
+  { label: "Organisation", to: "/settings/organisation" },
+  { label: "Users and roles", to: "/settings/users-and-roles" },
+  { label: "Licence", to: "/settings/licence" },
+  { label: "Data and retention", to: "/settings/data-and-retention" },
+  { label: "Notifications", to: "/settings/notifications" },
+];

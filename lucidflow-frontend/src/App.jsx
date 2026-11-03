@@ -9,7 +9,7 @@ import ReportPreview from "./pages/ReportPreview.jsx";
 import ReportReady from "./pages/ReportReady.jsx";
 import { useEffect } from "react";
 import { applyTheme } from "./theme.js";
-
+import SettingsSection from "./pages/SettingsSection.jsx";
 
 
 export default function App() {
@@ -26,7 +26,9 @@ useEffect(() => {
         <Route path="/reports/ready" element={<ReportReady />} />
         <Route path="/history" element={<History />} />
         <Route path="/schedule" element={<Schedule />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/settings" element={<Settings />}>
+          <Route path=":section" element={<SettingsSection />} />
+        </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
