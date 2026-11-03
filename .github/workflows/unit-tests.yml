@@ -1,0 +1,133 @@
+name: Unit tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests-python:
+    name: unit-tests-python
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Python contract tests
+        working-directory: e1-01-agreed-json-schema-mock
+        run: |
+          test -d tests
+          python -m pip install -r requirements.txt
+          python -m pytest -q
+
+  coverage-python:
+    name: coverage-python
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Python validator coverage
+        working-directory: e1-01-agreed-json-schema-mock
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pytest -q --cov=validate_payload --cov-report=term-missing --cov-report=xml
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-python
+          path: e1-01-agreed-json-schema-mock/coverage.xml
+          if-no-files-found: error
+
+  lint-python:
+    name: lint-python
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Python lint
+        working-directory: e1-01-agreed-json-schema-mock
+        run: |
+          python -m pip install -r requirements.txt
+          python -m ruff check .
+
+  unit-tests-frontend:
+    name: unit-tests-frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: lucidflow-frontend/package-lock.json
+
+      - name: Frontend tests
+        working-directory: lucidflow-frontend
+        run: |
+          test -f package-lock.json
+          npm ci
+          npm run test:run
+
+  lint-frontend:
+    name: lint-frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: lucidflow-frontend/package-lock.json
+
+      - name: Frontend lint
+        working-directory: lucidflow-frontend
+        run: |
+          test -f package-lock.json
+          npm ci
+          npm run lint
+
+  coverage-frontend:
+    name: coverage-frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: lucidflow-frontend/package-lock.json
+
+      - name: Frontend coverage
+        working-directory: lucidflow-frontend
+        run: |
+          test -f package-lock.json
+          npm ci
+          npm run test:coverage
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-frontend
+          path: lucidflow-frontend/coverage
+          if-no-files-found: error
