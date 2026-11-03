@@ -1,0 +1,7 @@
+E7-08 Dummy pages for the other menu items
+Run: npm run test:run -- src/pages/DummyPages.test.jsx
+
+1. Given each of the 8 menu items, when clicked, then a page opens with its title and "Planned for a later phase"
+2. Given a dummy page, then every button is disabled
+3. Given the menu, then the active item is shown in red
+4. Given the dummy page for point 4, then "Upload from Excel" and "Fill from previous findings" show and are disabled
