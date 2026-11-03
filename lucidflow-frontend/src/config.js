@@ -74,10 +74,10 @@ export const SUMMARY_AI_PLACEHOLDER = {
 export const PLANNED_LABEL = "Planned for a later phase";
 
 export const SETTINGS_SECTIONS = [
-  { label: "Profile", to: "/settings/profile" },
-  { label: "Organisation", to: "/settings/organisation" },
-  { label: "Users and roles", to: "/settings/users-and-roles" },
-  { label: "Licence", to: "/settings/licence" },
-  { label: "Data and retention", to: "/settings/data-and-retention" },
-  { label: "Notifications", to: "/settings/notifications" },
+  { label: "Profile", to: "/settings/profile", icon: "user" },
+  { label: "Organisation", to: "/settings/organisation", icon: "building" },
+  { label: "Users and roles", to: "/settings/users-and-roles", icon: "users" },
+  { label: "Licence", to: "/settings/licence", icon: "file" },
+  { label: "Data and retention", to: "/settings/data-and-retention", icon: "database" },
+  { label: "Notifications", to: "/settings/notifications", icon: "bell" },
 ];

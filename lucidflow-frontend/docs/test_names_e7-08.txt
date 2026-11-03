@@ -1,7 +1,50 @@
-E7-08 Dummy pages for the other menu items
-Run: npm run test:run -- src/pages/DummyPages.test.jsx
+E7-08 Dummy pages for the other menu items (Settings)
+Run: npm run test:run -- src/pages/SettingsPages.test.jsx
 
-1. Given each of the 8 menu items, when clicked, then a page opens with its title and "Planned for a later phase"
-2. Given a dummy page, then every button is disabled
-3. Given the menu, then the active item is shown in red
-4. Given the dummy page for point 4, then "Upload from Excel" and "Fill from previous findings" show and are disabled
+-------------------------------------------------------------------
+1. Given Settings, when it opens, then the 6 options show, none is active and
+   the right side is blank
+-------------------------------------------------------------------
+RED  : src/pages/Settings.jsx -> inside <section className="settings-panel">
+       add <p>Hello</p> before <Outlet />
+       Result: only this test fails (the right side is not blank)
+GREEN: git restore src/pages/Settings.jsx
+       Result: all 10 tests pass
+
+-------------------------------------------------------------------
+2. Given an option, when it is clicked, then it is active and its title shows
+   on the right
+-------------------------------------------------------------------
+RED  : src/pages/Settings.jsx -> NavLink className:
+       "settings-item" + (isActive ? " active" : "")  ->  "settings-item"
+       Result: only this test fails (the clicked option is never active)
+GREEN: git restore src/pages/Settings.jsx
+       Result: all 10 tests pass
+
+-------------------------------------------------------------------
+3. Given the option <Profile / Organisation / Users and roles / Licence /
+   Data and retention / Notifications>, then its page shows the title and
+   "Planned for a later phase"   (6 tests)
+-------------------------------------------------------------------
+RED  : src/pages/SettingsSection.jsx -> delete the line
+       <p className="planned">{PLANNED_LABEL}</p>
+       Result: the 6 tests fail (the label is missing on every page)
+GREEN: git restore src/pages/SettingsSection.jsx
+       Result: all 10 tests pass
+
+-------------------------------------------------------------------
+4. Given a dummy page, then no real action is possible: every button is
+   disabled and there are no inputs
+-------------------------------------------------------------------
+RED  : src/pages/SettingsSection.jsx -> add <button>Save</button> under the label
+       Result: only this test fails (an enabled button exists)
+GREEN: git restore src/pages/SettingsSection.jsx
+       Result: all 10 tests pass
+
+-------------------------------------------------------------------
+5. Given a Settings page, then the Settings item in the menu is shown as active
+-------------------------------------------------------------------
+RED  : src/components/Layout.jsx -> NavLink end={l.to === "/"}  ->  end
+       Result: this test fails (Settings is not active on /settings/licence)
+GREEN: git restore src/components/Layout.jsx
+       Result: all 10 tests pass
