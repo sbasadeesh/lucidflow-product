@@ -9,7 +9,7 @@ export default function Settings() {
       <Topbar title="Settings" />
       <div className="content">
         <div className="settings-body">
-          <nav className="settings-menu card">
+          <div className="settings-menu card">
             {SETTINGS_SECTIONS.map((s) => (
               <NavLink
                 key={s.to}
@@ -20,10 +20,10 @@ export default function Settings() {
 <span>{s.label}</span>
               </NavLink>
             ))}
-          </nav>
-          <section className="settings-panel card">
+          </div>
+      
             <Outlet />
-          </section>
+          
         </div>
       </div>
     </>

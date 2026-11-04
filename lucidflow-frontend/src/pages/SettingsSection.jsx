@@ -7,10 +7,10 @@ export default function SettingsSection() {
   const item = SETTINGS_SECTIONS.find((s) => s.to === `/settings/${section}`);
   if (!item) return <Navigate to="/settings" replace />;
 
-  return (
-    <div>
+    return (
+    <section className="settings-panel card">
       <h2 className="panel-title">{item.label}</h2>
       <p className="planned">{PLANNED_LABEL}</p>
-    </div>
+    </section>
   );
 }

@@ -4,13 +4,10 @@ Run: npm run test:run -- src/pages/SettingsPages.test.jsx
 -------------------------------------------------------------------
 1. Given Settings, when it opens, then the 6 options show, none is active and
    the right side is blank
--------------------------------------------------------------------
-RED  : src/pages/Settings.jsx -> inside <section className="settings-panel">
-       add <p>Hello</p> before <Outlet />
-       Result: only this test fails (the right side is not blank)
+RED  : src/pages/Settings.jsx -> add <section className="settings-panel card" />
+       after </nav>
+       Result: only this test fails (a box shows on the right at the start)
 GREEN: git restore src/pages/Settings.jsx
-       Result: all 10 tests pass
-
 -------------------------------------------------------------------
 2. Given an option, when it is clicked, then it is active and its title shows
    on the right

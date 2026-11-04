@@ -24,10 +24,10 @@ const link = (name) => screen.getByRole("link", { name });
 const isActive = (name) => link(name).className.includes("active");
 
 describe("Settings dummy pages", () => {
-  it("Given Settings, when it opens, then the 6 options show, none is active and the right side is blank", () => {
+    it("Given Settings, when it opens, then the 6 options show, none is active and the right side is blank", () => {
     const { container } = renderAt("/settings");
     SETTINGS_SECTIONS.forEach((s) => expect(isActive(s.label)).toBe(false));
-    expect(container.querySelector(".settings-panel").textContent).toBe("");
+    expect(container.querySelector(".settings-panel")).toBeNull();
   });
 
   it("Given an option, when it is clicked, then it is active and its title shows on the right", () => {
