@@ -1,7 +1,8 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import App from "../App.jsx";
+import { PLANNED_LABEL } from "../config.js";
 
 const PAGES = [
   "/",
@@ -56,5 +57,55 @@ describe("App shell", () => {
 
     expect(screen.getByRole("heading", { name: "Start a scan" })).toBeInTheDocument();
     expect(screen.getByRole("navigation")).toBeInTheDocument();
+  });
+});
+describe("Main menu: Remediation and Prevention", () => {
+  const PAGES = [
+    { label: "Remediation", to: "/remediation" },
+    { label: "Prevention", to: "/prevention" },
+  ];
+  const renderAt = (path) =>
+    render(
+      <MemoryRouter initialEntries={[path]}>
+        <App />
+      </MemoryRouter>,
+    );
+  const link = (name) => screen.getByRole("link", { name });
+
+  it("Given the menu, then Remediation and Prevention show after Reports", () => {
+    const { container } = renderAt("/settings");
+    const labels = [...container.querySelectorAll(".nav-item")].map((el) => el.textContent);
+    const i = labels.indexOf("Reports");
+    expect(labels[i + 1]).toBe("Remediation");
+    expect(labels[i + 2]).toBe("Prevention");
+  });
+
+  it.each(PAGES)(
+    'Given I click $label, then a static page opens with its title and "Planned for a later phase"',
+    ({ label }) => {
+      renderAt("/settings");
+      fireEvent.click(link(label));
+      expect(screen.getByRole("heading", { name: label })).toBeTruthy();
+      expect(screen.getByText(PLANNED_LABEL)).toBeTruthy();
+    },
+  );
+
+  it("Given a dummy page, then no real action is possible: every button is disabled and there are no inputs", () => {
+    PAGES.forEach(({ to }) => {
+      const { container, unmount } = renderAt(to);
+      const enabled = container.querySelectorAll(
+        ".content button:not([disabled]), .content input, .content select, .content textarea, .content form",
+      );
+      expect(enabled.length).toBe(0);
+      unmount();
+    });
+  });
+
+  it("Given a dummy page, then its menu item is shown as active", () => {
+    PAGES.forEach(({ label, to }) => {
+      const { unmount } = renderAt(to);
+      expect(link(label).className).toContain("active");
+      unmount();
+    });
   });
 });
