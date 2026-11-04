@@ -2,12 +2,14 @@
 // Pages read from here, so text and numbers can change without touching the page code.
 
 export const NAV_LINKS = [
-  { to: "/", label: "Home" },
-  { to: "/new-scan", label: "New scan" },
-  { to: "/reports", label: "Reports" },
-  { to: "/history", label: "History" },
-  { to: "/schedule", label: "Schedule" },
-  { to: "/settings", label: "Settings" },
+  { label: "Home", to: "/", icon: "home" },
+  { label: "New scan", to: "/new-scan", icon: "plus" },
+  { label: "Reports", to: "/reports", icon: "report" },
+  { label: "Remediation", to: "/remediation", icon: "shieldCheck" },
+  { label: "Prevention", to: "/prevention", icon: "shield" },
+  { label: "History", to: "/history", icon: "clock" },
+  { label: "Schedule", to: "/schedule", icon: "calendar" },
+  { label: "Settings", to: "/settings", icon: "gear" },
 ];
 
 export const HOME = {

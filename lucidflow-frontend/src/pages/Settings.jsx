@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import Topbar from "../components/Topbar.jsx";
 import { SETTINGS_SECTIONS } from "../config.js";
-import SettingsIcon from "../components/SettingsIcon.jsx";
+import Icon from "../components/Icon.jsx";
 
 export default function Settings() {
   return (
@@ -16,7 +16,7 @@ export default function Settings() {
                 to={s.to}
                 className={({ isActive }) => "settings-item" + (isActive ? " active" : "")}
               >
-                <SettingsIcon name={s.icon} />
+                <Icon name={s.icon} />
 <span>{s.label}</span>
               </NavLink>
             ))}

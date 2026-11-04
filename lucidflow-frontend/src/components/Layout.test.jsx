@@ -13,8 +13,16 @@ const PAGES = [
   "/schedule",
   "/settings",
 ];
-const SIDEBAR = ["Home", "New scan", "Reports", "History", "Schedule", "Settings"];
-
+const SIDEBAR = [
+  "Home",
+  "New scan",
+  "Reports",
+  "Remediation",
+  "Prevention",
+  "History",
+  "Schedule",
+  "Settings",
+];
 function renderAt(path) {
   return render(
     <MemoryRouter initialEntries={[path]}>
@@ -32,7 +40,7 @@ describe("App shell", () => {
     expect(screen.getByRole("banner")).toBeInTheDocument();
   });
 
-  it("Given any page, then the sidebar lists Home, New scan, Reports, History, Schedule, Settings", () => {
+ it("Given any page, then the sidebar lists Home, New scan, Reports, Remediation, Prevention, History, Schedule, Settings", () => {
     renderAt("/history");
 
     const links = within(screen.getByRole("navigation")).getAllByRole("link");

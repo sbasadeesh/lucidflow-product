@@ -1,21 +1,23 @@
+import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import History from "./pages/History.jsx";
 import Schedule from "./pages/Schedule.jsx";
 import Settings from "./pages/Settings.jsx";
+import SettingsSection from "./pages/SettingsSection.jsx";
 import Scan from "./pages/Scan.jsx";
 import ReportPreview from "./pages/ReportPreview.jsx";
 import ReportReady from "./pages/ReportReady.jsx";
-import { useEffect } from "react";
+import Remediation from "./pages/Remediation.jsx";
+import Prevention from "./pages/Prevention.jsx";
 import { applyTheme } from "./theme.js";
-import SettingsSection from "./pages/SettingsSection.jsx";
-
 
 export default function App() {
-useEffect(() => {
-  applyTheme();
-}, []);
+  useEffect(() => {
+    applyTheme();
+  }, []);
+
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -24,6 +26,8 @@ useEffect(() => {
         <Route path="/scan" element={<Scan />} />
         <Route path="/reports" element={<ReportPreview />} />
         <Route path="/reports/ready" element={<ReportReady />} />
+        <Route path="/remediation" element={<Remediation />} />
+        <Route path="/prevention" element={<Prevention />} />
         <Route path="/history" element={<History />} />
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/settings" element={<Settings />}>

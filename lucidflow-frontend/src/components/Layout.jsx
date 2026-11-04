@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { NAV_LINKS } from "../config.js";
+import Icon from "./Icon.jsx";
 
 export function Logo() {
   return (
@@ -18,7 +19,8 @@ export default function Layout() {
           {NAV_LINKS.map((l) =>
             l.disabled ? (
               <span key={l.label} className="nav-item disabled">
-                {l.label}
+                <Icon name={l.icon} />
+                <span>{l.label}</span>
               </span>
             ) : (
               <NavLink
@@ -27,7 +29,8 @@ export default function Layout() {
                 end={l.to === "/"}
                 className={({ isActive }) => "nav-item" + (isActive ? " active" : "")}
               >
-                {l.label}
+                <Icon name={l.icon} />
+                <span>{l.label}</span>
               </NavLink>
             ),
           )}
