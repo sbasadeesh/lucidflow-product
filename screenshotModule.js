@@ -100,7 +100,7 @@ async function scrollToLoadContent(page) {
 // really visible, then stitches the pieces together (needs: npm i sharp).
 // Falls back to a normal fullPage screenshot if sharp is not installed.
 // --------------------------------------------------
-async function takeFullPage(page, outPath, log = () => { }) {
+async function takeFullPage(page, outPath, log = () => { }, hooks = {}) {
     // Make sure content-visibility / reveal animations don't hide things
     await page
         .addStyleTag({
@@ -127,26 +127,74 @@ async function takeFullPage(page, outPath, log = () => { }) {
     await page.waitForTimeout(800);
 
     let y = 0;
-    let hidFixed = false;
 
     for (let i = 0; i < 80; i++) {
         await page.evaluate((yy) => window.scrollTo(0, yy), y);
         await page.waitForTimeout(1000); // let this section render
         await page.waitForLoadState("networkidle", { timeout: 3000 }).catch(() => { });
 
-        // after the first screen, hide sticky/fixed bars so they don't repeat on every tile
-        if (i === 1 && !hidFixed) {
+        // e.g. close a popup that appeared while scrolling
+        if (hooks.beforeTile) await hooks.beforeTile().catch(() => { });
+
+        if (i === 0) {
+            // remember where small elements sit on screen at the top of the page
             await page.evaluate(() => {
-                [...document.querySelectorAll("*")].forEach((el) => {
-                    const pos = getComputedStyle(el).position;
-                    if (pos === "fixed" || pos === "sticky") {
-                        el.dataset.prevVis = el.style.visibility || "";
-                        el.dataset.hiddenByShot = "1";
-                        el.style.visibility = "hidden";
-                    }
-                });
-            });
-            hidFixed = true;
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+                const snap = [];
+                const walk = (root) => {
+                    root.querySelectorAll("*").forEach((el) => {
+                        if (el.shadowRoot) walk(el.shadowRoot);
+                        const r = el.getBoundingClientRect();
+                        if (r.width < 8 || r.height < 8) return;
+                        if (r.width * r.height > vw * vh * 0.25) return;
+                        if (r.bottom < 0 || r.top > vh) return;
+                        snap.push({ el, top: r.top, left: r.left, w: r.width, h: r.height, y: window.scrollY });
+                    });
+                };
+                walk(document);
+                window.__shotSnap = snap.slice(0, 4000);
+                window.__shotPinnedDone = false;
+            }).catch(() => { });
+        } else {
+            // From the second screen on, hide everything that stays on screen while
+            // the page scrolls, so it appears once and not on every tile:
+            //  - position: fixed / sticky elements (also inside shadow DOM)
+            //  - widgets that a script keeps at the same screen position
+            await page.evaluate(() => {
+                const hidden = window.__shotHidden || (window.__shotHidden = []);
+                const hide = (el) => {
+                    if (el.dataset && el.dataset.hiddenByShot === "1") return;
+                    el.dataset.prevVis = el.style.visibility || "";
+                    el.dataset.hiddenByShot = "1";
+                    el.style.visibility = "hidden";
+                    hidden.push(el);
+                };
+                const walk = (root) => {
+                    root.querySelectorAll("*").forEach((el) => {
+                        if (el.shadowRoot) walk(el.shadowRoot);
+                        const pos = getComputedStyle(el).position;
+                        if (pos === "fixed" || pos === "sticky") hide(el);
+                    });
+                };
+                walk(document);
+
+                if (window.__shotSnap && !window.__shotPinnedDone) {
+                    const sy = window.scrollY;
+                    window.__shotSnap.forEach((s) => {
+                        if (Math.abs(sy - s.y) < 100 || !s.el.isConnected) return;
+                        const r = s.el.getBoundingClientRect();
+                        if (
+                            Math.abs(r.top - s.top) < 2 && Math.abs(r.left - s.left) < 2 &&
+                            Math.abs(r.width - s.w) < 2 && Math.abs(r.height - s.h) < 2
+                        ) {
+                            hide(s.el);
+                        }
+                    });
+                    window.__shotPinnedDone = true;
+                    window.__shotSnap = null;
+                }
+            }).catch(() => { });
             await page.waitForTimeout(300);
         }
 
@@ -159,12 +207,14 @@ async function takeFullPage(page, outPath, log = () => { }) {
         y = actualY + vp.height;
     }
 
-    // restore hidden fixed elements + go back to top
+    // restore the hidden elements + go back to top
     await page.evaluate(() => {
-        document.querySelectorAll('[data-hidden-by-shot="1"]').forEach((el) => {
+        (window.__shotHidden || []).forEach((el) => {
             el.style.visibility = el.dataset.prevVis || "";
             delete el.dataset.hiddenByShot;
+            delete el.dataset.prevVis;
         });
+        window.__shotHidden = [];
         window.scrollTo(0, 0);
     }).catch(() => { });
 

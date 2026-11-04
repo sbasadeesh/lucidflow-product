@@ -13,14 +13,149 @@ const {
     listScans,
     readScan,
 } = require("./screenshotModule");
+const {
+    stabilizePage,
+    installDeterministicEnvironment,
+    compareImages,
+} = require("./screenshotStabilizer");
+const stabilizerConfig = require("./stabilizer.config");
+const { runStateScript, parseScript, ScriptError } = require("./stateScriptRunner");
+const stateScriptConfig = require("./stateScript.config");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // Set to false to leave the optional email empty in the screenshots
 const FILL_EMAIL = true;
 
 // Max dropdowns to open per page, and max Continue/Next steps to follow
+// Errors that mean "the site closed the connection on us" (bot protection)
+const CONNECTION_BLOCK_ERRORS =
+    /ERR_HTTP2_PROTOCOL_ERROR|ERR_CONNECTION_RESET|ERR_CONNECTION_CLOSED|ERR_EMPTY_RESPONSE|ERR_ACCESS_DENIED/;
+
+function errorCode(err) {
+    const m = String((err && err.message) || "").match(/net::(ERR_[A-Z0-9_]+)/);
+    return m ? m[1] : "unknown";
+}
+
+// Statuses where the page really was assessed. Every other status means "could not assess".
+const ASSESSED_STATUSES = ["completed", "completed_with_failures", "stopped"];
+
+// HTTP status of every redirect the first request went through
+async function redirectChainOf(response) {
+    const hops = [];
+    let request = response ? response.request() : null;
+    while (request && request.redirectedFrom()) {
+        const from = request.redirectedFrom();
+        const r = await from.response().catch(() => null);
+        hops.unshift({ url: from.url(), status: r ? r.status() : null });
+        request = from;
+    }
+    return hops;
+}
+
+// A short page that says "not found" / "error" even though the status was 200
+async function softErrorText(page) {
+    return page
+        .evaluate(() => {
+            const body = ((document.body && document.body.innerText) || "").trim();
+            const head = ((document.title || "") + " " + body.slice(0, 300)).toLowerCase();
+            const m = head.match(
+                /page not found|not found|internal server error|service unavailable|something went wrong|this site can.t be reached|\b(404|500|502|503)\b.{0,40}(error|not found|unavailable)/
+            );
+            return body.length < 1500 && m ? m[0] : null;
+        })
+        .catch(() => null);
+}
+
+// Opens the page and says whether it can be assessed.
+// Returns { assessable, status, reason, errorCode?, loadInfo }
+async function openAndCheckPage(page, url, record) {
+    const loadInfo = { requestedUrl: url, finalUrl: url, redirected: false, redirectChain: [], statusCode: null };
+    const fail = (status, reason, extra = {}) => {
+        record(`Could not assess: ${reason}`);
+        return { assessable: false, status, reason, loadInfo, ...extra };
+    };
+
+    // 1. open the page (one more try when the site cuts the connection)
+    let response = null;
+    let loadError = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+            response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
+            loadError = null;
+            break;
+        } catch (e) {
+            loadError = e;
+            if (!CONNECTION_BLOCK_ERRORS.test(e.message) || attempt === 2) break;
+            record(`First page load failed (${errorCode(e)}) -> trying once more`);
+            await page.waitForTimeout(3000);
+        }
+    }
+    if (loadError) {
+        const code = errorCode(loadError);
+        if (CONNECTION_BLOCK_ERRORS.test(loadError.message)) {
+            return fail("blocked", "The site closed the connection (it blocks automated browsers)", { errorCode: code });
+        }
+        if (code === "ERR_NAME_NOT_RESOLVED") {
+            return fail("load_failed", "The address does not exist (DNS lookup failed)", { errorCode: code });
+        }
+        if (/timeout/i.test(loadError.message)) {
+            return fail("load_failed", "The page did not load in time", { errorCode: "TIMEOUT" });
+        }
+        return fail("load_failed", `The page could not be loaded (${code})`, { errorCode: code });
+    }
+
+    // 2. HTTP status and redirects
+    loadInfo.statusCode = response ? response.status() : null;
+    loadInfo.redirectChain = await redirectChainOf(response);
+    loadInfo.finalUrl = page.url();
+    loadInfo.redirected =
+        loadInfo.redirectChain.length > 0 || normalizeUrl(loadInfo.finalUrl) !== normalizeUrl(url);
+
+    if (loadInfo.redirected) {
+        const hops = [...loadInfo.redirectChain.map((h) => `${h.url} (${h.status})`), loadInfo.finalUrl].join(" -> ");
+        record(`Redirected: ${hops}`);
+        try {
+            if (new URL(loadInfo.finalUrl).hostname !== new URL(url).hostname) {
+                record("Warning: the redirect leads to another domain");
+            }
+        } catch { }
+    }
+    record(`Final URL: ${loadInfo.finalUrl} (HTTP ${loadInfo.statusCode})`);
+
+    if (loadInfo.statusCode !== null && loadInfo.statusCode >= 400) {
+        // a 403 / 429 with a block page ("Access Denied", captcha...) is bot protection, not a missing page
+        const blockText = await isBlockedPage(page);
+        if (blockText) {
+            return fail("blocked", `The site refused the scan with HTTP ${loadInfo.statusCode} ("${blockText}")`, {
+                errorCode: `HTTP_${loadInfo.statusCode}`,
+            });
+        }
+        return fail("http_error", `The page answered with HTTP ${loadInfo.statusCode}`, {
+            errorCode: `HTTP_${loadInfo.statusCode}`,
+        });
+    }
+
+    // 3. let the page settle, then check again (JavaScript redirects, block pages, "not found" pages)
+    await page.waitForTimeout(2500);
+    loadInfo.finalUrl = page.url();
+    loadInfo.redirected = loadInfo.redirected || normalizeUrl(loadInfo.finalUrl) !== normalizeUrl(url);
+
+    const blockedText = await isBlockedPage(page);
+    if (blockedText) return fail("blocked", `The site answered with a block page ("${blockedText}")`);
+
+    const softText = await softErrorText(page);
+    if (softText) return fail("http_error", `The page looks like an error page ("${softText}")`);
+
+    return { assessable: true, loadInfo };
+}
+
+// Automatic popups (a banner that opens a few seconds after the page loads)
+const POPUP_WAIT_MS = 8000;      // wait up to this long for a popup to show up
+const POPUP_MIN_WAIT_MS = 3000;  // always wait at least this long
+const POPUP_QUIET_MS = 1500;     // stop once no popup was seen for this long
+
 const MAX_DROPDOWNS = 15;
 const MAX_STEPS = 5;
 const MAX_NAV = 20;        // top nav-bar items to click
@@ -166,6 +301,30 @@ async function clearPopups(page) {
         }
     }
 
+    // Visible "Close" / "Dismiss" buttons that sit inside an overlay (modal or banner popup)
+    const generic = page.getByRole("button", { name: /^(close|dismiss|no thanks|maybe later|not now|skip)$/i });
+    const genericCount = Math.min(await generic.count().catch(() => 0), 6);
+    for (let i = genericCount - 1; i >= 0; i--) {
+        const button = generic.nth(i);
+        if (!(await button.isVisible().catch(() => false))) continue;
+        const inOverlay = await button
+            .evaluate((el) => {
+                for (let e = el; e && e !== document.body; e = e.parentElement) {
+                    const cs = getComputedStyle(e);
+                    if (e.getAttribute("role") === "dialog" || e.getAttribute("aria-modal") === "true") return true;
+                    if ((cs.position === "fixed" || cs.position === "absolute") && parseInt(cs.zIndex || "0", 10) >= 100) return true;
+                }
+                return false;
+            })
+            .catch(() => false);
+        if (!inOverlay) continue;
+        try {
+            await button.click({ timeout: 1000 });
+            handled++;
+            await page.waitForTimeout(300);
+        } catch { }
+    }
+
     const dialog = page.getByRole("dialog").last();
     if (await dialog.isVisible().catch(() => false)) {
         for (const label of ["Close", "Dismiss", "No thanks", "Maybe later"]) {
@@ -219,7 +378,10 @@ async function getFieldInfo(field) {
                 inputmode: (el.getAttribute("inputmode") || "").toLowerCase(),
                 text: parts.filter(Boolean).join(" | "),
                 placeholder: el.placeholder || "",
-                inChrome: !!el.closest("header, nav, footer"),
+                inChrome:
+                    !!el.closest("footer") ||
+                    (el.type || "").toLowerCase() === "search" ||
+                    /search/i.test([el.name, el.id, el.placeholder, el.getAttribute("aria-label"), el.getAttribute("role")].join(" ")),
             };
         })
         .catch(() => null);
@@ -339,6 +501,168 @@ async function clearPopupsSettled(page) {
         total += n || 0;
         await page.waitForTimeout(700);
     }
+    return total;
+}
+
+// --------------------------------------------------
+// Automatic popups
+//   dismissOverlays:       finds popups that cover the page (modals, promo banners)
+//                          and cancels them: its Close button -> Escape -> hide it
+//   waitAndDismissPopups:  waits for popups to appear and cancels each one
+// --------------------------------------------------
+async function dismissOverlays(page, record = () => { }) {
+    // 1. find overlays on screen and tag the outermost ones
+    const found = await page
+        .evaluate(() => {
+            document.querySelectorAll("[data-popup-target]").forEach((e) => e.removeAttribute("data-popup-target"));
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const hits = [];
+
+            document.querySelectorAll("body *").forEach((el) => {
+                const cs = getComputedStyle(el);
+                if (cs.display === "none" || cs.visibility === "hidden" || parseFloat(cs.opacity) === 0) return;
+                if (cs.position !== "fixed" && cs.position !== "absolute") return;
+
+                const r = el.getBoundingClientRect();
+                if (r.width < 150 || r.height < 100) return;
+
+                const hint = (el.id + " " + (typeof el.className === "string" ? el.className : "")).toLowerCase();
+                const isDialog =
+                    el.getAttribute("role") === "dialog" ||
+                    el.getAttribute("aria-modal") === "true" ||
+                    /modal|popup|pop-up|dialog|lightbox|overlay|interstitial/.test(hint);
+                const z = parseInt(cs.zIndex, 10) || 0;
+                const big = r.width * r.height >= vw * vh * 0.12;
+
+                if (!(isDialog || (cs.position === "fixed" && z >= 100 && big))) return;
+                // sticky header / footer bars are wide and short: not a popup
+                if (cs.position === "fixed" && r.height < 120 && r.width > vw * 0.6 && !isDialog) return;
+                // the page itself (or an app shell) is not a popup
+                if (el.querySelector("header, nav, main, footer")) return;
+
+                hits.push(el);
+            });
+
+            const outer = hits.filter((el) => !hits.some((o) => o !== el && o.contains(el)));
+            outer.forEach((el, i) => el.setAttribute("data-popup-target", String(i)));
+            return outer.map((el, i) => ({
+                idx: i,
+                text: (el.innerText || "").trim().replace(/\s+/g, " ").slice(0, 60),
+                textLength: (el.innerText || "").length,
+            }));
+        })
+        .catch(() => []);
+
+    let dismissed = 0;
+
+    for (const p of found) {
+        const target = page.locator(`[data-popup-target="${p.idx}"]`).first();
+        const stillOpen = async () => target.isVisible().catch(() => false);
+        const label = p.text || "(no text)";
+
+        // 2a. click the popup's own Close / X / "No thanks" control
+        const hasCloser = await page
+            .evaluate(({ idx }) => {
+                const root = document.querySelector(`[data-popup-target="${idx}"]`);
+                if (!root) return false;
+                document.querySelectorAll("[data-popup-close]").forEach((e) => e.removeAttribute("data-popup-close"));
+
+                const wordRe = /^(close|dismiss|no,? ?thanks|skip|not now|maybe later|cancel|got it|✕|✖|×|x)$/i;
+                const labelRe = /(close|dismiss)/i;
+                const classRe = /(^|[-_\s])(close|dismiss)([-_\s]|$)|btn-close|modal-close|popup-close|icon-close/i;
+
+                let best = null;
+                root.querySelectorAll("button, a, [role='button'], span, div, i, img, svg").forEach((el) => {
+                    const r = el.getBoundingClientRect();
+                    const cs = getComputedStyle(el);
+                    if (r.width < 8 || r.height < 8 || r.width > 260 || r.height > 120) return;
+                    if (cs.visibility === "hidden" || cs.display === "none") return;
+
+                    const text = (el.innerText || "").trim();
+                    const aria = (el.getAttribute("aria-label") || "") + " " + (el.getAttribute("title") || "") + " " + (el.getAttribute("alt") || "");
+                    const cls = (typeof el.className === "string" ? el.className : el.getAttribute("class") || "") + " " + (el.id || "");
+                    if (!(wordRe.test(text) || labelRe.test(aria) || classRe.test(cls))) return;
+
+                    const clickable = /^(button|a)$/i.test(el.tagName) || el.getAttribute("role") === "button";
+                    const score = (clickable ? 2 : 0) + (wordRe.test(text) ? 1 : 0);
+                    if (!best || score > best.score) best = { el, score };
+                });
+
+                if (!best) return false;
+                best.el.setAttribute("data-popup-close", "1");
+                return true;
+            }, { idx: p.idx })
+            .catch(() => false);
+
+        if (hasCloser) {
+            await smartClick(page.locator('[data-popup-close="1"]').first());
+            await page.waitForTimeout(600);
+            if (!(await stillOpen())) {
+                dismissed++;
+                record(`Popup cancelled with its Close button: "${label}"`);
+                continue;
+            }
+        }
+
+        // 2b. Escape key
+        await page.keyboard.press("Escape").catch(() => { });
+        await page.waitForTimeout(500);
+        if (!(await stillOpen())) {
+            dismissed++;
+            record(`Popup cancelled with the Escape key: "${label}"`);
+            continue;
+        }
+
+        // 2c. last resort: hide it (only if it is a small block, never the whole page)
+        if (p.textLength < 2500) {
+            await page
+                .evaluate(({ idx }) => {
+                    const el = document.querySelector(`[data-popup-target="${idx}"]`);
+                    if (el) el.style.setProperty("display", "none", "important");
+                    document.querySelectorAll('.modal-backdrop, [class*="backdrop"]').forEach((b) => {
+                        if (getComputedStyle(b).position === "fixed") b.style.setProperty("display", "none", "important");
+                    });
+                    document.body.classList.remove("modal-open");
+                    document.body.style.removeProperty("overflow");
+                    document.documentElement.style.removeProperty("overflow");
+                }, { idx: p.idx })
+                .catch(() => { });
+            await page.waitForTimeout(300);
+            dismissed++;
+            record(`Popup could not be closed with a click, so it was hidden: "${label}"`);
+        }
+    }
+
+    return dismissed;
+}
+
+// Waits for automatic popups to show up and cancels each one.
+// Always waits `minWaitMs`; stops early once no popup was seen for POPUP_QUIET_MS.
+async function waitAndDismissPopups(page, record = () => { }, options = {}) {
+    const waitMs = options.waitMs || POPUP_WAIT_MS;
+    const minWaitMs = options.minWaitMs || POPUP_MIN_WAIT_MS;
+
+    const start = Date.now();
+    let lastSeen = 0;
+    let total = 0;
+
+    record(`Waiting up to ${Math.round(waitMs / 1000)}s for automatic popups...`);
+
+    while (Date.now() - start < waitMs) {
+        const simple = await clearPopups(page).catch(() => 0); // cookie banners, plain Close buttons
+        const overlays = await dismissOverlays(page, record).catch(() => 0);
+
+        if (simple || overlays) {
+            total += (simple || 0) + (overlays || 0);
+            lastSeen = Date.now();
+        }
+
+        if (Date.now() - start >= minWaitMs && Date.now() - lastSeen >= POPUP_QUIET_MS) break;
+        await page.waitForTimeout(500);
+    }
+
+    record(total ? `${total} popup(s) / banner(s) cancelled` : "No automatic popup appeared");
     return total;
 }
 
@@ -656,6 +980,7 @@ async function scanNav(page) {
                     ).slice(0, 40);
                     if (text.length < 2) return;
                     if (/log ?out|sign ?out/i.test(text)) return;
+                    if (/^(submit|pay\b|payment|confirm|delete|cancel|subscribe|download|place order)/i.test(text)) return;
                     if (/^[\d\s\-+()]{6,}$/.test(text)) return;                 // phone numbers
                     const href = (el.getAttribute("href") || "").trim().toLowerCase();
                     if (/^(tel:|mailto:|javascript:|whatsapp:|sms:)/.test(href)) return;
@@ -716,7 +1041,8 @@ async function fieldKeys(page, before = null, mark = false) {
         document.querySelectorAll("input, select, textarea").forEach((el) => {
             const type = (el.type || "").toLowerCase();
             if (["hidden", "submit", "button", "image", "checkbox", "radio"].includes(type)) return;
-            if (el.closest("header, nav, footer")) return;
+            if (el.closest("footer")) return;
+            if (type === "search" || /search/i.test([el.name, el.id, el.placeholder, el.getAttribute("aria-label"), el.getAttribute("role")].join(" "))) return;
             const r = el.getBoundingClientRect();
             const cs = getComputedStyle(el);
             if (r.width < 5 || r.height < 5 || cs.visibility === "hidden" || cs.display === "none") return;
@@ -761,6 +1087,7 @@ async function saveRevealedShot(page, anchor, label, state, record) {
     const filename = `element-${state.ts}-${state.shots.length + 1}-${slug}.png`;
 
     try {
+        if (state.prep) await state.prep();
         await captureElementShot(page, container, path.join(screenshotDir, filename));
         state.shots.push({ label, url: `/screenshots/${filename}` });
         record(`Element (layout) screenshot saved: ${label}`, { filename });
@@ -855,10 +1182,41 @@ async function revealCheck({ page, guard, state, stats, record, before, label })
     return true;
 }
 
+// Text of a "you are blocked" page (Access Denied, captcha...), or null
+async function isBlockedPage(page) {
+    return page
+        .evaluate(() => {
+            const text = ((document.title || "") + " " + ((document.body && document.body.innerText) || "").slice(0, 600));
+            const m = text.match(
+                /access denied|request blocked|403 forbidden|you don't have permission|are you a robot|captcha|unusual traffic|temporarily blocked|pardon our interruption/i
+            );
+            return m ? m[0] : null;
+        })
+        .catch(() => null);
+}
+
+// Back to the original URL. Uses "Back" first (no new request when the browser
+// has the page cached), waits a little between visits so the site is not
+// hammered, and stops the run if the site starts blocking.
 async function returnHome(page, guard, record) {
-    await page.goto(guard.homeFull, { waitUntil: "domcontentloaded", timeout: 60000 }).catch(() => { });
+    await page.waitForTimeout(1200 + Math.floor(Math.random() * 1000));
+
+    if (normalizeUrl(page.url()) !== guard.home) {
+        await page.goBack({ waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => { });
+    }
+    if (normalizeUrl(page.url()) !== guard.home) {
+        await page.goto(guard.homeFull, { waitUntil: "domcontentloaded", timeout: 60000 }).catch(() => { });
+    }
+
     await page.waitForTimeout(1500);
     await clearPopups(page).catch(() => { });
+
+    const blocked = await isBlockedPage(page);
+    if (blocked) {
+        guard.blocked = true;
+        record(`The site is blocking the scan ("${blocked}") -> stopping page visits`);
+        return;
+    }
     record("Back on the original URL");
 }
 
@@ -867,6 +1225,7 @@ async function explorePass({ page, kind, title, maxItems, scan, guard, state, st
     const done = new Set();
 
     for (let i = 0; i < maxItems; i++) {
+        if (guard.blocked) return;
         const items = await scan().catch(() => []);
         const next = items.find((x) => !done.has(x.text.toLowerCase()));
         if (!next) break;
@@ -1035,6 +1394,10 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
     };
 
     for (let i = 0; i < MAX_NAV; i++) {
+        if (guard.blocked) {
+            record("Stopping nav pass: the site is blocking requests");
+            return;
+        }
         const items = await scanNav(page).catch(() => []);
         const next = items.find((x) => !doneTop.has(x.text.toLowerCase()));
         if (!next) break;
@@ -1090,6 +1453,10 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
 
         // ---- 3) click every link in the dropdown, one by one ----
         for (let j = 0; j < subs.length; j++) {
+            if (guard.blocked) {
+                record("Stopping nav pass: the site is blocking requests");
+                return;
+            }
             if (totalLinks >= MAX_NAV_LINKS) {
                 record(`Nav link limit (${MAX_NAV_LINKS}) reached -> stopping nav pass`);
                 return;
@@ -1188,7 +1555,7 @@ async function safePhase(name, fn, page, guard, record, fallback = null) {
 //   -> age -> Continue -> Contact details (email optional, mobile)
 // Never types into the mobile field.
 // --------------------------------------------------
-async function runQuoteFlowUntilPhone(page, log) {
+async function runQuoteFlowUntilPhone(page, log, prep = null) {
     let fieldsFilled = 0;
     let stepsVisited = 1;
 
@@ -1203,7 +1570,8 @@ async function runQuoteFlowUntilPhone(page, log) {
 
     const ts = Date.now();
     const fullFilename = `full-${ts}.png`;
-    await takeFullPage(page, path.join(screenshotDir, fullFilename), log);
+    if (prep) await prep();
+    await takeFullPage(page, path.join(screenshotDir, fullFilename), log, { beforeTile: () => clearPopups(page) });
     log("Captured full-page screenshot (before filling anything)");
 
     // Make sure we're at the top so the hero widget is in place
@@ -1571,6 +1939,7 @@ async function runQuoteFlowUntilPhone(page, log) {
         if (box) heroHeight = Math.ceil(Math.min(box.y + box.height + 40, 1400));
     }
 
+    if (prep) await prep();
     await page.screenshot({
         path: path.join(screenshotDir, elementFilename),
         clip: { x: 0, y: 0, width: vp.width, height: heroHeight },
@@ -1593,6 +1962,17 @@ async function runQuoteFlowUntilPhone(page, log) {
 // --------------------------------------------------
 app.post("/api/screenshot", async (req, res) => {
     const { url, selector } = req.body;
+    // Stabilizer options (all optional):
+    //   stabilize: false      -> do not stabilize (default: on)
+    //   mask: [".chat", ...]  -> extra volatile elements to cover before screenshots
+    //   maskMode: "mask" | "hide"
+    //   freezeTime: true      -> fixed date + seeded random numbers
+    const stabilizeOn = req.body.stabilize !== false;
+    const stabilizeOptions = {
+        maskSelectors: Array.isArray(req.body.mask) ? req.body.mask : [],
+        ...(req.body.maskMode ? { maskMode: req.body.maskMode } : {}),
+    };
+    const freezeTime = req.body.freezeTime === true || stabilizerConfig.freezeTime;
 
     if (!url) {
         return res.status(400).json({ error: "URL is required" });
@@ -1623,35 +2003,48 @@ app.post("/api/screenshot", async (req, res) => {
     const guard = {
         on: false,
         allowNav: false,
+        blocked: false,
         attempts: 0,
         tabs: 0,
         lastTab: "",
         home: normalizeUrl(parsedUrl.href),
         homeFull: parsedUrl.href,
     };
-    const state = { ts: Date.now(), shots: [], keys: new Set() };
+    const state = { ts: Date.now(), shots: [], keys: new Set(), prep: null, stab: { enabled: stabilizeOn } };
 
     const scanId = `scan-${state.ts}`;
     const startedAt = new Date().toISOString();
+
+    // What happened when the page was opened (status code, redirects, final URL)
+    const loadInfo = { requestedUrl: parsedUrl.href, finalUrl: parsedUrl.href, redirected: false, redirectChain: [], statusCode: null };
 
     // Builds the scan summary (states + interactions counted one way for every
     // flow), saves it to /scans/<scanId>.json and returns it for the response.
     const finish = (status, extra = {}) => {
         const m = computeScanMetrics(actions, navReport);
+        // a page that was never scanned has no states and no steps
+        const scanned = ASSESSED_STATUSES.includes(status) || Boolean(extra.screenshotUrl);
         const summary = {
             scanId,
             url: parsedUrl.href,
             status,
+            result: ASSESSED_STATUSES.includes(status) ? "assessed" : "could not assess",
+            statusCode: loadInfo.statusCode,
+            requestedUrl: loadInfo.requestedUrl,
+            finalUrl: loadInfo.finalUrl,
+            redirected: loadInfo.redirected,
+            redirectChain: loadInfo.redirectChain,
             startedAt,
             finishedAt: new Date().toISOString(),
             durationMs: Date.now() - state.ts,
-            states: m.states,
-            interactions: m.interactions,
+            states: scanned ? m.states : 0,
+            interactions: scanned ? m.interactions : 0,
             interactionBreakdown: m.breakdown,
             fieldsFilled: stats.fieldsFilled,
-            stepsVisited: stats.stepsVisited,
+            stepsVisited: scanned ? stats.stepsVisited : 0,
             popupsHandled: stats.popupsHandled,
             navLinksChecked: navReport.length,
+            stabilizer: state.stab,
             ...extra,
             actionLog: actions,
         };
@@ -1666,9 +2059,29 @@ app.post("/api/screenshot", async (req, res) => {
         const context = await browser.newContext({
             viewport: { width: 1366, height: 900 },
             deviceScaleFactor: 1,
+            userAgent: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${browser.version()} Safari/537.36`,
+            locale: "en-IN",
+            timezoneId: "Asia/Kolkata",
         });
 
+        if (stabilizeOn && freezeTime) {
+            await installDeterministicEnvironment(context);
+            state.stab.freezeTime = true;
+        }
+
         const page = await context.newPage();
+
+        // Make the page hold still before every screenshot (animations off,
+        // volatile elements masked, wait until the page stops changing)
+        state.prep = async () => {
+            if (!stabilizeOn) return;
+            try {
+                const info = await stabilizePage(page, stabilizeOptions, (m) => record(m));
+                state.stab = { ...state.stab, ...info };
+            } catch (e) {
+                record(`Stabilizer skipped: ${String(e.message).split("\n")[0]}`);
+            }
+        };
 
         await setupNavigationGuard(page, context, guard, (m) => record(m));
 
@@ -1690,17 +2103,32 @@ app.post("/api/screenshot", async (req, res) => {
         });
 
         record(`Opening ${parsedUrl.href}`);
-        await page.goto(parsedUrl.href, { waitUntil: "domcontentloaded", timeout: 60000 });
-        await page.waitForTimeout(2500);
+
+        const opened = await openAndCheckPage(page, parsedUrl.href, record);
+        Object.assign(loadInfo, opened.loadInfo);
+
+        if (!opened.assessable) {
+            await browser.close();
+            browser = null;
+            return res.json(finish(opened.status, {
+                message: opened.reason,
+                reason: opened.reason,
+                errorCode: opened.errorCode || null,
+                screenshotUrl: null,
+                elementScreenshotUrl: null,
+                elementScreenshots: [],
+            }));
+        }
 
         // ---------- Aditya Birla quote flow ----------
         if (parsedUrl.hostname.includes("adityabirlahealthinsurance.com")) {
-            const quoteResult = await runQuoteFlowUntilPhone(page, (m) => record(m));
+            const quoteResult = await runQuoteFlowUntilPhone(page, (m) => record(m), state.prep);
 
             if (quoteResult.success) {
                 // evidence crop for the requested selector (if any)
                 let selectorCropUrl = null;
                 const cropFile = `evidence-${state.ts}.png`;
+                await state.prep();
                 if (await captureSelectorCrop(page, selector, path.join(screenshotDir, cropFile), (m) => record(m))) {
                     selectorCropUrl = `/screenshots/${cropFile}`;
                 }
@@ -1729,16 +2157,24 @@ app.post("/api/screenshot", async (req, res) => {
 
         // 1) Clear popups, fully load the page, then FULL-PAGE screenshot
         //    before touching anything.
-        stats.popupsHandled += await clearPopupsSettled(page);
-        record("Popups / cookie banners cleared");
+        // wait for an automatic popup to open, cancel it, then load the whole page
+        stats.popupsHandled += await waitAndDismissPopups(page, record);
         await scrollToLoadContent(page);
         record("Page fully loaded (lazy content scrolled in)");
-        stats.popupsHandled += await clearPopupsSettled(page);
+        // popups can also open while scrolling
+        stats.popupsHandled += await waitAndDismissPopups(page, record, { waitMs: 4000, minWaitMs: 1500 });
         await page.evaluate(() => window.scrollTo(0, 0));
         await page.waitForTimeout(700);
 
         const fullFilename = `full-${state.ts}.png`;
-        await takeFullPage(page, path.join(screenshotDir, fullFilename), (m) => record(m));
+        await state.prep();
+        await takeFullPage(page, path.join(screenshotDir, fullFilename), (m) => record(m), {
+            // a popup that opens while the page is being captured is cancelled first
+            beforeTile: async () => {
+                await clearPopups(page);
+                await dismissOverlays(page, record);
+            },
+        });
         record("Full-page screenshot saved (before any interaction)", { filename: fullFilename });
 
         // 2) From now on the browser must stay on this URL
@@ -1758,6 +2194,30 @@ app.post("/api/screenshot", async (req, res) => {
         guard.allowNav = false;
         await page.evaluate(() => { window.__navGuard = true; }).catch(() => { });
         record(`Nav bar pass finished: ${navReport.length} link(s) checked`);
+
+        if (guard.blocked) {
+            record("Waiting 20 seconds, then trying the page once more...");
+            await page.waitForTimeout(20000);
+            await page.goto(guard.homeFull, { waitUntil: "domcontentloaded", timeout: 60000 }).catch(() => { });
+            await page.waitForTimeout(2500);
+
+            const still = await isBlockedPage(page);
+            if (still) {
+                record(`Still blocked ("${still}") -> finishing with what was captured before the block`);
+                await browser.close();
+                browser = null;
+                return res.json(finish("blocked", {
+                    message: "The site started blocking the scan during the nav pass. The full-page screenshot and the nav results above were captured before that.",
+                    screenshotUrl: `/screenshots/${fullFilename}`,
+                    elementScreenshotUrl: state.shots[0] ? state.shots[0].url : null,
+                    elementScreenshots: state.shots,
+                    navigationCheck: navReport,
+                }));
+            }
+            guard.blocked = false;
+            record("Access restored -> continuing");
+            await clearPopupsSettled(page);
+        }
 
         // 4) Open every form-style dropdown on the page and fill it
         await page.evaluate(() => window.scrollTo(0, 0));
@@ -1787,6 +2247,7 @@ app.post("/api/screenshot", async (req, res) => {
                 // main element shot: top of page down to the form (like the Aditya Birla one)
                 const container = await findCardContainer(sensitive.locator);
                 const mainFile = `element-${state.ts}-main.png`;
+                await state.prep();
                 await captureElementShot(page, container, path.join(screenshotDir, mainFile));
                 state.shots.unshift({ label: "main (sensitive field area)", url: `/screenshots/${mainFile}` });
                 record("Element screenshot saved (at the sensitive field)", { filename: mainFile });
@@ -1799,24 +2260,20 @@ app.post("/api/screenshot", async (req, res) => {
             await page.evaluate(() => window.scrollTo(0, 0));
             await page.waitForTimeout(500);
 
-            let element = page.locator(elementSelector).first();
-            if (!(await element.isVisible().catch(() => false))) {
-                elementSelector = "body";
-                element = page.locator("body");
-            }
+            // Nothing was revealed: the element screenshot is the layout of the top of
+            // the page (the full page is already saved separately)
             const fallbackFile = `element-${state.ts}.png`;
-            await element.screenshot({
-                path: path.join(screenshotDir, fallbackFile),
-                animations: "disabled",
-                timeout: 30000,
-            });
+            elementSelector = "top of page";
+            await state.prep();
+            await captureElementShot(page, null, path.join(screenshotDir, fallbackFile));
             state.shots.push({ label: elementSelector, url: `/screenshots/${fallbackFile}` });
-            record("Element screenshot saved", { filename: fallbackFile, selector: elementSelector });
+            record("Element screenshot saved (layout of the top of the page)", { filename: fallbackFile });
         }
 
         // evidence crop for the requested selector (if any)
         let selectorCropUrl = null;
         const cropFile = `evidence-${state.ts}.png`;
+        await state.prep();
         if (await captureSelectorCrop(page, selector, path.join(screenshotDir, cropFile), (m) => record(m))) {
             selectorCropUrl = `/screenshots/${cropFile}`;
         }
@@ -1855,6 +2312,215 @@ app.post("/api/screenshot", async (req, res) => {
 // --------------------------------------------------
 // Scan history: how many scans ran, and the states / interactions of each
 // --------------------------------------------------
+// --------------------------------------------------
+// State script runner
+//   POST /api/script
+//   body: {
+//     "url": "https://...",            (or "url" inside the script)
+//     "script": { "name": "...", "steps": [ ... ] }   (an object, a JSON string or YAML text)
+//     "maxStates": 10,                 (optional state cap)
+//     "stabilize": false,              (optional, default on)
+//     "mask": [".chat"]                (optional volatile elements to cover)
+//   }
+// Runs the steps (click, type, wait, capture) on ONE page and saves every
+// captured state in order. A failed step is logged with its reason; the run
+// carries on. The scan is saved like every other scan (see /api/scans).
+// --------------------------------------------------
+app.post("/api/script", async (req, res) => {
+    const body = req.body || {};
+    const scriptInput = body.script !== undefined ? body.script : body.steps ? body : undefined;
+
+    if (scriptInput === undefined) {
+        return res.status(400).json({ error: 'Send a "script" with a list of "steps".' });
+    }
+
+    let parsed;
+    try {
+        parsed = parseScript(scriptInput, stateScriptConfig);
+    } catch (e) {
+        if (e instanceof ScriptError) return res.status(400).json({ error: e.message });
+        throw e;
+    }
+
+    const url = body.url || parsed.url;
+    let parsedUrl;
+    try {
+        parsedUrl = new URL(url);
+    } catch {
+        return res.status(400).json({ error: 'Send the page address as "url" (in the request or in the script).' });
+    }
+    if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+        return res.status(400).json({ error: "Only HTTP and HTTPS URLs are supported" });
+    }
+
+    const ts = Date.now();
+    const scanId = `scan-${ts}`;
+    const startedAt = new Date().toISOString();
+    const actions = [];
+    const record = (action, details = {}) => {
+        console.log(action);
+        actions.push({ action, time: new Date().toISOString(), ...details });
+    };
+
+    const loadInfo = { requestedUrl: parsedUrl.href, finalUrl: parsedUrl.href, redirected: false, redirectChain: [], statusCode: null };
+
+    const summarize = (status, extra = {}) => {
+        const summary = {
+            scanId,
+            type: "script",
+            url: parsedUrl.href,
+            scriptName: parsed.name,
+            status,
+            result: ASSESSED_STATUSES.includes(status) ? "assessed" : "could not assess",
+            statusCode: loadInfo.statusCode,
+            requestedUrl: loadInfo.requestedUrl,
+            finalUrl: loadInfo.finalUrl,
+            redirected: loadInfo.redirected,
+            redirectChain: loadInfo.redirectChain,
+            startedAt,
+            finishedAt: new Date().toISOString(),
+            durationMs: Date.now() - ts,
+            ...extra,
+            actionLog: actions,
+        };
+        try { saveScanSummary(scansDir, summary); } catch { }
+        return summary;
+    };
+
+    let browser;
+    try {
+        browser = await chromium.launch({ headless: true });
+        const context = await browser.newContext({
+            viewport: { width: 1366, height: 900 },
+            deviceScaleFactor: 1,
+            userAgent: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${browser.version()} Safari/537.36`,
+            locale: "en-IN",
+            timezoneId: "Asia/Kolkata",
+        });
+        const page = await context.newPage();
+
+        // JavaScript alerts/confirms are dismissed and logged
+        page.on("dialog", async (dialog) => {
+            try {
+                record(`JavaScript dialog dismissed: "${dialog.message()}"`);
+                await dialog.dismiss();
+            } catch { }
+        });
+
+        // ---- open the page ----
+        record(`Opening ${parsedUrl.href}`);
+
+        const opened = await openAndCheckPage(page, parsedUrl.href, record);
+        Object.assign(loadInfo, opened.loadInfo);
+
+        if (!opened.assessable) {
+            await browser.close();
+            browser = null;
+            return res.json(summarize(opened.status, {
+                message: opened.reason,
+                reason: opened.reason,
+                errorCode: opened.errorCode || null,
+                capturedStates: [],
+                states: 0,
+                interactions: 0,
+                counts: { steps: parsed.steps.length, ok: 0, failed: 0, skipped: parsed.steps.length, statesCaptured: 0, statesSkipped: 0, interactions: 0 },
+            }));
+        }
+
+        // popups that open by themselves would sit on top of every state
+        await waitAndDismissPopups(page, record, { waitMs: 4000, minWaitMs: 1500 });
+
+        // ---- keep every state steady (animations off, volatile parts masked) ----
+        const stabilizeOn = body.stabilize !== false;
+        const prep = stabilizeOn
+            ? async () => {
+                try {
+                    await stabilizePage(
+                        page,
+                        { maskSelectors: Array.isArray(body.mask) ? body.mask : [] },
+                        (m) => record(m)
+                    );
+                } catch (e) {
+                    record(`Stabilizer skipped: ${String(e.message).split("\n")[0]}`);
+                }
+            }
+            : null;
+
+        // ---- run the script ----
+        const result = await runStateScript(page, parsed, {
+            maxStates: body.maxStates,
+            outDir: screenshotDir,
+            filePrefix: `state-${scanId}`,
+            fileUrl: (file) => `/screenshots/${file}`,
+            prep,
+            log: (m) => record(m),
+        });
+
+        await browser.close();
+        browser = null;
+
+        return res.json(summarize(result.status, {
+            // same two numbers as every other scan: states captured, interactions done
+            states: result.counts.statesCaptured,
+            interactions: result.counts.interactions,
+            stateCap: result.stateCap,
+            capped: result.capped,
+            capturedStates: result.states,
+            skippedStates: result.skippedStates,
+            warnings: result.warnings,
+            counts: result.counts,
+            steps: result.steps,
+        }));
+    } catch (error) {
+        console.error("Script run failed:", error.message);
+        return res.status(500).json(summarize("failed", {
+            error: "State script run failed",
+            details: error.message,
+            capturedStates: [],
+            states: 0,
+            interactions: 0,
+        }));
+    } finally {
+        if (browser) await browser.close().catch(() => { });
+    }
+});
+
+// --------------------------------------------------
+// Compare two screenshots from the screenshots folder.
+//   GET /api/compare?a=full-111.png&b=full-222.png[&threshold=0.01]
+// --------------------------------------------------
+app.get("/api/compare", async (req, res) => {
+    const { a, b } = req.query;
+    const safe = /^[\w.-]+\.png$/;
+
+    if (!safe.test(String(a || "")) || !safe.test(String(b || ""))) {
+        return res.status(400).json({ error: "Give two screenshot file names, for example ?a=full-1.png&b=full-2.png" });
+    }
+
+    const fileA = path.join(screenshotDir, a);
+    const fileB = path.join(screenshotDir, b);
+    if (!fs.existsSync(fileA) || !fs.existsSync(fileB)) {
+        return res.status(404).json({ error: "Screenshot not found" });
+    }
+
+    const options = {};
+    if (req.query.threshold !== undefined) {
+        const t = Number(req.query.threshold);
+        if (!Number.isFinite(t) || t < 0 || t > 1) {
+            return res.status(400).json({ error: "threshold must be a number between 0 and 1" });
+        }
+        options.threshold = t;
+    }
+
+    try {
+        const diffName = `diff-${Date.now()}.png`;
+        const result = await compareImages(fileA, fileB, { ...options, diffPath: path.join(screenshotDir, diffName) });
+        res.json({ a, b, ...result, diffPath: undefined, diffUrl: `/screenshots/${diffName}` });
+    } catch (err) {
+        res.status(500).json({ error: "Comparison failed", details: err.message });
+    }
+});
+
 app.get("/api/scans", (req, res) => {
     const scans = listScans(scansDir);
     res.json({
