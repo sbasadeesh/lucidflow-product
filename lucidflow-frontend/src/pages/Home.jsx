@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Topbar from "../components/Topbar.jsx";
 import { HOME } from "../config.js";
@@ -6,10 +6,33 @@ import { recentScans } from "../data.js";
 import { saveScan } from "../scanStore.js";
 import { parseEntries } from "../urlUtils.js";
 
+
+// A cell can hold plain text or a hyperlink object
+const asText = (v) => (v && typeof v === "object" ? v.hyperlink || v.text || "" : (v ?? ""));
+
+// Reads page URLs from column A of the first sheet.
+// Cells that do not look like a URL (for example the header) are skipped.
+async function readUrlsFromExcel(buffer) {
+  const { default: ExcelJS } = await import("exceljs");
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buffer);
+  const sheet = wb.worksheets[0];
+  if (!sheet) return [];
+
+  const urls = [];
+  sheet.getColumn(1).eachCell((cell) => {
+    const t = String(asText(cell.value)).trim();
+    if (t.includes(".") && !/\s/.test(t)) urls.push(t);
+  });
+  return [...new Set(urls)];
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const [mode, setMode] = useState("pages");
   const [texts, setTexts] = useState({ pages: "", domain: "" });
+  const fileRef = useRef(null);
+  const [notice, setNotice] = useState("");
 
   const current = HOME.modes[mode];
   const text = texts[mode];
@@ -25,6 +48,39 @@ export default function Home() {
         .map((i) => i.raw)
         .join(", "),
     );
+
+      // Add URLs to the Page URLs box, keeping what is already there (no repeats)
+  const addUrls = (list) =>
+    setTexts((t) => {
+      const have = t.pages
+        .split(/[,\n]+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      return { ...t, pages: [...new Set([...have, ...list])].join(", ") };
+    });
+
+  const fillFromPrevious = () => addUrls([`https://${recentScans[0].domain}`]);
+
+  const onFile = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".xlsx")) {
+      setNotice("Please choose an Excel file (.xlsx).");
+      return;
+    }
+    try {
+      const urls = await readUrlsFromExcel(await file.arrayBuffer());
+      if (urls.length === 0) {
+        setNotice("No URLs found in this file.");
+        return;
+      }
+      addUrls(urls);
+      setNotice("");
+    } catch {
+      setNotice("This file could not be read.");
+    }
+  };
 
   const run = () => {
     saveScan({
@@ -65,12 +121,18 @@ export default function Home() {
           )}
           <p className="muted">{current.help}</p>
 
-          {mode === "pages" && (
+                    {mode === "pages" && (
             <div className="links">
-              <button className="link">Upload from Excel</button>
-              <button className="link">Fill from previous findings</button>
+              <input ref={fileRef} type="file" accept=".xlsx" hidden onChange={onFile} />
+              <button className="link" onClick={() => fileRef.current.click()}>
+                Upload from Excel
+              </button>
+              <button className="link" onClick={fillFromPrevious}>
+                Fill from previous findings
+              </button>
             </div>
           )}
+          {notice && <p className="error">{notice}</p>}
 
           {items.length > 0 && (
             <div className="chips">

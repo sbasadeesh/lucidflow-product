@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import Home from "./Home.jsx";
 import ExcelJS from "exceljs";
 import { recentScans } from "../data.js";
@@ -123,7 +123,7 @@ describe("Home: Fill from previous findings and Upload from Excel", () => {
     expect(box().value).toContain(recentScans[0].domain);
     expect(box().value.split(",")).toHaveLength(1);
   });
-  
+
   // Upload from Excel
   it("Given the page, then the file picker accepts only .xlsx files", () => {
     const { container } = setup();
