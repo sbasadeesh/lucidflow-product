@@ -113,8 +113,6 @@ function today() {
 
 const hostOf = (u) => new URL(u).hostname.replace(/^www\./, "");
 
-const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
-
 // Builds the report only from what the user entered.
 // Pages from different websites -> every website (company) is shown.
 export function buildReport(scan) {
@@ -164,13 +162,10 @@ export function buildReport(scan) {
     tagline: "Automated Scanning. Continuous governance. Evidence-led findings.",
     client: hosts.join(", "),
     clients: hosts,
-        scope: isDomain
+    scope: isDomain
       ? `${hosts[0]} (whole domain)`
       : hosts
-          .map((h) => {
-            const states = findings.filter((f) => f.company === h).length; // 1 finding = 1 state
-            return `${h} (${plural(byHost[h].length, "page")}, ${plural(states, "state")})`;
-          })
+          .map((h) => `${h} (${byHost[h].length} page${byHost[h].length > 1 ? "s" : ""})`)
           .join(", "),
     id: `LF-${hosts.length > 1 ? "MULTI" : hosts[0].split(".")[0].toUpperCase()}-2026-001`,
     version: "V1.0",

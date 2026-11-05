@@ -94,7 +94,7 @@ export default function Home() {
             </p>
           )}
 
-          <button className="btn primary" disabled={!canRun} onClick={run}>   
+          <button className="btn primary" disabled={!canRun} onClick={run}>
             {HOME.runLabel}
           </button>
         </div>

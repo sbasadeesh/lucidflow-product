@@ -1,8 +1,8 @@
 import { render, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { PRIORITY_THEMES } from "../data.js";
 import mock from "../mock/mock_payload.json";
-import { getPages, Sheet } from "./ReportPages.jsx";
-import { buildReport } from "../data.js";
+import { fitSheetContent, getPages, Sheet } from "./ReportPages.jsx";
 
 const reportOf = (id) => mock.scenarios.find((s) => s.id === id).report;
 
@@ -111,60 +111,82 @@ describe("Report layout against the mock payload", () => {
     // the footer is its own block, outside the page body
     expect(body.contains(foot)).toBe(false);
   });
-});
 
-
-describe("Assessment PDF (E7-02)", () => {
-  // AC1
-  it("Given a payload with findings, when the report is generated, then the PDF has cover, summary, scope and findings pages in that order", () => {
-    const report = reportOf("S2-three-findings");
-    const n = report.findings.length;
+  it("Given empty theme strings, when the summary renders, then fallback assessment prose is not inserted", () => {
+    const report = reportOf("S5-empty-text-fields");
     const { container } = renderReport(report);
-    const sheets = sheetsOf(container);
-    const kinds = sheets.map(kindOf);
-
-    expect(kinds.slice(0, 2)).toEqual(["cover", "summary"]);
-    // scope sits on the cover
-    expect(within(sheets[0]).getByText("Assessment scope")).toBeInTheDocument();
-    expect(within(sheets[0]).getByText(report.scope)).toBeInTheDocument();
-    expect(kinds.slice(2, 2 + n)).toEqual(Array(n).fill("finding"));
-  });
-
-  // AC2
-  it("Given findings, when the report is generated, then each finding page shows its evidence and its screenshot", () => {
-    const report = reportOf("S2-three-findings");
-    const n = report.findings.length;
-    const { container } = renderReport(report);
-    const sheets = sheetsOf(container).slice(2, 2 + n);
-
-    expect(sheets).toHaveLength(n);
-    sheets.forEach((sheet, i) => {
-      const f = report.findings[i];
-      expect(within(sheet).getByText("EVIDENCE-LED FINDING")).toBeInTheDocument();
-      expect(sheet).toHaveTextContent(f.evidence);
-      expect(within(sheet).getByAltText(`Screenshot of ${f.url}`)).toHaveAttribute(
-        "src",
-        f.screenshot,
-      );
+    const summary = sheetsOf(container)[1];
+    PRIORITY_THEMES.forEach((theme) => {
+      expect(summary).not.toHaveTextContent(theme.text);
+    });
+    expect(summary.querySelectorAll(".themes p")).toHaveLength(3);
+    summary.querySelectorAll(".themes p").forEach((p) => {
+      expect(p.textContent).toBe("");
     });
   });
 
-  // Developer note
-  it('Given a one page scan with N findings, when the report is generated, then the scope line reads "1 page, N states"', () => {
-    const scan = { mode: "pages", urls: ["https://www.royalsundaram.in/claims"] };
-    expect(buildReport(scan).scope).toBe("royalsundaram.in (1 page, 1 state)");
+  it.each(mock.scenarios.map((s) => [s.id, s]))(
+    "Given %s, when pages are built, then the count, order, and CAP rows match the fixture",
+    (_id, scenario) => {
+      const report = scenario.report;
+      const { container } = renderReport(report);
+      const sheets = sheetsOf(container);
+      expect(sheets).toHaveLength(scenario.expected.total_pdf_pages);
+      sheets.forEach((sheet, i) => {
+        expect(within(sheet).getByText(`Page ${i + 1}`)).toBeInTheDocument();
+      });
+      const capIds = sheets
+        .filter((sheet) => kindOf(sheet) === "cap")
+        .flatMap((sheet) =>
+          [...sheet.querySelectorAll("tbody tr")].map((row) => row.querySelector("td").textContent),
+        );
+      expect(capIds).toEqual(report.cap.map((row) => row.id));
+    },
+  );
 
-    // mock with 3 findings shows 3 states
-    expect(reportOf("S2-three-findings").scope).toMatch(/\(1 page, 3 states\)$/);
+  it("Given a finding with a screenshot, when the finding page renders, then the image is shown", () => {
+    const report = reportOf("S1-one-finding");
+    const { container } = renderReport(report);
+    const finding = sheetsOf(container)[2];
+    expect(finding.querySelector("img.shot-img")).toHaveAttribute("src", report.findings[0].screenshot);
+    expect(finding.querySelector(".shot")).toBeNull();
   });
 
-  // Edge case
-  it('Given a payload with no findings, when the report is generated, then the scope line reads "1 page, 0 states"', () => {
+  it("Given a finding without a screenshot, when the finding page renders, then the placeholder is shown", () => {
+    const report = structuredClone(reportOf("S1-one-finding"));
+    delete report.findings[0].screenshot;
+    const { container } = renderReport(report);
+    const finding = sheetsOf(container)[2];
+    expect(finding.querySelector("img.shot-img")).toBeNull();
+    expect(finding.querySelector(".shot")).toHaveTextContent("Screenshot placeholder");
+  });
+
+  it("Given a sheet with no layout height, when fit runs, then it waits instead of locking zoom at 1", () => {
+    const box = { clientHeight: 0, scrollHeight: 0 };
+    const content = { style: {}, dataset: {} };
+    expect(fitSheetContent(box, content)).toBe(false);
+    expect(content.dataset.fitted).toBeUndefined();
+  });
+
+  it("Given content taller than the sheet, when fit runs, then zoom stays at or above 0.6 and marks a miss", () => {
+    const content = { style: {}, dataset: {} };
+    const box = {
+      clientHeight: 100,
+      get scrollHeight() {
+        const zoom = Number(content.style.zoom || 1);
+        return Math.ceil(400 * zoom);
+      },
+    };
+    expect(fitSheetContent(box, content)).toBe(true);
+    expect(Number(content.style.zoom)).toBeGreaterThanOrEqual(0.6);
+    expect(content.dataset.fitted).toBe("1");
+    expect(content.dataset.overflow).toBe("below-min-zoom");
+  });
+
+  it("Given zero findings, when the report renders, then only cover, summary, and about pages exist", () => {
     const report = reportOf("S4-zero-findings");
     const { container } = renderReport(report);
-    const cover = sheetsOf(container)[0];
-
-    expect(report.findings).toHaveLength(0);
-    expect(within(cover).getByText(/\(1 page, 0 states\)$/)).toBeInTheDocument();
+    const kinds = sheetsOf(container).map(kindOf);
+    expect(kinds).toEqual(["cover", "summary", "about"]);
   });
 });

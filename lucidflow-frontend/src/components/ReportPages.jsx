@@ -4,6 +4,39 @@ import { useLayoutEffect, useRef } from "react";
 
 const FOOTER_URL = "https://ww1.sbainfo.in/lucidflow";
 
+// 1px covers subpixel rounding. Larger overflow is a real miss.
+const FIT_TOLERANCE_PX = 1;
+
+// Shared by the on-screen preview and the print sheets.
+// Returns false when the sheet is not laid out yet (hidden print sheets
+// report 0×0). Callers must run again once print dimensions exist.
+export function fitSheetContent(box, content) {
+  if (!box || !content || box.clientHeight <= 0) return false;
+  const fits = () => box.scrollHeight - box.clientHeight <= FIT_TOLERANCE_PX;
+
+  content.style.zoom = "1";
+  if (fits()) {
+    delete content.dataset.overflow;
+    content.dataset.fitted = "1";
+    return true;
+  }
+
+  let low = 0.6;
+  let high = 1;
+  for (let i = 0; i < 8; i++) {
+    const mid = (low + high) / 2;
+    content.style.zoom = String(mid);
+    if (fits()) low = mid;
+    else high = mid;
+  }
+  content.style.zoom = String(low);
+  content.dataset.fitted = "1";
+  // 60% is the floor. Still-taller content is marked; it is not shrunk further.
+  if (!fits()) content.dataset.overflow = "below-min-zoom";
+  else delete content.dataset.overflow;
+  return true;
+}
+
 // One A4 page: logo top right, footer with page number
 // If the content is taller than the page, it shrinks to fit (never cut, never touches the footer)
 export function Sheet({ n, children }) {
@@ -13,21 +46,26 @@ export function Sheet({ n, children }) {
   useLayoutEffect(() => {
     const box = body.current;
     const content = inner.current;
-    const fits = () => box.scrollHeight <= box.clientHeight;
-
-    content.style.zoom = 1;
-    if (fits()) return; // fits already, nothing to do
-
-    // find the biggest size that still fits (between 60% and 100%)
-    let low = 0.6;
-    let high = 1;
-    for (let i = 0; i < 8; i++) {
-      const mid = (low + high) / 2;
-      content.style.zoom = mid;
-      if (fits()) low = mid;
-      else high = mid;
-    }
-    content.style.zoom = low;
+    let frame = 0;
+    // Print media is applied after beforeprint. Two frames wait for that
+    // layout instead of measuring the hidden 0×0 sheet.
+    const refit = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        frame = requestAnimationFrame(() => fitSheetContent(box, content));
+      });
+    };
+    fitSheetContent(box, content);
+    const media = typeof window.matchMedia === "function" ? window.matchMedia("print") : null;
+    if (media) media.addEventListener("change", refit);
+    window.addEventListener("beforeprint", refit);
+    window.addEventListener("afterprint", refit);
+    return () => {
+      cancelAnimationFrame(frame);
+      if (media) media.removeEventListener("change", refit);
+      window.removeEventListener("beforeprint", refit);
+      window.removeEventListener("afterprint", refit);
+    };
   });
 
   return (
@@ -87,7 +125,7 @@ function Cover({ r }) {
 
 function Summary({ r }) {
   const colors = ["var(--text)", "var(--secondary)", "var(--secondary)", "var(--success)"];
-  
+  const max = Math.max(...r.distribution.map((d) => d.count), 1);
 
   return (
     <div>
@@ -104,11 +142,11 @@ function Summary({ r }) {
       </div>
 
       <h3 className="sub">Pattern distribution</h3>
-          {r.distribution.map((d) => (
+      {r.distribution.map((d) => (
         <div className="dist" key={d.name}>
           <span>{d.name}</span>
           <div className="dbar">
-            <i style={{ width: `${Math.min(d.count * REPORT.barUnitPct, 100)}%` }} />
+            <i style={{ width: `${(d.count / max) * 100}%` }} />
           </div>
           <b>{d.count}</b>
         </div>
@@ -125,7 +163,7 @@ function Summary({ r }) {
         {PRIORITY_THEMES.map((t, i) => (
           <div key={t.title}>
             <span className="label-red">{t.title}</span>
-            <p>{r.themes?.[i] || t.text}</p>
+            <p>{r.themes?.[i] ?? t.text}</p>
           </div>
         ))}
       </div>
@@ -272,40 +310,10 @@ function CapRegister({ rows, first }) {
   );
 }
 
-// Rows are added to a page until it is full, then a new page starts
-const LINE_MM = 4; // height of one text line
-const ROW_PAD_MM = 8.5; // top + bottom padding of one row
-
-const countLines = (text, charsPerLine) =>
-  Math.max(1, Math.ceil(String(text ?? "").length / charsPerLine));
-
-function rowHeight(c) {
-  const lines = Math.max(
-    countLines(`${c.findingRef} (${c.pattern})`, 21), // Finding column
-    countLines(c.rootCause, 21), // Root cause column
-    c.action.reduce((sum, a) => sum + countLines(a, 30), 0), // Action column
-    countLines(c.owner, 12), // Owner column
-  );
-  return lines * LINE_MM + ROW_PAD_MM;
-}
-
 function capPages(r) {
   const groups = [];
-  let page = [];
-  let used = 0;
-
-  r.cap.forEach((c) => {
-    const h = rowHeight(c);
-    if (page.length > 0 && used + h > REPORT.capBodyMm) {
-      groups.push(page);
-      page = [];
-      used = 0;
-    }
-    page.push(c);
-    used += h;
-  });
-  if (page.length > 0) groups.push(page);
-
+  for (let i = 0; i < r.cap.length; i += REPORT.capRowsPerPage)
+    groups.push(r.cap.slice(i, i + REPORT.capRowsPerPage));
   return groups.map((g, i) => <CapRegister key={`cap-${i}`} rows={g} first={i === 0} />);
 }
 
