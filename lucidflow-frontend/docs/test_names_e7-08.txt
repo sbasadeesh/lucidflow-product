@@ -1,0 +1,194 @@
+E7-08 Dummy pages for the other menu items (Settings, Remediation, Prevention)
+      and Home: Upload from Excel, Fill from previous findings
+Run: npm run test:run -- src/pages/SettingsPages.test.jsx src/components/Layout.test.jsx src/pages/Home.test.jsx
+
+Before every RED step the code is committed. After each RED, git restore
+puts the code back, so the file ends up as it was.
+
+===================================================================
+SETTINGS (src/pages/SettingsPages.test.jsx, 10 tests)
+===================================================================
+
+-------------------------------------------------------------------
+1. Given Settings, when it opens, then the 6 options show, none is active and
+   the right side is blank
+-------------------------------------------------------------------
+RED  : src/pages/Settings.jsx -> add <section className="settings-panel card" />
+       after the menu div
+       Result: only this test fails (a box shows on the right at the start)
+GREEN: git restore src/pages/Settings.jsx
+
+-------------------------------------------------------------------
+2. Given an option, when it is clicked, then it is active and its title shows
+   on the right
+-------------------------------------------------------------------
+RED  : src/pages/Settings.jsx -> NavLink className:
+       "settings-item" + (isActive ? " active" : "")  ->  "settings-item"
+       Result: only this test fails (the clicked option is never active)
+GREEN: git restore src/pages/Settings.jsx
+
+-------------------------------------------------------------------
+3. Given the option <Profile / Organisation / Users and roles / Licence /
+   Data and retention / Notifications>, then its page shows the title and
+   "Planned for a later phase"   (6 tests)
+-------------------------------------------------------------------
+RED  : src/pages/SettingsSection.jsx -> delete the line
+       <p className="planned">{PLANNED_LABEL}</p>
+       Result: the 6 tests fail (the label is missing on every page)
+GREEN: git restore src/pages/SettingsSection.jsx
+
+-------------------------------------------------------------------
+4. Given a dummy page, then no real action is possible: every button is
+   disabled and there are no inputs
+-------------------------------------------------------------------
+RED  : src/pages/SettingsSection.jsx -> add <button>Save</button> under the label
+       Result: only this test fails (an enabled button exists)
+GREEN: git restore src/pages/SettingsSection.jsx
+
+-------------------------------------------------------------------
+5. Given a Settings page, then the Settings item in the menu is shown as active
+-------------------------------------------------------------------
+RED  : src/components/Layout.jsx -> NavLink end={l.to === "/"}  ->  end
+       Result: this test fails (Settings is not active on /settings/licence)
+GREEN: git restore src/components/Layout.jsx
+       Result: all 10 Settings tests pass
+
+===================================================================
+MAIN MENU: REMEDIATION AND PREVENTION (src/components/Layout.test.jsx,
+16 tests, 5 of them new, 1 updated)
+===================================================================
+
+-------------------------------------------------------------------
+6. Given the menu, then Remediation and Prevention show after Reports
+   (the old sidebar list test is updated to the 8 items)
+-------------------------------------------------------------------
+RED  : src/config.js -> NAV_LINKS: move Remediation and Prevention
+       below Settings
+       Result: 2 failed (the order test and the sidebar list test)
+GREEN: git restore src/config.js
+
+-------------------------------------------------------------------
+7. Given I click Remediation / Prevention, then a static page opens with
+   its title and "Planned for a later phase"   (2 tests)
+-------------------------------------------------------------------
+RED  : src/App.jsx -> delete the <Route path="/prevention" ... /> line
+       Result: the Prevention click test fails (and the active test)
+GREEN: git restore src/App.jsx
+
+-------------------------------------------------------------------
+8. Given a Remediation / Prevention page, then no real action is possible:
+   every button is disabled and there are no inputs
+-------------------------------------------------------------------
+RED  : src/pages/Prevention.jsx -> change <button type="button" disabled
+       className="pl-btn"> to a button without disabled
+       Result: only this test fails (an enabled button exists)
+GREEN: git restore src/pages/Prevention.jsx
+
+-------------------------------------------------------------------
+9. Given a Remediation / Prevention page, then its menu item is shown as
+   active
+-------------------------------------------------------------------
+RED  : src/components/Layout.jsx -> NavLink className:
+       "nav-item" + (isActive ? " active" : "")  ->  "nav-item"
+       Result: this test fails (the item never gets "active"), together with
+       the Reports highlighted test
+GREEN: git restore src/components/Layout.jsx
+       Result: all 16 Layout tests pass
+
+===================================================================
+HOME (src/pages/Home.test.jsx, 21 tests, 13 of them new)
+===================================================================
+
+-------------------------------------------------------------------
+10. Given I click Fill from previous findings, then the latest scan URL is
+    in the box
+    Given I click it twice, then the URL is not repeated   (2 tests)
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> fillFromPrevious = () => {}
+       Result: 2 failed (the box stays empty)
+GREEN: git restore src/pages/Home.jsx
+
+-------------------------------------------------------------------
+11. Given the page, then the file picker accepts only .xlsx files
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> delete accept=".xlsx" on the file input
+       Result: only this test fails
+GREEN: git restore src/pages/Home.jsx
+
+-------------------------------------------------------------------
+12. Given I click Upload from Excel, then the file picker opens
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> delete onClick of the Upload from Excel button
+       Result: only this test fails (the picker is never opened)
+GREEN: git restore src/pages/Home.jsx
+
+-------------------------------------------------------------------
+13. Given an Excel file with 3 URLs, then all 3 are in the box
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> comment out addUrls(urls) in onFile
+       Result: 6 failed (nothing is added to the box)
+GREEN: git restore src/pages/Home.jsx
+
+-------------------------------------------------------------------
+14. Given a header row in the file, then the header is skipped
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> readUrlsFromExcel: replace the URL check with
+       t.length > 0
+       Result: only this test fails (the header is added)
+GREEN: git restore src/pages/Home.jsx
+
+-------------------------------------------------------------------
+15. Given an Excel file with 60 URLs, then all 60 are in the box
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> addUrls(urls.slice(0, 50))
+       Result: only this test fails (50 instead of 60)
+GREEN: git restore src/pages/Home.jsx
+
+-------------------------------------------------------------------
+16. Given the same URL twice in the file, then it is added once
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> readUrlsFromExcel: return urls (no Set)
+       Result: only this test fails (the URL appears twice)
+GREEN: git restore src/pages/Home.jsx
+
+-------------------------------------------------------------------
+17. Given a hyperlink cell, then the link address is used
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> asText body: String(v ?? "")
+       Result: only this test fails (the address is not read)
+GREEN: git restore src/pages/Home.jsx
+
+-------------------------------------------------------------------
+18. Given text already in the box, then the Excel URLs are added after it
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> addUrls: pages: [...new Set(list)].join(", ")
+       Result: only this test fails (the old text is lost)
+GREEN: git restore src/pages/Home.jsx
+
+-------------------------------------------------------------------
+19. Given a file that is not .xlsx, then a message shows and the box stays
+    empty
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> delete the .xlsx extension check in onFile
+       Result: only this test fails (wrong message)
+GREEN: git restore src/pages/Home.jsx
+
+-------------------------------------------------------------------
+20. Given an Excel file with no URLs, then a message shows
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> if (urls.length === 0)  ->  if (false)
+       Result: only this test fails (no message)
+GREEN: git restore src/pages/Home.jsx
+
+-------------------------------------------------------------------
+21. Given a .xlsx file that is not a real Excel file, then a message shows
+-------------------------------------------------------------------
+RED  : src/pages/Home.jsx -> catch { setNotice(...) }  ->  catch {}
+       Result: only this test fails (no message)
+GREEN: git restore src/pages/Home.jsx
+       Result: all 21 Home tests pass
+
+===================================================================
+Full suite after all changes: 87 passed, 0 failed
+AC4 (Upload from Excel, Fill from previous findings): covered by tests 10 to 21
+===================================================================

@@ -2,12 +2,14 @@
 // Pages read from here, so text and numbers can change without touching the page code.
 
 export const NAV_LINKS = [
-  { to: "/", label: "Home" },
-  { to: "/new-scan", label: "New scan" },
-  { to: "/reports", label: "Reports" },
-  { to: "/history", label: "History" },
-  { to: "/schedule", label: "Schedule" },
-  { to: "/settings", label: "Settings" },
+  { label: "Home", to: "/", icon: "home" },
+  { label: "New scan", to: "/new-scan", icon: "plus" },
+  { label: "Reports", to: "/reports", icon: "report" },
+  { label: "Remediation", to: "/remediation", icon: "shieldCheck" },
+  { label: "Prevention", to: "/prevention", icon: "shield" },
+  { label: "History", to: "/history", icon: "clock" },
+  { label: "Schedule", to: "/schedule", icon: "calendar" },
+  { label: "Settings", to: "/settings", icon: "gear" },
 ];
 
 export const HOME = {
@@ -70,3 +72,14 @@ export const SUMMARY_AI_PLACEHOLDER = {
   theme:
     "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
 };
+
+export const PLANNED_LABEL = "Planned for a later phase";
+
+export const SETTINGS_SECTIONS = [
+  { label: "Profile", to: "/settings/profile", icon: "user" },
+  { label: "Organisation", to: "/settings/organisation", icon: "building" },
+  { label: "Users and roles", to: "/settings/users-and-roles", icon: "users" },
+  { label: "Licence", to: "/settings/licence", icon: "file" },
+  { label: "Data and retention", to: "/settings/data-and-retention", icon: "database" },
+  { label: "Notifications", to: "/settings/notifications", icon: "bell" },
+];
