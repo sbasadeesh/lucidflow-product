@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test E2-03_tests/ac4-server-integration.test.js E2-03_tests/element_crop_test/element_crop_test.js E2-03_tests/full_page/full_page_test.js E2-03_tests/lazy_loaded_content_test/lazy_loaded_content_test.js E2-03_tests/scan_metrics_test/scan_metrices_test.js E2-06_tests/could_not_assess_test/could_not_assess_test.js E2-06_tests/http_status_test/http_status_test.js E2-06_tests/redirect_test/redirect_test.js"
   },
   "keywords": [],
   "author": "",
