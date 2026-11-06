@@ -17,6 +17,7 @@ export const HOME = {
   runLabel: "Run scan",
   recentTitle: "Recent scans",
   scanRoute: "/scan",
+  maxUrls: 50, // most page URLs in one scan
   modes: {
     pages: {
       label: "Page URLs",
