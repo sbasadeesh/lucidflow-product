@@ -47,3 +47,9 @@ export function parseEntries(text, mode) {
   }
   return items;
 }
+
+
+// Entries typed more than once (to be implemented)
+export function findRepeats() {
+  return [];
+}
