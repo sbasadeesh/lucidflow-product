@@ -1,10 +1,13 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import Home from "./Home.jsx";
 import ExcelJS from "exceljs";
-import { recentScans } from "../data.js";
+import { HOME } from "../config.js";
+import { buildReport, recentScans } from "../data.js";
+import { getScan } from "../scanStore.js";
+import { parseEntries } from "../urlUtils.js";
 
 function renderHome() {
   return render(
@@ -110,18 +113,19 @@ describe("Home: Fill from previous findings and Upload from Excel", () => {
   }
 
   // Fill from previous findings
-  it("Given I click Fill from previous findings, then the latest scan URL is in the box", () => {
+    it("Given I click Fill from previous findings, then the pages of the latest scan are in the box", () => {
     setup();
     press("Fill from previous findings");
-    expect(box().value).toContain(recentScans[0].domain);
+    const filled = box().value.split(",").map((s) => s.trim());
+    expect(filled).toEqual(recentScans[0].pages);
   });
 
-    it("Given I click Fill from previous findings twice, then the URL is not repeated", () => {
+  it("Given I click Fill from previous findings twice, then the pages are not repeated", () => {
     setup();
     press("Fill from previous findings");
     press("Fill from previous findings");
-    expect(box().value).toContain(recentScans[0].domain);
-    expect(box().value.split(",")).toHaveLength(1);
+    const filled = box().value.split(",").map((s) => s.trim());
+    expect(filled).toEqual(recentScans[0].pages);
   });
 
   // Upload from Excel
@@ -201,5 +205,113 @@ describe("Home: Fill from previous findings and Upload from Excel", () => {
     const { container } = setup();
     pick(container, Buffer.from("hello"));
     expect(await screen.findByText("This file could not be read.", {}, WAIT)).toBeTruthy();
+  });
+});
+
+describe("Home: page URL flow", () => {
+  const N = HOME.maxUrls;
+  const setup = () =>
+    render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>,
+    );
+  const box = () => screen.getByRole("textbox");
+  const type = (v) => fireEvent.change(box(), { target: { value: v } });
+  const runBtn = () => screen.getByRole("button", { name: "Run scan" });
+  const urls = (n, host = "a.com") => Array.from({ length: n }, (_, i) => `https://${host}/p${i}`);
+
+  beforeEach(() => sessionStorage.clear());
+
+  // AC1: chips with a count
+  it("Given URLs separated by new lines and commas, then each shows as a chip", () => {
+    const { container } = setup();
+    type("https://a.com/1\nhttps://a.com/2, https://a.com/3");
+    expect(container.querySelectorAll(".chip")).toHaveLength(3);
+  });
+
+  it("Given 3 valid URLs, then the count shows 3 pages added", () => {
+    setup();
+    type(urls(3).join("\n"));
+    expect(screen.getByText("3 pages added")).toBeTruthy();
+  });
+
+  it("Given I click x on a chip, then it is removed and the count drops", () => {
+    const { container } = setup();
+    type(urls(3).join("\n"));
+    fireEvent.click(screen.getAllByText("×")[0]);
+    expect(container.querySelectorAll(".chip")).toHaveLength(2);
+    expect(screen.getByText("2 pages added")).toBeTruthy();
+  });
+
+  // AC2: invalid or duplicate URL is flagged and left out
+  it("Given a valid and an invalid URL, then the invalid one is flagged with a message and the count is 1", () => {
+    const { container } = setup();
+    type("https://a.com/claims, notaurl");
+    expect(container.querySelectorAll(".chip.bad")).toHaveLength(1);
+    expect(screen.getByText("notaurl: Not a valid URL")).toBeTruthy();
+    expect(screen.getByText("1 page added")).toBeTruthy();
+  });
+
+  it("Given a valid and an invalid URL, then Run scan stays enabled for the valid one", () => {
+    setup();
+    type("https://a.com/claims, notaurl");
+    expect(runBtn().disabled).toBe(false);
+  });
+
+  it("Given the same URL twice, then it shows once and a message says the repeat was left out", () => {
+    const { container } = setup();
+    type("https://a.com/x, https://a.com/x");
+    expect(container.querySelectorAll(".chip")).toHaveLength(1);
+    expect(screen.getByText("https://a.com/x: Repeated, left out")).toBeTruthy();
+  });
+
+  // AC3: each page on its own, results under one ID
+  it("Given Run scan with 3 URLs, then the saved scan has the 3 pages as separate entries", () => {
+    setup();
+    type(urls(3).join("\n"));
+    fireEvent.click(runBtn());
+    expect(getScan().urls).toEqual(urls(3));
+  });
+
+  it("Given an invalid and a repeated URL, then only the valid page is saved for scanning", () => {
+    setup();
+    type("https://a.com/x, https://a.com/x, notaurl");
+    fireEvent.click(runBtn());
+    expect(getScan().urls).toEqual(["https://a.com/x"]);
+  });
+
+  it("Given 3 pages, then the report has one ID and each finding is for its own page", () => {
+    const report = buildReport({ mode: "pages", host: "a.com", urls: urls(3) });
+    expect(report.id).toBe("LF-A-2026-001");
+    expect(report.findings.map((f) => f.url)).toEqual(urls(3));
+  });
+
+  // AC4: limit N from config
+  it("Given the config, then the limit N is 50", () => {
+    expect(N).toBe(50);
+  });
+
+  it("Given exactly N URLs, then they are accepted", () => {
+    setup();
+    type(urls(N).join("\n"));
+    expect(screen.getByText(`${N} pages added`)).toBeTruthy();
+    expect(runBtn().disabled).toBe(false);
+  });
+
+  it("Given more than N URLs, then a message shows and Run scan is disabled", () => {
+    setup();
+    type(urls(N + 1).join("\n"));
+    expect(screen.getByText(/Too many URLs/)).toBeTruthy();
+    expect(runBtn().disabled).toBe(true);
+  });
+
+  // Fill from previous findings: recent scans must hold valid page URLs
+  it("Given the recent scans, then each lists page URLs that pass the validator", () => {
+    recentScans.forEach((s) => {
+      expect(Array.isArray(s.pages)).toBe(true);
+      expect(s.pages.length).toBeGreaterThan(0);
+      expect(parseEntries(s.pages.join(","), "pages").every((i) => i.ok)).toBe(true);
+    });
   });
 });

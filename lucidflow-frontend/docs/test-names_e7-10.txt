@@ -1,0 +1,112 @@
+E7-10 Page URL flow
+Run: npm run test:run -- src/pages/Home.test.jsx src/urlUtils.test.js
+
+Each RED below was run on the committed code. After each RED, git restore
+put the code back (working tree clean).
+
+===================================================================
+AC1: each URL is a removable chip with a count
+===================================================================
+
+1. Given URLs separated by new lines and commas, then each shows as a chip
+RED  : src/urlUtils.js -> split(/[\s,]+/) -> split(/,/)   (both places)
+       Result: 12 failed (the new line tests in Home and urlUtils)
+GREEN: git restore src/urlUtils.js
+
+2. Given 3 valid URLs, then the count shows "3 pages added"
+   (with an invalid URL the count is only for the valid ones)
+RED  : src/pages/Home.jsx -> {valid.length} page{ -> {items.length} page{
+       Result: 1 failed (count is 2 instead of 1 with an invalid URL)
+GREEN: git restore src/pages/Home.jsx
+
+3. Given I click x on a chip, then it is removed and the count drops
+RED  : src/pages/Home.jsx -> >x</button> -> ></button>  (button text removed)
+       Result: 1 failed
+GREEN: git restore src/pages/Home.jsx
+
+===================================================================
+AC2: invalid or duplicate URL is flagged and left out, with a message
+===================================================================
+
+4. Given a valid and an invalid URL, then the invalid one is flagged with a
+   message and the count is 1
+RED  : src/pages/Home.jsx -> {e.raw}: {e.error} -> {e.raw}  (message text removed)
+       Result: 2 failed (this test and "domain in Page URLs mode")
+GREEN: git restore src/pages/Home.jsx
+
+5. Given a valid and an invalid URL, then Run scan stays enabled
+   Given an invalid and a repeated URL, then only the valid page is saved
+RED  : src/pages/Home.jsx -> const canRun = items.length > 0 && errors.length === 0 && !tooMany
+       Result: 3 failed (Run scan disabled: these 2 tests and the count test)
+GREEN: git restore src/pages/Home.jsx
+
+6. Given the same URL twice, then it shows once and a message says the repeat
+   was left out
+RED  : src/pages/Home.jsx -> {r}: Repeated, left out -> {r}
+       Result: 1 failed
+GREEN: git restore src/pages/Home.jsx
+
+7. findRepeats: repeated entries / none / a.com/x same as https://a.com/x
+   (3 tests)
+RED  : src/urlUtils.js -> const key = item.url || raw.toLowerCase()
+       -> const key = raw.toLowerCase()
+       Result: 1 failed (a.com/x and https://a.com/x are not seen as the same)
+GREEN: git restore src/urlUtils.js
+
+===================================================================
+AC3: each page on its own, results under one ID
+===================================================================
+
+8. Given Run scan with 3 URLs, then the saved scan has the 3 pages as
+   separate entries
+RED  : src/pages/Home.jsx -> urls: mode === "pages" ? valid.map((i) => i.url) : [] -> urls: []
+       Result: 2 failed (this test and "only the valid page is saved")
+GREEN: git restore src/pages/Home.jsx
+
+9. Given 3 pages, then the report has one ID and each finding is for its own page
+RED  : src/data.js -> buildReport findings: url: ordered[i] -> url: ordered[0]
+       Result: 1 failed
+GREEN: git restore src/data.js
+
+===================================================================
+AC4: more than N URLs is rejected (N in config)
+===================================================================
+
+10. Given the config, then the limit N is 50
+RED  : src/config.js -> maxUrls: 50 -> maxUrls: 30
+       Result: 1 failed
+GREEN: git restore src/config.js
+
+11. Given exactly N URLs, then they are accepted
+RED  : src/pages/Home.jsx -> items.length > HOME.maxUrls -> items.length >= HOME.maxUrls
+       Result: 1 failed
+GREEN: git restore src/pages/Home.jsx
+
+12. Given more than N URLs, then a message shows and Run scan is disabled
+RED  : src/pages/Home.jsx -> const tooMany = ... -> const tooMany = false
+       Result: 1 failed
+GREEN: git restore src/pages/Home.jsx
+
+===================================================================
+Fill from previous findings (uses the pages of the latest scan)
+===================================================================
+
+13. Given I click Fill from previous findings, then the pages of the latest
+    scan are in the box   (2 tests: once, twice)
+RED  : src/pages/Home.jsx -> addUrls(recentScans[0].pages)
+       -> addUrls([`https://${recentScans[0].domain}`])   (old behaviour: a domain)
+       Result: 2 failed
+GREEN: git restore src/pages/Home.jsx
+
+14. Given the recent scans, then each lists page URLs that pass the validator
+RED  : src/data.js -> first page of the first scan becomes a domain
+       ("https://www.abcinsurance.example")
+       Result: 1 failed
+GREEN: git restore src/data.js
+       Result: all 46 tests pass
+
+===================================================================
+Full suite after all changes: 103 passed, 0 failed
+Not changed on purpose: report ID format (LF-TATAAIG-2026-001), scan engine,
+page-exists check (engine task)
+===================================================================

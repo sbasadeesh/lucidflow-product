@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseEntries } from "./urlUtils.js";
+import { findRepeats, parseEntries } from "./urlUtils.js";
 
 describe("parseEntries - Page URLs mode", () => {
   it("accepts a single page URL", () => {
@@ -53,5 +53,21 @@ describe("parseEntries - Whole domain mode", () => {
     const items = parseEntries("https://a.com, https://b.com", "domain");
     expect(items[0].ok).toBe(true);
     expect(items[1].ok).toBe(false);
+  });
+});
+
+describe("findRepeats", () => {
+  it("returns the entries that appear more than once", () => {
+    expect(findRepeats("https://a.com/x, https://a.com/y, https://a.com/x", "pages")).toEqual([
+      "https://a.com/x",
+    ]);
+  });
+
+  it("returns nothing when no entry is repeated", () => {
+    expect(findRepeats("https://a.com/x, https://a.com/y", "pages")).toEqual([]);
+  });
+
+  it("treats a.com/x and https://a.com/x as the same page", () => {
+    expect(findRepeats("https://a.com/x, a.com/x", "pages")).toEqual(["a.com/x"]);
   });
 });

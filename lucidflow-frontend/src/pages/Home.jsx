@@ -4,7 +4,8 @@ import Topbar from "../components/Topbar.jsx";
 import { HOME } from "../config.js";
 import { recentScans } from "../data.js";
 import { saveScan } from "../scanStore.js";
-import { parseEntries } from "../urlUtils.js";
+import { findRepeats, parseEntries } from "../urlUtils.js";
+
 
 
 // A cell can hold plain text or a hyperlink object
@@ -36,9 +37,12 @@ export default function Home() {
 
   const current = HOME.modes[mode];
   const text = texts[mode];
-  const items = parseEntries(text, mode);
+    const items = parseEntries(text, mode);
   const errors = items.filter((i) => !i.ok);
-  const canRun = items.length > 0 && errors.length === 0;
+  const valid = items.filter((i) => i.ok);
+  const repeats = [...new Set(findRepeats(text, mode))];
+  const tooMany = mode === "pages" && items.length > HOME.maxUrls;
+  const canRun = valid.length > 0 && !tooMany;
 
   const setText = (value) => setTexts({ ...texts, [mode]: value });
   const removeItem = (raw) =>
@@ -59,7 +63,7 @@ export default function Home() {
       return { ...t, pages: [...new Set([...have, ...list])].join(", ") };
     });
 
-  const fillFromPrevious = () => addUrls([`https://${recentScans[0].domain}`]);
+  const fillFromPrevious = () => addUrls(recentScans[0].pages);
 
   const onFile = async (e) => {
     const file = e.target.files[0];
@@ -82,11 +86,11 @@ export default function Home() {
     }
   };
 
-  const run = () => {
+   const run = () => {
     saveScan({
       mode,
-      host: items[0].host,
-      urls: mode === "pages" ? items.map((i) => i.url) : [],
+      host: valid[0].host,
+      urls: mode === "pages" ? valid.map((i) => i.url) : [],
     });
     navigate(HOME.scanRoute);
   };
@@ -145,14 +149,25 @@ export default function Home() {
             </div>
           )}
 
-          {errors.map((e) => (
+                    {errors.map((e) => (
             <p className="error" key={e.raw}>
               {e.raw}: {e.error}
             </p>
           ))}
+          {repeats.map((r) => (
+            <p className="error" key={r}>
+              {r}: Repeated, left out
+            </p>
+          ))}
+          {tooMany && (
+            <p className="error">
+              Too many URLs: {items.length} entered, the limit is {HOME.maxUrls}. Remove some and try
+              again.
+            </p>
+          )}
           {mode === "pages" && canRun && (
             <p className="muted">
-              {items.length} page{items.length > 1 ? "s" : ""} added
+              {valid.length} page{valid.length > 1 ? "s" : ""} added
             </p>
           )}
 
