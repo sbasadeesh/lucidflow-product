@@ -7,13 +7,17 @@
       "description": "Today's real case: Single Page URL, 1 finding.",
       "input": {
         "mode": "pages",
-        "urls": ["https://www.royalsundaram.in/claims"]
+        "urls": [
+          "https://www.royalsundaram.in/claims"
+        ]
       },
       "report": {
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": ["royalsundaram.in"],
+        "clients": [
+          "royalsundaram.in"
+        ],
         "scope": "royalsundaram.in (1 page)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
@@ -49,6 +53,7 @@
           "Observed": 0
         },
         "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "limitations": "This assessment is limited to the pages, states, and evidence included in the supplied scan data. Content or interactions outside that scope may not have been assessed. An absence of findings does not establish an absence of potential issues. Findings require human review and are not a legal determination.",
         "themes": [
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
           "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
@@ -96,8 +101,15 @@
       },
       "expected": {
         "renders_without_errors": true,
-        "total_pdf_pages": 5,
-        "page_order": ["cover", "summary", "finding-001", "cap-register-1", "about"],
+        "total_pdf_pages": 6,
+        "page_order": [
+          "cover",
+          "summary",
+          "finding-001",
+          "cap-register-1",
+          "limitations",
+          "about"
+        ],
         "finding_pages": 1,
         "cap_pages": 1,
         "high_critical": 0,
@@ -114,13 +126,17 @@
       "description": "3 findings on the one scanned page; MEDIUM and OBSERVED.",
       "input": {
         "mode": "pages",
-        "urls": ["https://www.royalsundaram.in/claims"]
+        "urls": [
+          "https://www.royalsundaram.in/claims"
+        ]
       },
       "report": {
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": ["royalsundaram.in"],
+        "clients": [
+          "royalsundaram.in"
+        ],
         "scope": "royalsundaram.in (1 page)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
@@ -164,6 +180,7 @@
           "Observed": 1
         },
         "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "limitations": "This assessment is limited to the pages, states, and evidence included in the supplied scan data. Content or interactions outside that scope may not have been assessed. An absence of findings does not establish an absence of potential issues. Findings require human review and are not a legal determination.",
         "themes": [
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
           "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
@@ -281,7 +298,7 @@
       },
       "expected": {
         "renders_without_errors": true,
-        "total_pdf_pages": 7,
+        "total_pdf_pages": 8,
         "page_order": [
           "cover",
           "summary",
@@ -289,6 +306,7 @@
           "finding-002",
           "finding-003",
           "cap-register-1",
+          "limitations",
           "about"
         ],
         "finding_pages": 3,
@@ -315,13 +333,17 @@
       "description": "8 findings; all 4 severities; 8 finding pages. CAP rows share pages by measured row height (2 CAP pages at the current capBodyMm).",
       "input": {
         "mode": "pages",
-        "urls": ["https://www.royalsundaram.in/claims"]
+        "urls": [
+          "https://www.royalsundaram.in/claims"
+        ]
       },
       "report": {
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": ["royalsundaram.in"],
+        "clients": [
+          "royalsundaram.in"
+        ],
         "scope": "royalsundaram.in (1 page)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
@@ -369,6 +391,7 @@
           "Observed": 2
         },
         "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "limitations": "This assessment is limited to the pages, states, and evidence included in the supplied scan data. Content or interactions outside that scope may not have been assessed. An absence of findings does not establish an absence of potential issues. Findings require human review and are not a legal determination.",
         "themes": [
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
           "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
@@ -661,7 +684,7 @@
       },
       "expected": {
         "renders_without_errors": true,
-        "total_pdf_pages": 13,
+        "total_pdf_pages": 14,
         "page_order": [
           "cover",
           "summary",
@@ -675,6 +698,7 @@
           "finding-008",
           "cap-register-1",
           "cap-register-2",
+          "limitations",
           "about"
         ],
         "finding_pages": 8,
@@ -705,13 +729,17 @@
       "description": "Page scanned, nothing found.",
       "input": {
         "mode": "pages",
-        "urls": ["https://www.royalsundaram.in/claims"]
+        "urls": [
+          "https://www.royalsundaram.in/claims"
+        ]
       },
       "report": {
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": ["royalsundaram.in"],
+        "clients": [
+          "royalsundaram.in"
+        ],
         "scope": "royalsundaram.in (1 page)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
@@ -742,6 +770,7 @@
           "Observed": 0
         },
         "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "limitations": "This assessment is limited to the pages, states, and evidence included in the supplied scan data. Content or interactions outside that scope may not have been assessed. An absence of findings does not establish an absence of potential issues. Findings require human review and are not a legal determination.",
         "themes": [
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
           "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
@@ -752,8 +781,13 @@
       },
       "expected": {
         "renders_without_errors": true,
-        "total_pdf_pages": 3,
-        "page_order": ["cover", "summary", "about"],
+        "total_pdf_pages": 4,
+        "page_order": [
+          "cover",
+          "summary",
+          "limitations",
+          "about"
+        ],
         "finding_pages": 0,
         "cap_pages": 0,
         "high_critical": 0,
@@ -766,13 +800,17 @@
       "description": "E7-01 criteria 2: every text field empty (posture, evidence, why, fix, root cause, action). Layout must still look right.",
       "input": {
         "mode": "pages",
-        "urls": ["https://www.royalsundaram.in/claims"]
+        "urls": [
+          "https://www.royalsundaram.in/claims"
+        ]
       },
       "report": {
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": ["royalsundaram.in"],
+        "clients": [
+          "royalsundaram.in"
+        ],
         "scope": "royalsundaram.in (1 page)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
@@ -808,7 +846,12 @@
           "Observed": 0
         },
         "posture": "",
-        "themes": ["", "", ""],
+        "limitations": "This assessment is limited to the pages, states, and evidence included in the supplied scan data. Content or interactions outside that scope may not have been assessed. An absence of findings does not establish an absence of potential issues. Findings require human review and are not a legal determination.",
+        "themes": [
+          "",
+          "",
+          ""
+        ],
         "findings": [
           {
             "id": "FINDING-001",
@@ -843,8 +886,15 @@
       },
       "expected": {
         "renders_without_errors": true,
-        "total_pdf_pages": 5,
-        "page_order": ["cover", "summary", "finding-001", "cap-register-1", "about"],
+        "total_pdf_pages": 6,
+        "page_order": [
+          "cover",
+          "summary",
+          "finding-001",
+          "cap-register-1",
+          "limitations",
+          "about"
+        ],
         "finding_pages": 1,
         "cap_pages": 1,
         "high_critical": 0,
@@ -869,7 +919,9 @@
         "title": "Dark Pattern Assessment Report",
         "tagline": "Automated Scanning. Continuous governance. Evidence-led findings.",
         "client": "royalsundaram.in",
-        "clients": ["royalsundaram.in"],
+        "clients": [
+          "royalsundaram.in"
+        ],
         "scope": "royalsundaram.in (1 page)",
         "id": "LF-ROYALSUNDARAM-2026-001",
         "version": "V1.0",
@@ -905,6 +957,7 @@
           "Observed": 0
         },
         "posture": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+        "limitations": "This assessment is limited to the pages, states, and evidence included in the supplied scan data. Content or interactions outside that scope may not have been assessed. An absence of findings does not establish an absence of potential issues. Findings require human review and are not a legal determination.",
         "themes": [
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
           "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
@@ -960,8 +1013,15 @@
       },
       "expected": {
         "renders_without_errors": true,
-        "total_pdf_pages": 5,
-        "page_order": ["cover", "summary", "finding-001", "cap-register-1", "about"],
+        "total_pdf_pages": 6,
+        "page_order": [
+          "cover",
+          "summary",
+          "finding-001",
+          "cap-register-1",
+          "limitations",
+          "about"
+        ],
         "finding_pages": 1,
         "cap_pages": 1,
         "high_critical": 0,
