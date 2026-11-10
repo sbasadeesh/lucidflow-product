@@ -59,6 +59,8 @@
           "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
           "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
         ],
+        "isDataAvailable": true,
+        "isDemo": false,
         "findings": [
           {
             "id": "FINDING-001",
@@ -186,6 +188,8 @@
           "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
           "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
         ],
+        "isDataAvailable": true,
+        "isDemo": false,
         "findings": [
           {
             "id": "FINDING-001",
@@ -397,6 +401,8 @@
           "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
           "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
         ],
+        "isDataAvailable": true,
+        "isDemo": false,
         "findings": [
           {
             "id": "FINDING-001",
@@ -776,6 +782,8 @@
           "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
           "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
         ],
+        "isDataAvailable": true,
+        "isDemo": false,
         "findings": [],
         "cap": []
       },
@@ -852,6 +860,8 @@
           "",
           ""
         ],
+        "isDataAvailable": true,
+        "isDemo": false,
         "findings": [
           {
             "id": "FINDING-001",
@@ -963,6 +973,8 @@
           "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
           "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla."
         ],
+        "isDataAvailable": true,
+        "isDemo": false,
         "findings": [
           {
             "id": "FINDING-001",

@@ -199,7 +199,7 @@ describe("Report layout against the mock payload", () => {
     const sheets = sheetsOf(container);
     const limitationsSheet = sheets.find(s => kindOf(s) === "limitations");
     expect(limitationsSheet).toBeTruthy();
-    expect(limitationsSheet).toHaveTextContent("Dark patterns can undermine");
+    expect(limitationsSheet).toHaveTextContent("This assessment is limited to");
     // Mock scenarios don't have states field, so scope won't show states in report
     // (This is tested in data.test.js)
   });
