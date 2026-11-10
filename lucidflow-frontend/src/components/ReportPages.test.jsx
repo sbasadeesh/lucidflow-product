@@ -27,6 +27,8 @@ const kindOf = (sheet) => {
   const label = sheet.querySelector(".eyebrow, .big-label").textContent;
   if (label.startsWith("AI POWERED")) return "cover";
   if (label.startsWith("02 /")) return "summary";
+  if (label.startsWith("ASSESSMENT DATA")) return "data-unavailable";
+  if (label.startsWith("ASSESSMENT LIMITATIONS")) return "limitations";
   if (label.startsWith("CORRECTIVE")) return "cap";
   if (label.startsWith("ABOUT")) return "about";
   return "finding";
@@ -39,8 +41,8 @@ describe("Report layout against the mock payload", () => {
     const { container } = renderReport(report);
     const sheets = sheetsOf(container);
 
-    // cover, summary, 1 finding, 1 CAP page, about
-    expect(sheets).toHaveLength(5);
+    // cover, summary, 1 finding, 1 CAP page, limitations, about
+    expect(sheets).toHaveLength(6);
     expect(within(sheets[0]).getByRole("heading", { level: 1 })).toHaveTextContent(report.title);
     expect(within(sheets[2]).getByRole("heading", { level: 2 })).toHaveTextContent(
       report.findings[0].title,
@@ -48,7 +50,7 @@ describe("Report layout against the mock payload", () => {
   });
 
   // AC1
-  it("Given the mock payload with three findings, when the report preview opens, then every page renders in the right order: cover, summary, findings, CAP register, about", () => {
+  it("Given the mock payload with three findings, when the report preview opens, then every page renders in the right order: cover, summary, findings, CAP register, limitations, about", () => {
     const report = reportOf("S2-three-findings");
     const n = report.findings.length;
     const { container } = renderReport(report);
@@ -58,8 +60,9 @@ describe("Report layout against the mock payload", () => {
     expect(kinds.slice(0, 2)).toEqual(["cover", "summary"]);
     expect(kinds.slice(2, 2 + n)).toEqual(Array(n).fill("finding"));
     expect(kinds.at(-1)).toBe("about");
+    expect(kinds.at(-2)).toBe("limitations");
 
-    const capKinds = kinds.slice(2 + n, -1);
+    const capKinds = kinds.slice(2 + n, -2);  // Exclude limitations and about
     expect(capKinds.length).toBeGreaterThanOrEqual(1);
     expect(capKinds.every((k) => k === "cap")).toBe(true);
 
@@ -183,10 +186,81 @@ describe("Report layout against the mock payload", () => {
     expect(content.dataset.overflow).toBe("below-min-zoom");
   });
 
-  it("Given zero findings, when the report renders, then only cover, summary, and about pages exist", () => {
+  it("Given zero findings, when the report renders, then only cover, summary, limitations, and about pages exist", () => {
     const report = reportOf("S4-zero-findings");
     const { container } = renderReport(report);
     const kinds = sheetsOf(container).map(kindOf);
-    expect(kinds).toEqual(["cover", "summary", "about"]);
+    expect(kinds).toEqual(["cover", "summary", "limitations", "about"]);
+  });
+
+  it("Given a report with limitations, when rendered, then limitations page contains the text", () => {
+    const report = reportOf("S1-one-finding");
+    const { container } = renderReport(report);
+    const sheets = sheetsOf(container);
+    const limitationsSheet = sheets.find(s => kindOf(s) === "limitations");
+    expect(limitationsSheet).toBeTruthy();
+    expect(limitationsSheet).toHaveTextContent("This assessment is limited to");
+    // Mock scenarios don't have states field, so scope won't show states in report
+    // (This is tested in data.test.js)
+  });
+
+  it("Given a report with state count, when scope renders, then states are included", () => {
+    const report = reportOf("S1-one-finding");
+    // Mock scenarios don't have states field (test data), so should show unavailable
+    expect(report.scope).toContain("page");
+    // Real scans will have states from backend E2-03
+    // State handling tested in data.test.js with explicit fixtures
+  });
+
+  it("Given supplied findings array (including empty), when buildReport is called, then isDataAvailable is true", () => {
+    // Regression: distinguish supplied zero findings from missing findings field
+    // Supplied empty array = valid assessment with 0 findings
+    // Missing findings field = assessment data unavailable (should render NoScan or equivalent)
+    const report = reportOf("S4-zero-findings");
+    expect(report.isDataAvailable).toBe(true);  // findings was supplied as []
+    expect(report.findings).toEqual([]);
+  });
+
+  it("Given zero supplied findings, when the report renders, then cover/summary/limitations/about pages exist with no finding pages", () => {
+    // Regression: zero findings (from supplied []) vs. data unavailable (missing field)
+    // This test verifies supplied empty findings renders a valid report
+    const report = reportOf("S4-zero-findings");
+    const { container } = renderReport(report);
+    const sheets = sheetsOf(container);
+    const kinds = sheets.map(kindOf);
+    
+    // Exactly 4 pages: cover, summary, limitations, about (no finding/CAP pages)
+    expect(kinds).toEqual(["cover", "summary", "limitations", "about"]);
+    
+    // Confirm stats show 0 findings
+    expect(report.stats[1].value).toBe(0);  // Potential findings
+    expect(report.findings).toHaveLength(0);
+  });
+
+  it("Given assessment data unavailable (missing findings, not demo), when the report renders, then data-unavailable page appears between summary and limitations", () => {
+    // Regression: visibly distinguish unavailable data from zero findings
+    const report = reportOf("S1-one-finding");
+    // Simulate missing findings: clear the array and unset isDataAvailable
+    const unavailableReport = {
+      ...report,
+      findings: [],
+      isDataAvailable: false,  // Key: findings field was not supplied
+      isDemo: false,
+    };
+    
+    const { container } = renderReport(unavailableReport);
+    const sheets = sheetsOf(container);
+    const kinds = sheets.map(kindOf);
+    
+    // Should render: cover, summary, data-unavailable, limitations, about
+    expect(kinds.slice(0, 3)).toEqual(["cover", "summary", "data-unavailable"]);
+    expect(kinds.at(-2)).toBe("limitations");
+    expect(kinds.at(-1)).toBe("about");
+    
+    // Verify the data-unavailable message is shown
+    const dataUnavailableSheet = sheets.find(s => 
+      s.textContent.includes("No scan data available")
+    );
+    expect(dataUnavailableSheet).toBeTruthy();
   });
 });

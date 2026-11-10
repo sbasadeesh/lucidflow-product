@@ -227,6 +227,26 @@ function Finding({ f }) {
   );
 }
 
+function Limitations({ r }) {
+  return (
+    <div className="limitations">
+      <p className="eyebrow">ASSESSMENT LIMITATIONS</p>
+      <h2 className="title">Scope and constraints</h2>
+      <p className="para">{r.limitations}</p>
+    </div>
+  );
+}
+
+function DataUnavailable() {
+  return (
+    <div className="data-unavailable">
+      <p className="eyebrow">ASSESSMENT DATA</p>
+      <h2 className="title">No scan data available</h2>
+      <p className="para">This report cannot be completed. Assessment data (findings, scope, or scan details) was not supplied or could not be retrieved. Please run a scan and provide complete scan results to generate a report.</p>
+    </div>
+  );
+}
+
 function About() {
   return (
     <div className="about">
@@ -317,13 +337,27 @@ function capPages(r) {
   return groups.map((g, i) => <CapRegister key={`cap-${i}`} rows={g} first={i === 0} />);
 }
 
-// Page order: cover, summary, one page per finding, CAP register, about + categories
+// Page order: cover, summary, one page per finding, CAP register, limitations, about + categories
+// If assessment data unavailable (no findings supplied and not demo): show data-unavailable page instead
 export function getPages(r) {
+  // If findings were not supplied and this is not demo output, render unavailable page
+  if (!r.isDataAvailable && !r.isDemo) {
+    return [
+      <Cover r={r} key="cover" />,
+      <Summary r={r} key="summary" />,
+      <DataUnavailable key="data-unavailable" />,
+      <Limitations r={r} key="limitations" />,
+      <About key="about" />,
+    ];
+  }
+  
+  // Normal case: supplied findings (including []) or demo mode
   return [
     <Cover r={r} key="cover" />,
     <Summary r={r} key="summary" />,
     ...r.findings.map((f) => <Finding f={f} key={f.id} />),
     ...capPages(r),
+    <Limitations r={r} key="limitations" />,
     <About key="about" />,
   ];
 }
