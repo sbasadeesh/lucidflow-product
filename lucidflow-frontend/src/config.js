@@ -46,3 +46,10 @@ export const REPORT = {
   maxFindings: 4,
   capRowsPerPage: 5,
 };
+
+// CAP Excel: Root cause and Corrective action are AI columns.
+// They show this placeholder text until the AI is connected.
+export const CAP_AI_PLACEHOLDER = {
+  rootCause: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  action: "Sed do eiusmod tempor incididunt ut labore et dolore.",
+};
