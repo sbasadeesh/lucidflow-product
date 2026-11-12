@@ -10,6 +10,12 @@ export const NAV_LINKS = [
   { to: "/settings", label: "Settings" },
 ];
 
+// Cautious wording policy: reports must contain "potential" and avoid "violation" or "non-compliant"
+export const WORDING = {
+  required: ["potential"],
+  forbidden: ["violation", "non-compliant"],
+};
+
 export const HOME = {
   title: "Start a scan",
   runLabel: "Run scan",
