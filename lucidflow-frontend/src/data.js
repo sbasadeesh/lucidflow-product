@@ -1,5 +1,5 @@
 import { padId, titleCase } from "./utils/format.js";
-import { REPORT } from "./config.js";
+import { REPORT, SEVERITY_ORDER } from "./config.js";
 
 export const recentScans = [
   {
@@ -172,6 +172,9 @@ export function buildReport(scan) {
     counts[name] = (counts[name] || 0) + 1;
   });
 
+  // E7-06: count findings by severity
+  const countSeverity = (...names) => findings.filter((f) => names.includes(f.severity)).length;
+
   const names =
     hosts.length > 1 ? `${hosts.slice(0, -1).join(", ")} and ${hosts[hosts.length - 1]}` : hosts[0];
 
@@ -197,11 +200,17 @@ export function buildReport(scan) {
     stats: [
       { value: assessed, label: "Pages / screens assessed" },
       { value: findings.length, label: "Potential findings" },
-      { value: findings.filter((f) => f.severity === "HIGH").length, label: "High / critical" },
+      { value: countSeverity("HIGH", "CRITICAL"), label: "High / critical" },
       { value: 0, label: "Revalidated closed" },
     ],
     distribution: Object.entries(counts).map(([name, count]) => ({ name, count })),
-    posture: `The assessment of ${names} identified dark-pattern concerns including forced action and nagging. These patterns influence how users interact with the journey, accept terms and provide personal information.`,
+    // E7-06: severity split, computed from findings
+    severitySplit: Object.fromEntries(
+      SEVERITY_ORDER.map((s) => [s, countSeverity(s.toUpperCase())]),
+    ),
+    // E7-06: AI text slots (empty until AI connected; Summary shows placeholder text)
+    posture: scan.posture ?? "",
+    themes: scan.themes ?? ["", "", ""],
     limitations: "This assessment is limited to the pages, states, and evidence included in the supplied scan data. Content or interactions outside that scope may not have been assessed. An absence of findings does not establish an absence of potential issues. Findings require human review and are not a legal determination.",
     findings,
     // Corrective action plan register (PDF + Excel)
