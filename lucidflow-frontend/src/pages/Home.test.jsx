@@ -93,7 +93,7 @@ describe("Home: Fill from previous findings and Upload from Excel", () => {
         <Home />
       </MemoryRouter>,
     );
-  const box = () => screen.getByRole("textbox");
+    const box = () => screen.getAllByRole("textbox")[0];
   const press = (name) => fireEvent.click(screen.getByRole("button", { name }));
   const WAIT = { timeout: 5000 };
 
@@ -216,7 +216,7 @@ describe("Home: page URL flow", () => {
         <Home />
       </MemoryRouter>,
     );
-  const box = () => screen.getByRole("textbox");
+  const box = () => screen.getAllByRole("textbox")[0];
   const type = (v) => fireEvent.change(box(), { target: { value: v } });
   const runBtn = () => screen.getByRole("button", { name: "Run scan" });
   const urls = (n, host = "a.com") => Array.from({ length: n }, (_, i) => `https://${host}/p${i}`);
@@ -313,5 +313,113 @@ describe("Home: page URL flow", () => {
       expect(s.pages.length).toBeGreaterThan(0);
       expect(parseEntries(s.pages.join(","), "pages").every((i) => i.ok)).toBe(true);
     });
+  });
+});
+
+describe("Home: journey order on Page URLs", () => {
+  const P = (n) => `https://a.com/p${n}`;
+  const setupJourney = () =>
+    render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>,
+    );
+  const typeUrls = (list) =>
+    fireEvent.change(screen.getAllByRole("textbox")[0], { target: { value: list.join("\n") } });
+  const order = (container) =>
+    [...container.querySelectorAll(".chip")].map((c) =>
+      c.textContent.replace(/^\d+/, "").replace(/×$/, ""),
+    );
+  const up = (i) => fireEvent.click(screen.getAllByRole("button", { name: "Move up" })[i]);
+  const down = (i) => fireEvent.click(screen.getAllByRole("button", { name: "Move down" })[i]);
+
+  beforeEach(() => sessionStorage.clear());
+
+  it("Given 3 URLs, then each page shows its order number 1, 2, 3", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    const nums = [...container.querySelectorAll(".cnum")].map((n) => n.textContent);
+    expect(nums).toEqual(["1", "2", "3"]);
+  });
+
+  it("Given 3 URLs, then the first Move up and the last Move down are disabled", () => {
+    setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    const ups = screen.getAllByRole("button", { name: "Move up" });
+    const downs = screen.getAllByRole("button", { name: "Move down" });
+    expect(ups.map((b) => b.disabled)).toEqual([true, false, false]);
+    expect(downs.map((b) => b.disabled)).toEqual([false, false, true]);
+  });
+
+  it("Given I click Move up on the 3rd page, then it becomes the 2nd", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    up(2);
+    expect(order(container)).toEqual([P(1), P(3), P(2)]);
+    expect(screen.getAllByRole("textbox")[0].value).toBe(`${P(1)}, ${P(3)}, ${P(2)}`);
+  });
+
+  it("Given I click Move down on the 1st page, then it becomes the 2nd", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    down(0);
+    expect(order(container)).toEqual([P(2), P(1), P(3)]);
+  });
+
+  it("Given I move a page, then the count stays the same and no page is lost", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    up(1);
+    expect(screen.getByText("3 pages added")).toBeTruthy();
+    expect([...order(container)].sort()).toEqual([P(1), P(2), P(3)]);
+  });
+
+  it("Given I remove the middle page, then 2 pages stay and the numbers are 1, 2", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    fireEvent.click(screen.getAllByText("×")[1]);
+    expect(order(container)).toEqual([P(1), P(3)]);
+    const nums = [...container.querySelectorAll(".cnum")].map((n) => n.textContent);
+    expect(nums).toEqual(["1", "2"]);
+    expect(screen.getByText("2 pages added")).toBeTruthy();
+  });
+
+  it("Given the order is changed, then an invalid entry still shows its message", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), "notaurl"]);
+    up(1);
+    expect(order(container)).toEqual(["notaurl", P(1)]);
+    expect(screen.getByText("notaurl: Not a valid URL")).toBeTruthy();
+    expect(screen.getByText("1 page added")).toBeTruthy();
+  });
+
+  it("Given Page URLs, then the Home page URL is disabled with a planned label", () => {
+    setupJourney();
+    expect(screen.getByLabelText("Home page URL").disabled).toBe(true);
+    expect(screen.getByText("Planned for a later phase")).toBeTruthy();
+  });
+
+  it("Given Whole domain, then there are no arrows and no Home page URL", () => {
+    setupJourney();
+    typeUrls([P(1), P(2)]);
+    fireEvent.click(screen.getByRole("button", { name: "Whole domain" }));
+    expect(screen.queryAllByRole("button", { name: "Move up" })).toHaveLength(0);
+    expect(screen.queryAllByRole("button", { name: "Move down" })).toHaveLength(0);
+    expect(screen.queryByLabelText("Home page URL")).toBeNull();
+  });
+
+  it("Given I reorder and click Run scan, then the saved scan keeps the new order", () => {
+    setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    up(2);
+    fireEvent.click(screen.getByRole("button", { name: "Run scan" }));
+    const saved = JSON.parse(sessionStorage.getItem("lucidflow-scan"));
+    expect(saved.urls).toEqual([P(1), P(3), P(2)]);
+  });
+
+  it("Given 2 or more pages, then a note says pages are scanned in the order shown", () => {
+    setupJourney();
+    typeUrls([P(1), P(2)]);
+    expect(screen.getByText(/scanned in the order shown/i)).toBeTruthy();
   });
 });
