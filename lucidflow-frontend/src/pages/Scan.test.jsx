@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Scan from "./Scan.jsx";
@@ -109,5 +109,62 @@ describe("Scan: discovery preview for Whole domain", () => {
     save({ mode: "pages", host: "a.com", urls: URLS });
     show();
     expect(screen.queryByText("Preview: live discovery arrives in P1")).toBeNull();
+  });
+});
+describe("Scan: one scanning screen for every mode", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    sessionStorage.clear();
+  });
+  afterEach(() => vi.useRealTimers());
+
+  const card = (container) => container.querySelector(".scan-card").textContent;
+
+  it("Given a list of pages, then progress, page count, current URL and findings show", () => {
+    save({ mode: "pages", host: "a.com", urls: URLS });
+    const { container } = show();
+    expect(screen.getByRole("heading", { name: "Scanning", level: 2 })).toBeTruthy();
+    expect(container.querySelector(".ring")).toBeTruthy();
+    expect(screen.getByText("Page 1 of 3")).toBeTruthy();
+    expect(card(container)).toContain(URLS[0]);
+    expect(card(container)).toContain("Potential dark patterns found so far: 0");
+  });
+
+  it("Given the scan moves on, then the page count and the current URL move on", () => {
+    save({ mode: "pages", host: "a.com", urls: URLS });
+    const { container } = show();
+        act(() => vi.advanceTimersByTime(TICK * 2));
+    expect(screen.getByText("Page 2 of 3")).toBeTruthy();
+    expect(card(container)).toContain(URLS[1]);
+    expect(Number(container.querySelector(".ring").style.getPropertyValue("--p"))).toBeGreaterThan(0);
+  });
+
+  it("Given all pages are scanned, then the findings so far are more than 0", () => {
+    save({ mode: "pages", host: "a.com", urls: URLS });
+    const { container } = show();
+    act(() => vi.advanceTimersByTime(TICK * 3));
+    expect(card(container)).toMatch(/found so far: [1-9]/);
+  });
+
+  it("Given Whole domain after discovery, then the same screen shows page count, URL and findings", () => {
+    save({ mode: "domain", host: "a.com", urls: [] });
+    const { container } = show();
+    fireEvent.click(screen.getByRole("button", { name: "Continue to report" }));
+    expect(screen.getByRole("heading", { name: "Scanning", level: 2 })).toBeTruthy();
+    expect(screen.getByText(`Page 1 of ${SCAN.domainPages}`)).toBeTruthy();
+    expect(card(container)).toContain("https://a.com");
+    expect(card(container)).toContain("Potential dark patterns found so far:");
+  });
+
+  it("Given one page, then no state map shows", () => {
+    save({ mode: "pages", host: "a.com", urls: [URLS[0]] });
+    show();
+    expect(screen.queryByLabelText("State map")).toBeNull();
+  });
+
+  it("Given two pages, then the state map shows", () => {
+    save({ mode: "pages", host: "a.com", urls: [URLS[0], URLS[1]] });
+    show();
+    expect(screen.getByLabelText("State map")).toBeTruthy();
   });
 });
