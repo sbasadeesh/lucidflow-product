@@ -412,21 +412,21 @@ test("E2-07-REAL-3: Payment wall triggers guard stop", async (t) => {
     console.log(`  ✓ Fixture-side: No protected form interactions recorded`);
 });
 
-test("E2-07-REAL-4: Engine reaching payment form - guard blocks immediately", async (t) => {
-    console.log("\n[TEST 4] Engine reaching payment form...");
+test("E2-07-REAL-4: Safe page transitioning to payment wall", async (t) => {
+    console.log("\n[TEST 4] Safe → payment transition...");
     
-    // Engine navigates/explores and reaches checkout (payment form).
-    // Guard MUST block before ANY payment field fill.
-    // This tests the critical transition: engine ready → encounters payment guard → blocked.
-    const testUrl = `${fixtureUrl}/checkout`;
+    // Engine MUST navigate from safe page through intermediate to payment form.
+    // Guard MUST block payment form before ANY payment field fill.
+    // This is a genuine transition test, not a direct-load.
+    const testUrl = `${fixtureUrl}/intermediate`;
     const payload = {
         url: testUrl,
         selector: "body"
     };
     
     console.log(`  Request: POST ${engineUrl}/api/screenshot`);
-    console.log(`  Target: ${testUrl} (payment form - direct test of transition scenario)`);
-    console.log(`  Scenario: Engine reaches payment wall → guard blocks before form access`);
+    console.log(`  Start: ${testUrl} (intermediate page linking to /checkout)`);
+    console.log(`  Scenario: Engine explores and navigates to payment form`);
     
     let response;
     try {
@@ -438,21 +438,22 @@ test("E2-07-REAL-4: Engine reaching payment form - guard blocks immediately", as
     
     assert.equal(response.status, 200, "HTTP status should be 200");
     
-    // REQUIRE blocked status (engine reaching payment MUST trigger guard)
+    // REQUIRE blocked status (engine MUST reach and be blocked by payment guard)
     assert.equal(
         response.body.status,
         "blocked",
-        `Status must be 'blocked' (engine reaching payment form must be blocked). Got: ${response.body.status}`
+        `Status must be 'blocked' (engine must navigate to and be blocked by payment form). Got: ${response.body.status}`
     );
-    assert.equal(response.body.reason, "PAYMENT_REQUIRED", "Guard reason must be PAYMENT_REQUIRED");
+    assert.equal(response.body.reason, "PAYMENT_REQUIRED", "Guard reason must be PAYMENT_REQUIRED (engine reached payment)");
     
     // Confirm: NO payment fields should be filled
     assert.equal(response.body.fieldsFilled, 0, "Zero payment fields filled (guard before form access)");
-    assert.equal(response.body.interactions, 0, "Zero interactions (guard blocked immediately)");
+    assert.equal(response.body.interactions, 0, "Zero interactions during payment form");
     
-    console.log(`  ✓ Status: "blocked"`);
+    console.log(`  ✓ Engine navigated from ${testUrl} to /checkout`);
+    console.log(`  ✓ Status: "blocked" (guard triggered on payment form)`);
     console.log(`  ✓ Reason: "PAYMENT_REQUIRED"`);
-    console.log(`  ✓ Interactions: ${response.body.interactions} (zero - guard stopped immediately)`);
+    console.log(`  ✓ Interactions: ${response.body.interactions} (zero - guard blocked immediately)`);
     console.log(`  ✓ Payment fields filled: 0 (no cardNumber, expiry, or cvv touched)`);
 });
 

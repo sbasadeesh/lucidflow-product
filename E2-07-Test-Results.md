@@ -335,4 +335,75 @@ Exit Code: 0
 
 ## Unresolved Failures
 
-**None.** All 4 review items fixed. All tests pass (50/50). Original source never modified during mutations. Regression suite clean (39/39 pass).
+**UNRESOLVED-1: Transition Test (Test 4) - Engine Does Not Navigate to Payment**
+
+**Status:** BLOCKED  
+**Issue:** Test E2-07-REAL-4 requires engine to navigate from /intermediate to /checkout and be blocked by PAYMENT_REQUIRED guard. Engine currently returns "completed" instead of "blocked", indicating it did not follow the /checkout link.
+
+**Root Cause:** Engine's link-following logic does not reliably navigate to all available links. The fixture provides a clear anchor tag (`<a href="/checkout">`) but the engine exploration completes without visiting it.
+
+**Evidence:**  
+- Test URL: `${fixtureUrl}/intermediate`
+- Fixture response: Intermediate page with clear link to `/checkout`
+- Expected: status === "blocked", reason === "PAYMENT_REQUIRED"
+- Actual: status === "completed"
+
+**Commands Run:**
+```
+node --test 'E2-07_tests\real_endpoint_test.js'
+Exit Code: 1 (FAILED)
+Test 4 failure: Status must be 'blocked' (engine must navigate to and be blocked by payment form). Got: completed
+```
+
+**Fix Required:** Either (a) engine must be enhanced to follow more links, or (b) requirement must be relaxed to test the direct /checkout path instead of transition. Currently, transition test cannot pass with engine's current link-following behavior.
+
+---
+
+**UNRESOLVED-2: Mutation Behavioral Execution - Engine Server Startup Fails**
+
+**Status:** BLOCKED  
+**Issue:** Mutation tests require spawning isolated engine instances (one with guard disabled, one with guard restored) to execute behavioral tests. Engine server (`node server.js`) fails to start or accept connections when spawned from the test harness.
+
+**Root Cause:** When `spawn("node", [mutatedServerPath], { env: { PORT: port } })` is called, the server process does not successfully bind to the specified port or become ready within the timeout window. Connection attempts result in `ECONNREFUSED`.
+
+**Evidence:**  
+```
+[MUTATION-1] Starting mutated engine on port 53897...
+Error: connect ECONNREFUSED 127.0.0.1:53897
+(after 8000ms startup timeout)
+
+[MUTATION-2] Starting restored engine on port 58586...
+Error: connect ECONNREFUSED 127.0.0.1:58586
+(after 8000ms startup timeout)
+```
+
+**Commands Run:**
+```
+node --test 'E2-07_tests\mutation_test.js'
+Exit Code: 1 (FAILED)
+MUTATION-1 FAILED: Engine request failed: connect ECONNREFUSED 127.0.0.1:53897
+MUTATION-2 FAILED: Engine request failed: connect ECONNREFUSED 127.0.0.1:58586
+MUTATION-3 PASSED: Original source unchanged (isolation confirmed)
+```
+
+**Fix Required:** Server startup in spawned child process environment needs debugging. Possible causes:
+- Server requires additional initialization or dependencies not available in subprocess
+- Port may not be available or writable from test subprocess
+- Server startup logic may have prerequisites not met in isolated environment
+
+Cannot proceed with behavioral mutation execution until engine server spawn works reliably.
+
+---
+
+**Test Summary with Unresolved Items**
+
+| Test Suite | Tests | Pass | Fail | Status |
+|---|---|---|---|---|
+| Focused Units | 2 | 2 | 0 | ✅ |
+| Real Endpoint | 6 | 5 | 1 | ⚠️ Test 4 navigation not triggered |
+| Mutation Behavior | 3 | 1 | 2 | ⚠️ Engine spawn fails |
+| Mutation Isolation | 3 | 3 | 0 | ✅ (verification only, no execution) |
+| Regression | 39 | 39 | 0 | ✅ |
+| **TOTAL** | **53** | **50** | **3** | **⚠️ 2 items blocked** |
+
+---
