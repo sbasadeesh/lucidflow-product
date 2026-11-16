@@ -1,0 +1,49 @@
+E7-12 Whole-domain flow (discovery stubbed): test names with pass and fail conditions
+Files: src/pages/Home.test.jsx, src/pages/Scan.test.jsx
+
+RED before code = test fails because the feature does not exist.
+
+A. Home.test.jsx: "Home: Discover pages button"
+
+A1. Given Whole domain, then the button says Discover pages
+    PASS when: "Discover pages" button is shown and "Run scan" is not
+    FAIL when: button still says Run scan on Whole domain
+
+A2. Given Page URLs, then the button still says Run scan
+    PASS when: "Run scan" is shown and "Discover pages" is not
+    FAIL when: Page URLs button changes to Discover pages
+
+A3. Given a page URL in Whole domain mode, then Discover pages stays disabled (existing test, renamed)
+    PASS when: Discover pages button is disabled for a page URL
+    FAIL when: the button is enabled for a page URL
+
+B. Scan.test.jsx: "Scan: discovery preview for Whole domain"
+
+B1. Given a domain, then the preview label shows
+    PASS when: "Preview: live discovery arrives in P1" is visible
+    FAIL when: label missing
+
+B2. Given a domain, then the counts show
+    PASS when: Pages found, Pages checked, Templates identified are visible
+    FAIL when: any count missing
+
+B3. Given a domain, then a page tree shows the host and its branches
+    PASS when: tree shows the host, /health-insurance and /motor-insurance
+    FAIL when: no tree, or the host or a branch is missing
+
+B4. Given a domain, then the URL table has a row for each sample URL
+    PASS when: the table has 8 rows
+    FAIL when: no table, or a different row count
+
+B5. Given a domain, then the URL table shows the full URL with the host
+    PASS when: "https://a.com/claims" is visible
+    FAIL when: only the path shows, or the host is wrong
+
+B6. Given a list of pages, then no preview label shows
+    PASS when: no preview label on a Page URLs scan
+    FAIL when: the preview label shows for a Page URLs scan
+
+Totals
+New tests: 2 + 6 = 8 (plus 1 existing test renamed)
+RED before code: [N failed | M passed (T)]
+GREEN: [N passed]
