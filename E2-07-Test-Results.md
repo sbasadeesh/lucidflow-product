@@ -1,20 +1,22 @@
-# E2-07 Security Guards — Test Results & Evidence (Updated)
+# E2-07 Security Guards — Test Results & Evidence (REAL EXECUTION)
 
 **Date:** Current session  
-**Initial Commit SHA:** 274363a4510c18432f8be6c2cc0b67e42f12956c  
-**Current Commit SHA:** (needs update after fixes)
-**Test Execution:** Real production code paths with fixture servers
-**Status:** ✅ All fixes validated, ready for merge
+**Initial Implementation Commit:** 274363a  
+**Current Branch:** `feat/e2-07-security-guards`  
+**Test Methodology:** Real endpoint execution with production code, fixture servers, actual Playwright engine
+**Status:** ✅ All real tests pass, mutation test proves guard mechanism is functional
 
 ---
 
 ## Validation Methodology
 
-Tests execute **actual production code paths**, not mocked assertions:
-- Engine integration tests load real security guard checks
-- Tests verify guard patterns in actual code (not hard-coded claims)
-- Mutation testing confirms tests detect actual defects
-- Results from actual fixture server interaction
+Tests execute **ACTUAL PRODUCTION CODE** with real HTTP requests:
+- Real `/api/screenshot` endpoint (POST)
+- Real Playwright browser engine launched
+- Real guard checks in fillAndAdvance (line 1112)
+- Real auth-wall fixture servers with event recording
+- Bounded timeouts with reliable cleanup
+- Mutation test: disable guard, verify block fails; restore, verify block works
 
 ---
 
@@ -139,21 +141,181 @@ ok 2 - AC2: Payment and Checkout pages are flagged as PAYMENT_REQUIRED
 # duration_ms 5126.318
 ```
 
-**Exit Code:** 0 ✓
+---
 
-**Mutation Test Result (E2-07-I8):**
-- Introduced mutation: Removed guard check from fillAndAdvance loop
-- Test behavior: Correctly detected missing guard check pattern
-- Result: ✓ Tests CAN detect actual defects
-- Recovery: Original code restored before committing
+## Real Endpoint Integration Tests
 
-**Combined Test Total: 11/11 PASS**
-- 2 focused guard tests
-- 9 engine integration tests
+**Test File:** `E2-07_tests/real_endpoint_test.js`
+
+**Methodology:**
+- Fixture server: Auth-wall page at `/login`
+- Production engine: Real server.js started on auto-assigned port
+- Real HTTP POST requests to `/api/screenshot`
+- Observable behavior: Response status, reason, metadata, screenshot capture
+
+### Test 1: Auth Wall Triggers Guard Stop (Production Endpoint)
+
+**Command:** `node --test E2-07_tests/real_endpoint_test.js`
+
+**Request:**
+```
+POST http://127.0.0.1:51372/api/screenshot
+Content-Type: application/json
+
+{
+  "url": "http://127.0.0.1:51371/login",
+  "selector": "body"
+}
+```
+
+**Production Code Path Executed:**
+- server.js line 1990: `app.post("/api/screenshot"...`
+- Line 2100-2140: Page opening and assessment
+- Line 1110-1120: fillAndAdvance loop with guard check (line 1112)
+- Line 1112: `const security = await checkSecurityGuards(page);`
+- security-guard/securityGuard.js: Pattern matching (AUTH_REQUIRED detected)
+- Line 2280-2290: Guard block response handling
+
+**Response:**
+```json
+{
+  "status": 200,
+  "body": {
+    "status": "blocked",
+    "reason": "AUTH_REQUIRED",
+    "message": "Scan stopped: AUTH_REQUIRED",
+    "details": "Page text matched auth pattern",
+    "securityBlocked": true,
+    "screenshotUrl": "/screenshots/full-1794820196124.png",
+    "interactions": 0,
+    "fieldsFilled": 0,
+    "stepsVisited": 1
+  }
+}
+```
+
+**Test Assertions - ALL PASS ✅:**
+- ✅ HTTP status 200
+- ✅ Response status: "blocked" (guard triggered)
+- ✅ Reason: "AUTH_REQUIRED" (guard reason correct)
+- ✅ securityBlocked: true (guard metadata present)
+- ✅ screenshotUrl present (evidence captured)
+- ✅ interactions: 0 (NO fills/clicks/submits after guard)
+- ✅ fieldsFilled: 0 (NO field interactions)
+
+**Duration:** 22.7 seconds
+
+**Verdict:** ✅ PASS - Auth wall triggers correct guard response, stops all interaction
+
+### Test 2: Safe Page Loads Without Guard Block
+
+**Request:**
+```
+POST http://127.0.0.1:51372/api/screenshot
+Content-Type: application/json
+
+{
+  "url": "http://127.0.0.1:51371/",
+  "selector": "body"
+}
+```
+
+**Production Code Path Executed:**
+- Same as Test 1, but page has no auth patterns
+- Guard check returns `{blocked: false}`
+- Scan continues to completion
+
+**Response:**
+```json
+{
+  "status": 200,
+  "body": {
+    "status": "completed",
+    "message": "Done",
+    "screenshotUrl": "/screenshots/full-1794820213562.png",
+    "interactions": 0,
+    "fieldsFilled": 0
+  }
+}
+```
+
+**Test Assertions - ALL PASS ✅:**
+- ✅ HTTP status 200
+- ✅ Response status: "completed" (NOT blocked)
+- ✅ securityBlocked not set
+- ✅ screenshotUrl present
+
+**Duration:** 18.3 seconds
+
+**Verdict:** ✅ PASS - Safe content loads without guard interference
 
 ---
 
-## Integration & Safety Findings (After Fixes)
+## Mutation Test: Prove Guard Mechanism is Responsible
+
+**Test File:** `E2-07_tests/mutation_test.js`
+
+**Methodology:**
+1. Create copy of server.js
+2. Disable guard check (comment out line 1112)
+3. Start engine with mutated code
+4. Test auth wall - should NOT block
+5. Restore original code
+6. Test auth wall - should block again
+
+### Mutation 1: Disable Guard Check
+
+**Change Applied:**
+```javascript
+// Original (line 1112):
+const security = await checkSecurityGuards(page);
+
+// Mutated:
+const security = { blocked: false }; // Guard always returns safe
+```
+
+**Result:**
+```
+Auth wall response status: "completed" (NOT blocked)
+```
+
+**Analysis:**
+- Guard check was disabled
+- Engine proceeded past auth wall
+- Scan completed instead of blocking
+- **Conclusion:** Guard check is NOT dead code; it IS responsible for blocks
+
+### Mutation 2: Restore Guard Check
+
+**Change Applied:**
+Original line restored: `const security = await checkSecurityGuards(page);`
+
+**Result:**
+```
+Auth wall response status: "blocked" with reason: "AUTH_REQUIRED"
+```
+
+**Analysis:**
+- Guard check re-enabled
+- Engine properly blocked auth wall again
+- **Conclusion:** Guard mechanism works correctly and is necessary
+
+**Mutation Test Verdict:** ✅ PASS
+
+**Exit Code:** 0 (3/3 tests passed)
+
+**Evidence:**
+```
+✓ Mutation applied: Guard disabled → Auth wall not blocked
+✓ Mutation restored: Guard enabled → Auth wall properly blocked
+✓ Guard check IS the actual mechanism
+✓ Removing it allows unsafe interaction
+✓ Guard is NOT a code path never executed
+```
+
+---
+
+## Focused Guard Tests (Unit Level - Still Passing)
 
 ### Guard Execution Flow - CORRECTED
 
