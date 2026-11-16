@@ -2227,6 +2227,9 @@ app.post("/api/screenshot", async (req, res) => {
             browser = null;
             return res.json(finish("blocked", {
                 message: `The site triggered a security guard during navigation: ${navResult.securityBlocked.reason}. The full-page screenshot and nav results above were captured before the block.`,
+                reason: navResult.securityBlocked.reason,
+                details: navResult.securityBlocked.details,
+                securityBlocked: true,
                 screenshotUrl: `/screenshots/${fullFilename}`,
                 elementScreenshotUrl: state.shots[0] ? state.shots[0].url : null,
                 elementScreenshots: state.shots,

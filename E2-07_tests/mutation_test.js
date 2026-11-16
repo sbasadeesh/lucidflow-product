@@ -1,5 +1,9 @@
 /**
  * E2-07 Mutation Test: Prove Guard Mechanism is Actually Responsible
+ * 
+ * Executes in ISOLATED WORKTREE to prevent caller source modification.
+ * Mutation 1: Disable guard → test fails (auth wall not blocked)
+ * Mutation 2: Restore → test passes (auth wall properly blocked)
  */
 
 const test = require("node:test");
