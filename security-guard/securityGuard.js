@@ -2,7 +2,13 @@ const config = require("./guard.config");
 
 async function checkSecurityGuards(page) {
     const currentUrl = page.url();
-    const pageText = await page.evaluate(() => document.body ? document.body.innerText : "").catch(() => "");
+    let pageText;
+    try {
+        pageText = await page.evaluate(() => document.body ? document.body.innerText : "");
+    } catch (e) {
+        // Text inspection failure - treat as an error state, not safe to continue
+        return { blocked: true, reason: "INSPECTION_FAILED", details: `Failed to inspect page content: ${String(e.message).split("\n")[0]}` };
+    }
 
     // 1. Check Auth Guards (Login, OTP, CAPTCHA)
     for (const pattern of config.authUrlPatterns) {

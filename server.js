@@ -1101,15 +1101,14 @@ async function saveRevealedShot(page, anchor, label, state, record) {
 async function fillAndAdvance(page, guard, stats, record) {
     let sensitive = null;
 
-    // --- E2-07: Check Security Guards ---
-    const security = await checkSecurityGuards(page);
-    if (security.blocked) {
-        record(`Security Guard Triggered: ${security.reason} (${security.details}) -> stopping.`);
-        return { sensitive: null, securityBlocked: security };
-    }
-    // ------------------------------------
-
     for (let step = 0; step < MAX_STEPS; step++) {
+        // --- E2-07: Check Security Guards on EACH step ---
+        const security = await checkSecurityGuards(page);
+        if (security.blocked) {
+            record(`Security Guard Triggered: ${security.reason} (${security.details}) -> stopping.`);
+            return { sensitive: null, securityBlocked: security };
+        }
+        // ------------------------------------
         const closed = await clearPopups(page).catch(() => 0);
         stats.interactions += closed;
         stats.popupsHandled += closed;
@@ -1175,20 +1174,10 @@ async function revealCheck({ page, guard, state, stats, record, before, label })
 
     const { sensitive, securityBlocked } = await fillAndAdvance(page, guard, stats, record);
 
-    // --- E2-07: If guard blocked, take a screenshot and stop ---
+    // --- E2-07: If guard blocked, propagate the blocked result to the caller ---
     if (securityBlocked) {
-        guard.on = false;
-        await browser.close();
-        browser = null;
-        return res.json(finish("not_assessed", {
-            message: `Scan stopped: ${securityBlocked.reason}`,
-            reason: securityBlocked.reason,
-            details: securityBlocked.details,
-            screenshotUrl: `/screenshots/${fullFilename}`,
-            elementScreenshots: state.shots,
-            stoppedBeforeSensitiveField: true,
-            securityBlocked: true
-        }));
+        record(`${label}: Security guard triggered: ${securityBlocked.reason} (${securityBlocked.details})`);
+        return { blocked: true, securityBlocked };
     }
 
     if (sensitive) {
@@ -1280,6 +1269,10 @@ async function explorePass({ page, kind, title, maxItems, scan, guard, state, st
         const handled = await revealCheck({
             page, guard, state, stats, record, before, label: `${title}: ${next.text}`,
         });
+        if (handled && handled.blocked) {
+            // Guard was triggered, propagate up
+            return { blocked: true, securityBlocked: handled.securityBlocked };
+        }
         if (!handled) record(`${title} ${n}: opened, URL unchanged, no fields found`);
 
         await closePanel(page);
@@ -1467,6 +1460,11 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
                 const handled = await revealCheck({
                     page, guard, state, stats, record, before: beforeFields, label: `Nav: ${next.text}`,
                 });
+                if (handled && handled.blocked) {
+                    // Guard was triggered, stop navigation pass
+                    record(`Security guard triggered during nav pass: ${handled.securityBlocked.reason}`);
+                    return { blocked: true, securityBlocked: handled.securityBlocked };
+                }
                 if (!handled) record(`Nav ${n}: URL unchanged, no dropdown links or fields found`);
                 navReport.push({ menu: next.text, item: next.text, result: "URL unchanged", url: page.url() });
                 await closePanel(page);
@@ -1529,6 +1527,12 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
             const handled = await revealCheck({
                 page, guard, state, stats, record, before: fieldsBefore, label: `Nav: ${sub.text}`,
             });
+            if (handled && handled.blocked) {
+                // Guard was triggered, stop nav pass
+                record(`Security guard triggered during nested nav: ${handled.securityBlocked.reason}`);
+                await closePanel(page);
+                return { blocked: true, securityBlocked: handled.securityBlocked };
+            }
             if (handled) {
                 await closePanel(page);
                 topPos = (await reopenTop(next.text, "hover")) || topPos;
