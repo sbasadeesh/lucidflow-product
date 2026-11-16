@@ -17,7 +17,7 @@ export default function Scan() {
 
 function ScanRun({ scan, navigate }) {
   const isDomain = scan.mode === "domain";
-  const showMap = scan.mode === "pages"; // a list of pages is scanned in order
+  const showMap = scan.mode === "pages" && scan.urls.length > 1; // order only matters for 2 or more pages
   const report = buildReport(scan);
   const total = isDomain ? DOMAIN_PAGES : scan.urls.length;
 
@@ -197,6 +197,7 @@ function StateMap({ urls, current, findings }) {
     </ol>
   );
 }
+
 // Page tree from sample data (live discovery arrives in P1)
 function PageTree({ node, label }) {
   return (
