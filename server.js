@@ -1140,6 +1140,13 @@ async function fillAndAdvance(page, guard, stats, record) {
             await page.waitForTimeout(1200);
 
             if (normalizeUrl(page.url()) !== guard.home) {
+                // Check if navigated-to page is protected BEFORE going back
+                const navigatedSecurity = await checkSecurityGuards(page);
+                if (navigatedSecurity.blocked) {
+                    record(`Security Guard Triggered on navigated URL ${page.url()}: ${navigatedSecurity.reason}`);
+                    return { sensitive: null, securityBlocked: navigatedSecurity };
+                }
+                
                 record(`URL changed to ${page.url()} -> going back and stopping`);
                 await page.goBack({ timeout: 15000 }).catch(() => { });
                 break;
