@@ -2220,7 +2220,6 @@ app.post("/api/screenshot", async (req, res) => {
         await page.evaluate(() => { window.__navGuard = false; }).catch(() => { });
         const navResult = await safePhase("Nav pass", () => navDeepPass({ page, guard, state, stats, record, navReport }), page, guard, record);
         guard.allowNav = false;
-        await page.evaluate(() => { window.__navGuard = true; }).catch(() => { });
         if (navResult && navResult.blocked) {
             record(`Security guard blocked during nav pass: ${navResult.securityBlocked.reason}`);
             await browser.close();
@@ -2236,6 +2235,7 @@ app.post("/api/screenshot", async (req, res) => {
                 navigationCheck: navReport,
             }));
         }
+        await page.evaluate(() => { window.__navGuard = true; }).catch(() => { });
         record(`Nav bar pass finished: ${navReport.length} link(s) checked`);
 
         if (guard.blocked) {
