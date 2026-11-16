@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Topbar from "../components/Topbar.jsx";
+import Icon from "../components/Icon.jsx";
 import { buildReport, SAMPLE_PATHS } from "../data.js";
 import { getScan } from "../scanStore.js";
 import { SCAN } from "../config.js";
@@ -16,6 +17,7 @@ export default function Scan() {
 
 function ScanRun({ scan, navigate }) {
   const isDomain = scan.mode === "domain";
+  const showMap = scan.mode === "pages"; // a list of pages is scanned in order
   const report = buildReport(scan);
   const total = isDomain ? DOMAIN_PAGES : scan.urls.length;
 
@@ -136,6 +138,12 @@ function ScanRun({ scan, navigate }) {
             <b>Potential dark patterns found so far: {patterns}</b>
           </div>
         </div>
+        {showMap && (
+          <>
+            <p className="muted">One session: pages are scanned in the order you set.</p>
+            <StateMap urls={scan.urls} current={current} findings={report.findings} />
+          </>
+        )}
         <div className="actions">
           <button className="btn ghost" onClick={() => setPaused(!paused)}>
             {paused ? "Resume" : "Pause"}
@@ -147,5 +155,34 @@ function ScanRun({ scan, navigate }) {
         <p className="muted">You can close this window. We will notify you when it finishes.</p>
       </div>
     </>
+  );
+}
+
+// State map: one box per page, in order, with an arrow to the next page
+function StateMap({ urls, current, findings }) {
+  return (
+    <ol className="smap" aria-label="State map">
+      {urls.map((url, k) => {
+        const state = k < current ? "Scanned" : k === current ? "Scanning" : "Waiting";
+        const count = findings.filter((f) => f.url === url).length;
+        return (
+          <li key={url} className={"snode " + state.toLowerCase()}>
+            <div className="sbox">
+              <span className="snum">{k + 1}</span>
+              <span className="surl">{url}</span>
+              <b className="sstate">
+                {state}
+                {state === "Scanned" ? `: ${count} potential` : ""}
+              </b>
+            </div>
+            {k < urls.length - 1 && (
+              <span className="sarrow" aria-hidden="true">
+                <Icon name="arrowDown" />
+              </span>
+            )}
+          </li>
+        );
+      })}
+    </ol>
   );
 }
