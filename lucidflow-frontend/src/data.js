@@ -211,7 +211,6 @@ export function buildReport(scan) {
       severity: f.severity,
       rootCause: f.cause,
       action: f.fix,
-      owner: f.owner,
       due: "[Date]",
       status: "OPEN",
     })),

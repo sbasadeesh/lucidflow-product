@@ -1,5 +1,5 @@
 import { ABOUT, CATEGORIES, PRIORITY_THEMES } from "../data.js";
-import { REPORT, SEVERITY_ORDER, SUMMARY_AI_PLACEHOLDER } from "../config";
+import { REPORT, SEVERITY_ORDER, SUMMARY_AI_PLACEHOLDER, CAP_MANUAL_REVIEW } from "../config";
 import { useLayoutEffect, useRef } from "react";
 
 const FOOTER_URL = "https://ww1.sbainfo.in/lucidflow";
@@ -244,7 +244,7 @@ function CapRegister({ rows, first }) {
             <th>Finding</th>
             <th>Root cause</th>
             <th>Action</th>
-            <th>Owner</th>
+            <th>{CAP_MANUAL_REVIEW.header}</th>            
             <th>Due</th>
             <th>Status</th>
           </tr>
@@ -264,7 +264,7 @@ function CapRegister({ rows, first }) {
                   ))}
                 </ul>
               </td>
-              <td>{c.owner}</td>
+              <td>{CAP_MANUAL_REVIEW.placeholder}</td>
               <td>{c.due}</td>
               <td>{c.status}</td>
             </tr>
@@ -287,7 +287,7 @@ function rowHeight(c) {
     countLines(`${c.findingRef} (${c.pattern})`, 21), // Finding column
     countLines(c.rootCause, 21), // Root cause column
     c.action.reduce((sum, a) => sum + countLines(a, 30), 0), // Action column
-    countLines(c.owner, 12), // Owner column
+
   );
   return lines * LINE_MM + ROW_PAD_MM;
 }

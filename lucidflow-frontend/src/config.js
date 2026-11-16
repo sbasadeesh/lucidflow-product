@@ -95,3 +95,8 @@ export const JOURNEY = {
   homeLabel: "Home page URL",
   homePlaceholder: "https://www.example.com",
 };
+export const CAP_MANUAL_REVIEW = {
+  header: "Manual review",
+  options: ["Yes", "No"],
+  placeholder: "[Yes / No]",
+};

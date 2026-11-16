@@ -11,7 +11,6 @@ import mock from "../mock/mock_payload.json";
 export default function ReportPreview() {
   const navigate = useNavigate();
   const [i, setI] = useState(0);
-  const [opts, setOpts] = useState({ screenshots: true, appendix: true, language: "English" });
 
     // Dev only: ?mock=<scenario id> shows the report from src/mock/mock_payload.json
   const [params] = useSearchParams();
@@ -58,35 +57,12 @@ export default function ReportPreview() {
         </section>
 
         <aside className="card options no-print">
-          <h3>Report options</h3>
-          <label className="switch-row">
-            Include screenshots
-            <input
-              type="checkbox"
-              checked={opts.screenshots}
-              onChange={(e) => setOpts({ ...opts, screenshots: e.target.checked })}
-            />
-          </label>
-          <label className="switch-row">
-            Include appendix
-            <input
-              type="checkbox"
-              checked={opts.appendix}
-              onChange={(e) => setOpts({ ...opts, appendix: e.target.checked })}
-            />
-          </label>
-          <label className="label">Language</label>
-          <select
-            value={opts.language}
-            onChange={(e) => setOpts({ ...opts, language: e.target.value })}
-          >
-            <option>English</option>
-            <option>Tamil</option>
-            <option>Hindi</option>
-          </select>
-          <hr />
           <b>Report includes:</b>
-          {["Scope statement", "Limitations", "Evidence for every finding"].map((t) => (
+          {[
+            "Intelligence Recommendations",
+            "Corrective Action Plan Register",
+            "Evidence for every finding",
+          ].map((t) => (
             <label className="check" key={t}>
               <input type="checkbox" defaultChecked /> {t}
             </label>
