@@ -100,3 +100,8 @@ export const CAP_MANUAL_REVIEW = {
   options: ["Yes", "No"],
   placeholder: "[Yes / No]",
 };
+export const UNCONFIRMED = {
+  title: "Unconfirmed findings",
+  text: "Only confirmed findings are included in the PDF and CAP. These findings will be removed:",
+  ok: "OK",
+};
