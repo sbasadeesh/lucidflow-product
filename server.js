@@ -2284,7 +2284,7 @@ app.post("/api/screenshot", async (req, res) => {
             guard.on = false;
             await browser.close();
             browser = null;
-            return res.json(finish("not_assessed", {
+            return res.json(finish("blocked", {
                 message: `Scan stopped: ${securityBlocked.reason}`,
                 reason: securityBlocked.reason,
                 details: securityBlocked.details,
