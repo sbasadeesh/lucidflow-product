@@ -1,14 +1,13 @@
 /**
  * E2-07 Mutation Test: Prove Guard Mechanism is Actually Responsible
  * 
- * ISOLATED EXECUTION: Creates temporary worktree copy and runs behavioral tests
- * against mutated and restored engine code.
- * 
- * - Mutation 1: Disable guard → execute test → verify auth wall NOT blocked
- * - Mutation 2: Restore → execute test → verify auth wall IS blocked
+ * ISOLATED EXECUTION: Creates real git detached worktree, runs behavioral tests.
+ * - Mutation 1: Disable guard → execute auth wall test → verify NOT blocked
+ * - Mutation 2: Restore guard → execute auth wall test → verify IS blocked  
  * - Proves guard is the actual mechanism, not dead code
  * 
- * Never modifies active source tree. Engine started fresh for each mutation.
+ * Uses real git worktree with all dependencies (node_modules symlink).
+ * Never modifies active source tree.
  */
 
 const test = require("node:test");
@@ -16,31 +15,64 @@ const assert = require("node:assert/strict");
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
-const { spawn, execSync } = require("child_process");
+const os = require("os");
+const { execSync, execFileSync, spawn } = require("child_process");
 
 let fixtureServer;
 let fixtureUrl;
 
 const repoRoot = path.join(__dirname, "..");
 const originalServerPath = path.join(repoRoot, "server.js");
+const nodeModulesPath = path.join(repoRoot, "node_modules");
 let worktreeDir;
-let mutatedServerPath;
+let worktreeServerPath;
+let childProcess;
+let cleanOriginal;  // Store the clean server.js from worktree
 
 test.before(async (t) => {
-    console.log("\n=== E2-07 Mutation Test (Behavioral Execution with Isolated Worktree) ===\n");
+    console.log("\n=== E2-07 Mutation Test (Real Worktree with Behavioral Execution) ===\n");
     
-    // Create temporary worktree directory
-    worktreeDir = path.join(repoRoot, ".worktrees", `mutation-behavioral-${Date.now()}`);
-    fs.mkdirSync(worktreeDir, { recursive: true });
-    console.log(`✓ Isolated worktree created: ${worktreeDir}`);
+    // Create temporary directory for worktree
+    worktreeDir = path.join(os.tmpdir(), `e2-07-mutation-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
+    console.log(`📁 Creating real git worktree: ${worktreeDir}`);
     
-    // Copy server.js to worktree (never modify original)
-    mutatedServerPath = path.join(worktreeDir, "server.js");
-    const originalContent = fs.readFileSync(originalServerPath, "utf8");
-    fs.writeFileSync(mutatedServerPath, originalContent, "utf8");
-    console.log(`✓ server.js copied to isolated worktree (${Math.round(originalContent.length / 1024)}KB)`);
+    try {
+        // Create REAL detached git worktree from current HEAD
+        execFileSync("git", ["worktree", "add", "--detach", worktreeDir, "HEAD"], {
+            cwd: repoRoot,
+            stdio: "pipe"
+        });
+        console.log(`✓ Git worktree created (detached from HEAD)`);
+    } catch (err) {
+        throw new Error(`Failed to create git worktree: ${err.message}`);
+    }
     
-    // Start fixture server for mutation tests
+    worktreeServerPath = path.join(worktreeDir, "server.js");
+    
+    // Capture the clean worktree server.js content for use across mutations
+    cleanOriginal = fs.readFileSync(worktreeServerPath, "utf8");
+    
+    // Link node_modules to make dependencies available in worktree
+    const worktreeNodeModules = path.join(worktreeDir, "node_modules");
+    if (fs.existsSync(nodeModulesPath) && !fs.existsSync(worktreeNodeModules)) {
+        try {
+            // Try junction (Windows-friendly)
+            execFileSync("cmd", ["/c", "mklink", "/J", worktreeNodeModules, nodeModulesPath], {
+                stdio: "pipe"
+            });
+            console.log(`✓ node_modules linked (junction)`);
+        } catch (e1) {
+            try {
+                // Fallback: symlink
+                fs.symlinkSync(nodeModulesPath, worktreeNodeModules, "dir");
+                console.log(`✓ node_modules linked (symlink)`);
+            } catch (e2) {
+                console.log(`⚠ Could not link node_modules (${e1.message}), relying on existing install`);
+            }
+        }
+    }
+    
+    // Start fixture server
     await new Promise((resolve, reject) => {
         fixtureServer = http.createServer((req, res) => {
             res.setHeader("Content-Type", "text/html");
@@ -65,39 +97,62 @@ test.after(async () => {
         fixtureServer.close();
     }
     
-    // Clean up worktree directory
-    if (worktreeDir && fs.existsSync(worktreeDir)) {
+    if (childProcess) {
         try {
-            execSync(`powershell -Command "Remove-Item -Path '${worktreeDir}' -Recurse -Force"`, { stdio: "ignore" });
-            console.log(`✓ Worktree cleaned up`);
-        } catch (e) {
-            try {
-                const removeDir = (dir) => {
-                    if (fs.existsSync(dir)) {
-                        fs.readdirSync(dir).forEach(f => {
-                            const fullPath = path.join(dir, f);
-                            if (fs.lstatSync(fullPath).isDirectory()) {
-                                removeDir(fullPath);
-                            } else {
-                                fs.unlinkSync(fullPath);
-                            }
-                        });
-                        fs.rmdirSync(dir);
-                    }
-                };
-                removeDir(worktreeDir);
-                console.log(`✓ Worktree cleaned up (fallback)`);
-            } catch (e2) {
-                console.log(`  (worktree cleanup pending)`);
-            }
+            childProcess.kill("SIGTERM");
+        } catch (e) {}
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    
+    // Clean up git worktree
+    if (worktreeDir) {
+        try {
+            execFileSync("git", ["worktree", "remove", "--force", worktreeDir], {
+                cwd: repoRoot,
+                stdio: "pipe"
+            });
+            console.log(`✓ Worktree removed`);
+        } catch (err) {
+            console.log(`  (worktree cleanup: ${err.message})`);
         }
     }
 });
 
+function pollForReadiness(url, deadline = 10000) {
+    return new Promise((resolve, reject) => {
+        const startTime = Date.now();
+        
+        const poll = () => {
+            const elapsed = Date.now() - startTime;
+            if (elapsed > deadline) {
+                reject(new Error(`Engine did not respond after ${deadline}ms`));
+                return;
+            }
+            
+            const options = new URL(url);
+            const req = http.get(options, (res) => {
+                if (res.statusCode === 200) {
+                    resolve();
+                } else {
+                    setTimeout(poll, 500);
+                }
+            });
+            
+            req.on("error", () => {
+                setTimeout(poll, 500);
+            });
+            
+            req.setTimeout(1000);
+        };
+        
+        poll();
+    });
+}
+
 function makeRequest(url, payload, timeout = 30000) {
     return new Promise((resolve, reject) => {
         const timeoutHandle = setTimeout(() => {
-            reject(new Error(`Timeout after ${timeout}ms`));
+            reject(new Error(`Request timeout after ${timeout}ms`));
         }, timeout);
         
         try {
@@ -137,64 +192,86 @@ function makeRequest(url, payload, timeout = 30000) {
     });
 }
 
-async function startEngineWithServer(serverPath, port) {
+async function startMutatedEngine(mutation, port, cleanOriginal) {
+    // Always restore from clean original first (cleans up mutations from previous test)
+    fs.writeFileSync(worktreeServerPath, cleanOriginal, "utf8");
+    
+    // Apply mutation if provided
+    let toRun = cleanOriginal;
+    if (mutation) {
+        toRun = mutation(cleanOriginal);
+        fs.writeFileSync(worktreeServerPath, toRun, "utf8");
+    }
+    
+    // Spawn child process
     return new Promise((resolve, reject) => {
-        let engineProcess;
         let ready = false;
-        const readyTimeout = setTimeout(() => {
+        let stdout = "";
+        let stderr = "";
+        
+        childProcess = spawn(process.execPath, [worktreeServerPath], {
+            cwd: worktreeDir,
+            stdio: ["ignore", "pipe", "pipe"],
+            env: { ...process.env, PORT: String(port) }
+        });
+        
+        let stdoutTimeout;
+        
+        childProcess.stdout.on("data", (data) => {
+            stdout += data.toString();
+            if (!ready) {
+                console.log(`    [engine stdout] ${data.toString().trim()}`);
+                ready = true;
+                clearTimeout(stdoutTimeout);
+                resolve({ ready: true });
+            }
+        });
+        
+        childProcess.stderr.on("data", (data) => {
+            stderr += data.toString();
+            if (!ready) {
+                console.log(`    [engine stderr] ${data.toString().trim()}`);
+            }
+        });
+        
+        childProcess.on("error", (err) => {
+            ready = true;
+            reject(new Error(`Engine spawn error: ${err.message}`));
+        });
+        
+        childProcess.on("exit", (code, signal) => {
             if (!ready) {
                 ready = true;
-                resolve({ process: engineProcess });
+                reject(new Error(`Engine exited prematurely: code ${code}, signal ${signal}\n${stderr}`));
             }
-        }, 8000);
+        });
         
-        try {
-            engineProcess = spawn("node", [serverPath], {
-                stdio: ["ignore", "pipe", "pipe"],
-                env: { ...process.env, PORT: port }
-            });
-            
-            engineProcess.stdout.on("data", (data) => {
-                if (!ready) {
+        // Timeout: if no stdout/stderr within 3s, try polling
+        stdoutTimeout = setTimeout(async () => {
+            if (!ready) {
+                try {
+                    await pollForReadiness(`http://127.0.0.1:${port}/`, 5000);
                     ready = true;
-                    clearTimeout(readyTimeout);
-                    resolve({ process: engineProcess });
-                }
-            });
-            
-            engineProcess.stderr.on("data", (data) => {
-                if (!ready) {
+                    resolve({ ready: true });
+                } catch (pollErr) {
                     ready = true;
-                    clearTimeout(readyTimeout);
-                    resolve({ process: engineProcess });
+                    reject(new Error(`Engine failed to start: ${pollErr.message}\nStderr: ${stderr}`));
                 }
-            });
-            
-            engineProcess.on("error", (err) => {
-                if (!ready) {
-                    ready = true;
-                    clearTimeout(readyTimeout);
-                    reject(err);
-                }
-            });
-        } catch (err) {
-            clearTimeout(readyTimeout);
-            reject(err);
-        }
+            }
+        }, 3000);
     });
 }
 
-test("MUTATION-1: Disable guard → execute behavioral test → auth wall NOT blocked", async (t) => {
-    console.log("\n[MUTATION-1] Testing with guard DISABLED...");
+test("MUTATION-1: Disable guard in worktree → execute auth wall test → expect NOT blocked", async (t) => {
+    console.log("\n[MUTATION-1] Testing with guard DISABLED in worktree...");
     
-    // Apply mutation to worktree copy
-    const original = fs.readFileSync(mutatedServerPath, "utf8");
-    let mutated = original.replace(
-        "const security = await checkSecurityGuards(page);",
-        "const security = { blocked: false }; // MUTATED"
-    );
-    fs.writeFileSync(mutatedServerPath, mutated, "utf8");
-    console.log("  ✓ Guard disabled in worktree copy");
+    // Mutation: disable guard
+    const disableGuardMutation = (src) => {
+        return src.replace(
+            "const security = await checkSecurityGuards(page);",
+            "const security = { blocked: false }; // MUTATED: guard disabled"
+        );
+    };
     
     // Get available port
     const tempServer = http.createServer();
@@ -205,51 +282,42 @@ test("MUTATION-1: Disable guard → execute behavioral test → auth wall NOT bl
         });
     });
     
-    // Start engine with disabled guard
-    console.log(`  Starting mutated engine on port ${port}...`);
-    const { process: engineProcess } = await startEngineWithServer(mutatedServerPath, port);
-    const engineUrl = `http://127.0.0.1:${port}`;
+    console.log(`  Spawning engine with disabled guard on port ${port}...`);
     
-    // Wait for engine to be ready
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    let response;
     try {
-        response = await makeRequest(`${engineUrl}/api/screenshot`, {
+        await startMutatedEngine(disableGuardMutation, port, cleanOriginal);
+        const engineUrl = `http://127.0.0.1:${port}`;
+        
+        // Wait for engine readiness
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Execute behavioral test: hit auth wall with disabled guard
+        console.log(`  Executing behavioral test: POST ${engineUrl}/api/screenshot...`);
+        const response = await makeRequest(`${engineUrl}/api/screenshot`, {
             url: `${fixtureUrl}/login`,
             selector: "body"
         }, 30000);
-    } catch (err) {
-        if (engineProcess) {
-            engineProcess.kill("SIGTERM");
+        
+        console.log(`  Response status: "${response.body.status}"`);
+        
+        // With guard disabled, auth wall should NOT block
+        if (response.body.status === "blocked") {
+            throw new Error("MUTATION FAILED: Guard still blocks when it should be disabled");
         }
-        throw new Error(`MUTATION-1 FAILED: Engine request failed: ${err.message}`);
+        
+        console.log("  ✓ MUTATION CORRECT: Auth wall NOT blocked (guard is disabled)");
+        console.log("  ✓ Behavioral execution confirms mutation effective");
+    } finally {
+        if (childProcess) {
+            childProcess.kill("SIGTERM");
+            childProcess = null;
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
     }
-    
-    // Kill engine
-    if (engineProcess) {
-        engineProcess.kill("SIGTERM");
-        await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-    
-    // With guard disabled, auth wall should NOT block
-    console.log(`  Response status: "${response.body.status}"`);
-    
-    if (response.body.status === "blocked") {
-        throw new Error("MUTATION FAILED: Guard still active when it should be disabled");
-    }
-    
-    console.log("  ✓ MUTATION WORKED: Auth wall NOT blocked (guard is disabled)");
-    console.log("  ✓ Behavioral execution confirmed mutation effective");
 });
 
-test("MUTATION-2: Restore guard → execute behavioral test → auth wall IS blocked", async (t) => {
-    console.log("\n[MUTATION-2] Testing with guard RESTORED...");
-    
-    // Restore original to worktree
-    const original = fs.readFileSync(originalServerPath, "utf8");
-    fs.writeFileSync(mutatedServerPath, original, "utf8");
-    console.log("  ✓ Guard restored in worktree copy");
+test("MUTATION-2: Restore guard in worktree → execute auth wall test → expect IS blocked", async (t) => {
+    console.log("\n[MUTATION-2] Testing with guard RESTORED in worktree...");
     
     // Get available port
     const tempServer = http.createServer();
@@ -260,53 +328,51 @@ test("MUTATION-2: Restore guard → execute behavioral test → auth wall IS blo
         });
     });
     
-    // Start engine with restored guard
-    console.log(`  Starting restored engine on port ${port}...`);
-    const { process: engineProcess } = await startEngineWithServer(mutatedServerPath, port);
-    const engineUrl = `http://127.0.0.1:${port}`;
+    console.log(`  Spawning engine with restored guard on port ${port}...`);
     
-    // Wait for engine to be ready
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    let response;
     try {
-        response = await makeRequest(`${engineUrl}/api/screenshot`, {
+        // No mutation = original code (cleanOriginal will be restored)
+        await startMutatedEngine(null, port, cleanOriginal);
+        const engineUrl = `http://127.0.0.1:${port}`;
+        
+        // Wait for engine readiness
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Execute behavioral test: hit auth wall with guard restored
+        console.log(`  Executing behavioral test: POST ${engineUrl}/api/screenshot...`);
+        const response = await makeRequest(`${engineUrl}/api/screenshot`, {
             url: `${fixtureUrl}/login`,
             selector: "body"
         }, 30000);
-    } catch (err) {
-        if (engineProcess) {
-            engineProcess.kill("SIGTERM");
+        
+        console.log(`  Response status: "${response.body.status}"`);
+        console.log(`  Response reason: "${response.body.reason}"`);
+        
+        // With guard restored, auth wall MUST block
+        assert.equal(
+            response.body.status,
+            "blocked",
+            "Auth wall should be blocked when guard is restored"
+        );
+        assert.equal(
+            response.body.reason,
+            "AUTH_REQUIRED",
+            "Guard reason should be AUTH_REQUIRED"
+        );
+        
+        console.log("  ✓ Auth wall IS blocked (guard properly restored)");
+        console.log("  ✓ Behavioral execution confirms guard is the actual mechanism");
+    } finally {
+        if (childProcess) {
+            childProcess.kill("SIGTERM");
+            childProcess = null;
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
-        throw new Error(`MUTATION-2 FAILED: Engine request failed: ${err.message}`);
     }
-    
-    // Kill engine
-    if (engineProcess) {
-        engineProcess.kill("SIGTERM");
-        await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-    
-    // With guard restored, auth wall MUST block
-    console.log(`  Response status: "${response.body.status}"`);
-    
-    assert.equal(
-        response.body.status,
-        "blocked",
-        "Auth wall should be blocked when guard is restored"
-    );
-    assert.equal(
-        response.body.reason,
-        "AUTH_REQUIRED",
-        "Guard reason should be AUTH_REQUIRED"
-    );
-    
-    console.log("  ✓ Auth wall IS blocked (guard properly restored)");
-    console.log("  ✓ Behavioral execution confirms guard is the actual mechanism");
 });
 
 test("MUTATION-3: Verify original source unchanged", async (t) => {
-    console.log("\n[MUTATION-3] Verifying original source...");
+    console.log("\n[MUTATION-3] Verifying original source unchanged...");
     
     const current = fs.readFileSync(originalServerPath, "utf8");
     assert(
