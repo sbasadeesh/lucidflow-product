@@ -99,6 +99,7 @@ const TEMPLATES = [
     cause:
       "The banner copy and expiry date are maintained manually and are not verified against the approved campaign period.",
     severity: "MEDIUM",
+    confirmed: false, // P0 demo flag: shows the unconfirmed warning
     pattern: "FALSE URGENCY",
     effort: "LOW EFFORT",
     owner: "Marketing / Product / Compliance",
@@ -127,7 +128,7 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
 // Builds the report only from what the user entered.
 // Pages from different websites -> every website (company) is shown.
-export function buildReport(scan) {
+export function buildReport(scan, { dropUnconfirmed = false } = {}) {
   const isDomain = scan.mode === "domain";
   const pages = isDomain
     ? SAMPLE_PATHS.map((p) => `https://${scan.host}${p === "/" ? "" : p}`)
@@ -149,7 +150,7 @@ export function buildReport(scan) {
     queues.forEach((q) => q.length && ordered.push(q.shift()));
   }
 
-  const findings = TEMPLATES.slice(0, Math.min(REPORT.maxFindings, ordered.length)).map((t, i) => {
+  const all = TEMPLATES.slice(0, Math.min(REPORT.maxFindings, ordered.length)).map((t, i) => {
     const company = hostOf(ordered[i]);
     return {
       ...t,
@@ -159,6 +160,8 @@ export function buildReport(scan) {
       url: ordered[i],
     };
   });
+    const unconfirmed = all.filter((f) => f.confirmed === false);
+  const findings = dropUnconfirmed ? all.filter((f) => f.confirmed !== false) : all;
 
   const counts = {};
   findings.forEach((f) => {
@@ -200,6 +203,7 @@ export function buildReport(scan) {
     posture: "",
     themes: ["", "", ""],
     findings,
+    unconfirmed: unconfirmed.map((f) => ({ id: f.id, title: f.title })),
     // Corrective action plan register (PDF + Excel)
     cap: findings.map((f, i) => ({
       id: padId("CAP", i + 1),

@@ -7,10 +7,12 @@ import { buildReport } from "../data.js";
 import { getScan } from "../scanStore.js";
 import { downloadCap, downloadPdf } from "../export/downloads.js";
 import mock from "../mock/mock_payload.json";
+import { PLANNED_LABEL, UNCONFIRMED } from "../config.js";
 
 export default function ReportPreview() {
   const navigate = useNavigate();
   const [i, setI] = useState(0);
+  const [accepted, setAccepted] = useState(false);
 
     // Dev only: ?mock=<scenario id> shows the report from src/mock/mock_payload.json
   const [params] = useSearchParams();
@@ -20,13 +22,30 @@ export default function ReportPreview() {
     : null;
 
   const scan = getScan();
-  const report = mockReport ?? (scan ? buildReport(scan) : null);
+  const report = mockReport ?? (scan ? buildReport(scan, { dropUnconfirmed: accepted }) : null);
   if (!report) return <NoScan />;
   const pages = getPages(report);
+  const warn = !accepted && report.unconfirmed?.length > 0;
 
   return (
     <>
       <Topbar title="Report preview" />
+      {warn && (
+        <div className="warn-back no-print">
+          <div className="warn-box card" role="dialog" aria-modal="true" aria-labelledby="warn-title">
+            <h3 id="warn-title">{UNCONFIRMED.title}</h3>
+            <p>{UNCONFIRMED.text}</p>
+            <ul>
+              {report.unconfirmed.map((f) => (
+                <li key={f.id}>{f.title}</li>
+              ))}
+            </ul>
+            <button className="btn primary" onClick={() => setAccepted(true)}>
+              {UNCONFIRMED.ok}
+            </button>
+          </div>
+        </div>
+      )}
       <div className="content split">
         <section>
           <div className="row no-print">
@@ -80,6 +99,12 @@ export default function ReportPreview() {
         <button className="btn ghost" onClick={() => downloadCap(report)}>
           Download CAP (Excel)
         </button>
+        <button className="btn ghost" disabled aria-describedby="email-planned">
+          Send by email
+        </button>
+        <span className="planned" id="email-planned">
+          {PLANNED_LABEL}
+        </span>
         <button className="btn ghost" onClick={() => navigate("/reports/ready")}>
           Next
         </button>

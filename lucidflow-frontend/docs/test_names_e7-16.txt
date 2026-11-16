@@ -1,0 +1,32 @@
+E7-16 Download buttons: test names with pass and fail conditions
+File: src/pages/ReportPreview.test.jsx
+
+E1. Given the preview, then Download PDF and Download CAP buttons show
+    PASS when: both buttons are on the report preview page
+    FAIL when: either button is missing
+    (passes before the change too, because the buttons already existed)
+
+E2. Given the preview, then Send by email is disabled and says Planned for a later phase
+    PASS when: a disabled "Send by email" button shows with the text "Planned for a later phase"
+    FAIL when: the button is missing or can be clicked
+
+E3. Given unconfirmed findings, then a warning says only confirmed findings are included
+    PASS when: with 4 pages, a dialog says "Only confirmed findings are included" and names the unconfirmed finding
+    FAIL when: no warning shows
+
+E4. Given the warning, when I click OK, then it closes and the unconfirmed finding is removed
+    PASS when: OK closes the dialog and the report has one page less
+    FAIL when: the dialog stays, or the finding is still in the report
+
+E5. Given only confirmed findings, then no warning shows
+    PASS when: with 1 page, no dialog shows
+    FAIL when: a dialog shows
+    (passes before the change too)
+
+Totals
+New tests: 5
+RED (E7-15 versions of data.js and ReportPreview.jsx): 3 failed | 141 passed (144)  -> E2, E3, E4 fail
+GREEN: 144 passed (144)
+Lint: clean
+
+Note: the 4th finding (Urgency-oriented Offer Messaging) is marked confirmed: false as a P0 demo flag, so the warning shows when 4 or more pages are scanned.
