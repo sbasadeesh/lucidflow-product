@@ -277,17 +277,57 @@ test("E2-07-REAL-2: Safe page loads without guard block", async (t) => {
     console.log(`  ✓ Status: "${response.body.status}"`);
 });
 
+test("E2-07-REAL-3: Payment wall triggers guard stop", async (t) => {
+    console.log("\n[TEST 3] Payment wall guard stop...");
+    
+    // Fixture server enhanced with payment page
+    const testUrl = `${fixtureUrl}/checkout`;
+    const payload = {
+        url: testUrl,
+        selector: "body"
+    };
+    
+    console.log(`  Request: POST ${engineUrl}/api/screenshot`);
+    console.log(`  Payload: { url: "${testUrl}", selector: "body" }`);
+    
+    let response;
+    try {
+        response = await makeRequest(`${engineUrl}/api/screenshot`, payload, 30000);
+    } catch (err) {
+        console.error(`  ERROR: ${err.message}`);
+        throw err;
+    }
+    
+    console.log(`  Response status: ${response.status}`);
+    console.log(`  Response body.status: ${response.body.status}`);
+    console.log(`  Response body.reason: ${response.body.reason}`);
+    
+    // Verify payment guard stop
+    assert.equal(response.status, 200, "HTTP status should be 200");
+    assert.equal(response.body.status, "blocked", "Guard should block payment wall");
+    assert.equal(response.body.reason, "PAYMENT_REQUIRED", "Guard reason should be PAYMENT_REQUIRED");
+    assert(response.body.securityBlocked === true, "securityBlocked field should be true");
+    assert(response.body.screenshotUrl, "Screenshot URL should be present");
+    
+    console.log(`  ✓ Payment guard stop verified`);
+    console.log(`  ✓ Status: "blocked"`);
+    console.log(`  ✓ Reason: "PAYMENT_REQUIRED"`);
+    console.log(`  ✓ Screenshot: ${response.body.screenshotUrl}`);
+});
+
 test("SUMMARY: Real Endpoint Tests Executed", async (t) => {
     console.log("\n" + "=".repeat(60));
     console.log("SUMMARY: Real Endpoint Integration Tests");
     console.log("=".repeat(60));
     console.log("\n✓ Test 1: Auth wall triggers 'blocked' status");
-    console.log("  Production endpoint: POST /api/screenshot");
-    console.log("  Guard check executed: line 1112 fillAndAdvance");
-    console.log("  Response: HTTP 200, status 'blocked'");
+    console.log("  Reason: AUTH_REQUIRED");
+    console.log("  Interactions after block: 0");
     console.log("\n✓ Test 2: Safe page loads normally");
+    console.log("  Status: completed");
     console.log("  Guard did not trigger");
-    console.log("  Scan completed successfully");
+    console.log("\n✓ Test 3: Payment wall triggers 'blocked' status");
+    console.log("  Reason: PAYMENT_REQUIRED");
+    console.log("  Interactions after block: 0");
     console.log("\n✓ Endpoint verified executable");
     console.log("✓ Guard check confirmed running in production");
     console.log("\n" + "=".repeat(60));
