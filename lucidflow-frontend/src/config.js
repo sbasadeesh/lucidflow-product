@@ -76,6 +76,13 @@ export const SUMMARY_AI_PLACEHOLDER = {
 
 export const PLANNED_LABEL = "Planned for a later phase";
 
+export const DISCOVERY = {
+  previewLabel: "Preview: live discovery arrives in P1",
+  treeTitle: "Page tree",
+  tableTitle: "URL table",
+  discoverLabel: "Discover pages",
+};
+
 export const SETTINGS_SECTIONS = [
   { label: "Profile", to: "/settings/profile", icon: "user" },
   { label: "Organisation", to: "/settings/organisation", icon: "building" },

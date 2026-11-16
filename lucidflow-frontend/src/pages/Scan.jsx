@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Topbar from "../components/Topbar.jsx";
 import Icon from "../components/Icon.jsx";
-import { buildReport, SAMPLE_PATHS } from "../data.js";
+import { buildReport, DISCOVERY_TREE, DISCOVERY_URLS, SAMPLE_PATHS } from "../data.js";
 import { getScan } from "../scanStore.js";
-import { SCAN } from "../config.js";
+import { DISCOVERY, SCAN } from "../config.js";
 
 const DOMAIN_PAGES = SCAN.domainPages;
 
@@ -72,6 +72,7 @@ function ScanRun({ scan, navigate }) {
       <>
         <Topbar title={`Discovering pages on ${scan.host}`} />
         <div className="content">
+          <p className="disc-preview">{DISCOVERY.previewLabel}</p>
           <h2 className="big">Discovering pages on {scan.host}</h2>
           <div className="bar">
             <div style={{ width: `${Math.round((found / DOMAIN_PAGES) * 100)}%` }} />
@@ -104,6 +105,16 @@ function ScanRun({ scan, navigate }) {
               </li>
             ))}
           </ul>
+          <div className="disc-split">
+            <div className="card">
+              <h3 className="section">{DISCOVERY.treeTitle}</h3>
+              <PageTree node={DISCOVERY_TREE} label={scan.host} />
+            </div>
+            <div className="card">
+              <h3 className="section">{DISCOVERY.tableTitle}</h3>
+              <UrlTable host={scan.host} />
+            </div>
+          </div>
           <div className="actions left">
             <button className="btn ghost" onClick={() => setStatus("Scanning")}>
               Stop and review
@@ -184,5 +195,45 @@ function StateMap({ urls, current, findings }) {
         );
       })}
     </ol>
+  );
+}
+// Page tree from sample data (live discovery arrives in P1)
+function PageTree({ node, label }) {
+  return (
+    <ul className="disc-tree">
+      <li>
+        <span>{label || node.name}</span> <span className="disc-count">{node.count}</span>
+        {node.children?.map((c) => (
+          <PageTree key={c.name} node={c} />
+        ))}
+      </li>
+    </ul>
+  );
+}
+
+// URL table from sample data
+function UrlTable({ host }) {
+  return (
+    <table className="list">
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th>Template</th>
+          <th>Depth</th>
+        </tr>
+      </thead>
+      <tbody>
+        {DISCOVERY_URLS.map((u) => (
+          <tr key={u.path}>
+            <td>
+              https://{host}
+              {u.path === "/" ? "" : u.path}
+            </td>
+            <td>{u.template}</td>
+            <td>{u.depth}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
