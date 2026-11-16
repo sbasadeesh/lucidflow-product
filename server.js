@@ -1528,9 +1528,8 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
                 page, guard, state, stats, record, before: fieldsBefore, label: `Nav: ${sub.text}`,
             });
             if (handled && handled.blocked) {
-                // Guard was triggered, stop nav pass
+                // Guard was triggered, stop nav pass immediately without further interactions
                 record(`Security guard triggered during nested nav: ${handled.securityBlocked.reason}`);
-                await closePanel(page);
                 return { blocked: true, securityBlocked: handled.securityBlocked };
             }
             if (handled) {
@@ -2219,9 +2218,21 @@ app.post("/api/screenshot", async (req, res) => {
         await page.evaluate(() => window.scrollTo(0, 0));
         guard.allowNav = true;
         await page.evaluate(() => { window.__navGuard = false; }).catch(() => { });
-        await safePhase("Nav pass", () => navDeepPass({ page, guard, state, stats, record, navReport }), page, guard, record);
+        const navResult = await safePhase("Nav pass", () => navDeepPass({ page, guard, state, stats, record, navReport }), page, guard, record);
         guard.allowNav = false;
         await page.evaluate(() => { window.__navGuard = true; }).catch(() => { });
+        if (navResult && navResult.blocked) {
+            record(`Security guard blocked during nav pass: ${navResult.securityBlocked.reason}`);
+            await browser.close();
+            browser = null;
+            return res.json(finish("blocked", {
+                message: `The site triggered a security guard during navigation: ${navResult.securityBlocked.reason}. The full-page screenshot and nav results above were captured before the block.`,
+                screenshotUrl: `/screenshots/${fullFilename}`,
+                elementScreenshotUrl: state.shots[0] ? state.shots[0].url : null,
+                elementScreenshots: state.shots,
+                navigationCheck: navReport,
+            }));
+        }
         record(`Nav bar pass finished: ${navReport.length} link(s) checked`);
 
         if (guard.blocked) {
@@ -2266,9 +2277,8 @@ app.post("/api/screenshot", async (req, res) => {
         // 6) Fill whatever is on the page now and follow Continue/Next,
         //    stopping at the first sensitive field or security guard.
         const { sensitive, securityBlocked } = await fillAndAdvance(page, guard, stats, record);
-        stats.popupsHandled += await clearPopups(page).catch(() => 0);
 
-        // --- E2-07: If guard blocked, finish and return the result ---
+        // --- E2-07: Check for guard block BEFORE any further page interaction ---
         if (securityBlocked) {
             record(`Guard blocked: ${securityBlocked.reason} (${securityBlocked.details})`);
             guard.on = false;
@@ -2284,6 +2294,9 @@ app.post("/api/screenshot", async (req, res) => {
                 securityBlocked: true
             }));
         }
+
+        // Only interact with popups if NOT blocked
+        stats.popupsHandled += await clearPopups(page).catch(() => 0);
 
         if (sensitive) {
             record(`Sensitive field reached: "${sensitive.label}" -> stopped before entering anything`);
