@@ -66,3 +66,48 @@ describe("Scan: state map for a list of pages", () => {
     expect(now.every((s) => s.startsWith("Scanned"))).toBe(true);
   });
 });
+describe("Scan: discovery preview for Whole domain", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    sessionStorage.clear();
+    save({ mode: "domain", host: "a.com", urls: [] });
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it("Given a domain, then the preview label shows", () => {
+    show();
+    expect(screen.getByText("Preview: live discovery arrives in P1")).toBeTruthy();
+  });
+
+  it("Given a domain, then the counts show", () => {
+    show();
+    expect(screen.getByText("Pages found")).toBeTruthy();
+    expect(screen.getByText("Pages checked")).toBeTruthy();
+    expect(screen.getByText("Templates identified")).toBeTruthy();
+  });
+
+  it("Given a domain, then a page tree shows the host and its branches", () => {
+    const { container } = show();
+    const tree = container.querySelector(".disc-tree");
+    expect(tree).toBeTruthy();
+    expect(screen.getByText("a.com")).toBeTruthy();
+    expect(screen.getByText("/health-insurance")).toBeTruthy();
+    expect(screen.getByText("/motor-insurance")).toBeTruthy();
+  });
+
+  it("Given a domain, then the URL table has a row for each sample URL", () => {
+    const { container } = show();
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(8);
+  });
+
+  it("Given a domain, then the URL table shows the full URL with the host", () => {
+    show();
+    expect(screen.getByText("https://a.com/claims")).toBeTruthy();
+  });
+
+  it("Given a list of pages, then no preview label shows", () => {
+    save({ mode: "pages", host: "a.com", urls: URLS });
+    show();
+    expect(screen.queryByText("Preview: live discovery arrives in P1")).toBeNull();
+  });
+});
