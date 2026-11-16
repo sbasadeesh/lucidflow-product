@@ -84,3 +84,7 @@ export const SETTINGS_SECTIONS = [
   { label: "Data and retention", to: "/settings/data-and-retention", icon: "database" },
   { label: "Notifications", to: "/settings/notifications", icon: "bell" },
 ];
+export const JOURNEY = {
+  homeLabel: "Home page URL",
+  homePlaceholder: "https://www.example.com",
+};

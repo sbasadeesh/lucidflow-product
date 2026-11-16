@@ -1220,3 +1220,78 @@ select option {
   width: auto;
   margin: 0 0 0 8px;
 }
+/* Page URLs: order number and arrows on each chip */
+.cnum {
+  min-width: 20px;
+  height: 20px;
+  display: inline-grid;
+  place-items: center;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--secondary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.chip button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+/* State map: pages in scan order */
+.smap {
+  list-style: none;
+  margin: 16px 0;
+  padding: 0;
+  width: 100%;
+  max-width: 560px;
+}
+
+.snode {
+  display: grid;
+  justify-items: center;
+}
+
+.sbox {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: left;
+}
+
+.snode.scanning .sbox {
+  border-color: var(--secondary);
+}
+
+.snode.waiting .sbox {
+  opacity: 0.5;
+}
+
+.snum {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.surl {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.sstate {
+  font-size: 12px;
+}
+
+.sarrow {
+  display: grid;
+  place-items: center;
+  padding: 4px 0;
+}
