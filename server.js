@@ -21,6 +21,7 @@ const {
 const stabilizerConfig = require("./stabilizer.config");
 const { runStateScript, parseScript, ScriptError } = require("./stateScriptRunner");
 const stateScriptConfig = require("./stateScript.config");
+const { checkSecurityGuards } = require("./security-guard/securityGuard");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -1100,6 +1101,14 @@ async function saveRevealedShot(page, anchor, label, state, record) {
 async function fillAndAdvance(page, guard, stats, record) {
     let sensitive = null;
 
+    // --- E2-07: Check Security Guards ---
+    const security = await checkSecurityGuards(page);
+    if (security.blocked) {
+        record(`Security Guard Triggered: ${security.reason} (${security.details}) -> stopping.`);
+        return { sensitive: null, securityBlocked: security };
+    }
+    // ------------------------------------
+
     for (let step = 0; step < MAX_STEPS; step++) {
         const closed = await clearPopups(page).catch(() => 0);
         stats.interactions += closed;
@@ -1164,7 +1173,23 @@ async function revealCheck({ page, guard, state, stats, record, before, label })
     record(`${label}: ${newCount} new field(s) appeared, URL unchanged -> filling`);
     const anchorHandle = await newFields.first().elementHandle().catch(() => null);
 
-    const { sensitive } = await fillAndAdvance(page, guard, stats, record);
+    const { sensitive, securityBlocked } = await fillAndAdvance(page, guard, stats, record);
+
+    // --- E2-07: If guard blocked, take a screenshot and stop ---
+    if (securityBlocked) {
+        guard.on = false;
+        await browser.close();
+        browser = null;
+        return res.json(finish("not_assessed", {
+            message: `Scan stopped: ${securityBlocked.reason}`,
+            reason: securityBlocked.reason,
+            details: securityBlocked.details,
+            screenshotUrl: `/screenshots/${fullFilename}`,
+            elementScreenshots: state.shots,
+            stoppedBeforeSensitiveField: true,
+            securityBlocked: true
+        }));
+    }
 
     if (sensitive) {
         record(`${label}: sensitive field "${sensitive.label}" reached -> stopped for this form`);
@@ -2235,9 +2260,26 @@ app.post("/api/screenshot", async (req, res) => {
         record("Quote button pass finished");
 
         // 6) Fill whatever is on the page now and follow Continue/Next,
-        //    stopping at the first sensitive field.
-        const { sensitive } = await fillAndAdvance(page, guard, stats, record);
+        //    stopping at the first sensitive field or security guard.
+        const { sensitive, securityBlocked } = await fillAndAdvance(page, guard, stats, record);
         stats.popupsHandled += await clearPopups(page).catch(() => 0);
+
+        // --- E2-07: If guard blocked, finish and return the result ---
+        if (securityBlocked) {
+            record(`Guard blocked: ${securityBlocked.reason} (${securityBlocked.details})`);
+            guard.on = false;
+            await browser.close();
+            browser = null;
+            return res.json(finish("not_assessed", {
+                message: `Scan stopped: ${securityBlocked.reason}`,
+                reason: securityBlocked.reason,
+                details: securityBlocked.details,
+                screenshotUrl: `/screenshots/${fullFilename}`,
+                elementScreenshots: state.shots,
+                stoppedBeforeSensitiveField: true,
+                securityBlocked: true
+            }));
+        }
 
         if (sensitive) {
             record(`Sensitive field reached: "${sensitive.label}" -> stopped before entering anything`);
