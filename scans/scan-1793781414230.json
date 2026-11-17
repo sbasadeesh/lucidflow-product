@@ -1,10 +1,10 @@
 {
-  "scanId": "scan-1792649289178",
+  "scanId": "scan-1793781414230",
   "url": "https://www.adityabirlahealthinsurance.com/",
   "status": "completed",
-  "startedAt": "2026-10-22T06:08:09.178Z",
-  "finishedAt": "2026-10-22T06:09:25.402Z",
-  "durationMs": 76224,
+  "startedAt": "2026-11-04T08:36:54.230Z",
+  "finishedAt": "2026-11-04T08:38:46.188Z",
+  "durationMs": 111958,
   "states": 3,
   "interactions": 6,
   "interactionBreakdown": {
@@ -19,12 +19,12 @@
   "popupsHandled": 0,
   "navLinksChecked": 0,
   "message": "Quote flow completed up to the phone number field",
-  "screenshotUrl": "/screenshots/full-1792649334793.png",
-  "elementScreenshotUrl": "/screenshots/quote-before-phone-1792649334793.png",
+  "screenshotUrl": "/screenshots/full-1793781488931.png",
+  "elementScreenshotUrl": "/screenshots/quote-before-phone-1793781488931.png",
   "elementScreenshots": [
     {
       "label": "main (phone step layout)",
-      "url": "/screenshots/quote-before-phone-1792649334793.png"
+      "url": "/screenshots/quote-before-phone-1793781488931.png"
     }
   ],
   "selectorCropUrl": null,
@@ -32,47 +32,51 @@
   "actionLog": [
     {
       "action": "Opening https://www.adityabirlahealthinsurance.com/",
-      "time": "2026-10-22T06:08:09.778Z"
+      "time": "2026-11-04T08:36:56.038Z"
     },
     {
-      "action": "Full page captured in 12 screens",
-      "time": "2026-10-22T06:09:10.877Z"
+      "action": "Rendered in 20772 ms (HTTP 200, network idle)",
+      "time": "2026-11-04T08:37:16.811Z"
+    },
+    {
+      "action": "Full page captured in 13 screens",
+      "time": "2026-11-04T08:38:28.681Z"
     },
     {
       "action": "Captured full-page screenshot (before filling anything)",
-      "time": "2026-10-22T06:09:10.877Z"
+      "time": "2026-11-04T08:38:28.681Z"
     },
     {
       "action": "Opened Members dropdown",
-      "time": "2026-10-22T06:09:16.073Z"
+      "time": "2026-11-04T08:38:35.338Z"
     },
     {
       "action": "Clicked OK",
-      "time": "2026-10-22T06:09:19.942Z"
+      "time": "2026-11-04T08:38:39.497Z"
     },
     {
       "action": "Clicked Get free quote",
-      "time": "2026-10-22T06:09:20.504Z"
+      "time": "2026-11-04T08:38:40.467Z"
     },
     {
       "action": "Entered age 30",
-      "time": "2026-10-22T06:09:22.682Z"
+      "time": "2026-11-04T08:38:42.842Z"
     },
     {
       "action": "Clicked Continue",
-      "time": "2026-10-22T06:09:23.537Z"
+      "time": "2026-11-04T08:38:43.885Z"
     },
     {
       "action": "Filled test email",
-      "time": "2026-10-22T06:09:23.717Z"
+      "time": "2026-11-04T08:38:44.155Z"
     },
     {
       "action": "Phone number field reached",
-      "time": "2026-10-22T06:09:24.226Z"
+      "time": "2026-11-04T08:38:44.666Z"
     },
     {
       "action": "Captured hero + contact-details screenshot",
-      "time": "2026-10-22T06:09:25.120Z"
+      "time": "2026-11-04T08:38:45.738Z"
     }
   ]
 }
