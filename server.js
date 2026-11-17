@@ -13,9 +13,12 @@ const {
     listScans,
     readScan,
 } = require("./screenshotModule");
+const domCaptureConfig = require("./DOMcapture.config");
+const capture = require("./capture");
+const { captureState } = require("./DOMcapture");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // Set to false to leave the optional email empty in the screenshots
 const FILL_EMAIL = true;
@@ -44,6 +47,16 @@ fs.mkdirSync(screenshotDir, { recursive: true });
 app.use(cors());
 app.use(express.json());
 app.use("/screenshots", express.static(screenshotDir));
+const snapshotDir = path.join(__dirname, domCaptureConfig.folder);
+fs.mkdirSync(snapshotDir, { recursive: true });
+// A saved page is served as plain text, never as a page: its scripts must not run on this server's address.
+app.use(`/${domCaptureConfig.folder}`, express.static(snapshotDir, {
+    setHeaders: (res) => {
+        res.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.setHeader("X-Content-Type-Options", "nosniff");
+        res.setHeader("Content-Security-Policy", "sandbox");
+    },
+}));
 
 app.get("/", (req, res) => {
     res.send("Screenshot Testing API is running");
@@ -722,7 +735,7 @@ async function fieldKeys(page, before = null, mark = false) {
             if (r.width < 5 || r.height < 5 || cs.visibility === "hidden" || cs.display === "none") return;
 
             const key = [el.tagName, type, el.name, el.id, el.placeholder,
-                Math.round(r.x / 20), Math.round((r.y + window.scrollY) / 20)].join("|");
+            Math.round(r.x / 20), Math.round((r.y + window.scrollY) / 20)].join("|");
             out.push(key);
             if (mark && !known.has(key)) el.setAttribute("data-newf", "1");
         });
@@ -1044,117 +1057,117 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
         const topLoc = page.locator(`[data-nav="${next.idx}"]`).first();
 
         try {
-        const beforeLinks = await visibleAnchorKeys(page);
-        const beforeFields = await fieldKeys(page);
-        const tabsBefore = guard.tabs;
+            const beforeLinks = await visibleAnchorKeys(page);
+            const beforeFields = await fieldKeys(page);
+            const tabsBefore = guard.tabs;
 
-        // ---- 1) hover the nav item ----
-        record(`Nav ${n}: "${next.text}" - hovering`);
-        let topPos = await hoverOpen(page, topLoc);
-        let subs = await newMenuLinks(page, beforeLinks, guard.home, MAX_SUB);
+            // ---- 1) hover the nav item ----
+            record(`Nav ${n}: "${next.text}" - hovering`);
+            let topPos = await hoverOpen(page, topLoc);
+            let subs = await newMenuLinks(page, beforeLinks, guard.home, MAX_SUB);
 
-        // ---- 2) nothing opened on hover -> click it ----
-        if (!subs.length) {
-            record(`Nav ${n}: "${next.text}" - nothing on hover, clicking`);
-            await smartClick(topLoc);
-            stats.interactions++;
-            await page.waitForTimeout(1200);
-
-            if (normalizeUrl(page.url()) !== guard.home) {
-                const newUrl = page.url();
-                record(`Nav ${n}: URL changed to ${newUrl}`);
-                navReport.push({ menu: next.text, item: next.text, result: "URL changed", url: newUrl });
-                await returnHome(page, guard, record);
-                continue;
-            }
-            if (guard.tabs > tabsBefore) {
-                record(`Nav ${n}: opened a new tab (${guard.lastTab}) -> closed`);
-                navReport.push({ menu: next.text, item: next.text, result: "new tab", url: guard.lastTab });
-                continue;
-            }
-
-            subs = await newMenuLinks(page, beforeLinks, guard.home, MAX_SUB);
-
+            // ---- 2) nothing opened on hover -> click it ----
             if (!subs.length) {
-                const handled = await revealCheck({
-                    page, guard, state, stats, record, before: beforeFields, label: `Nav: ${next.text}`,
-                });
-                if (!handled) record(`Nav ${n}: URL unchanged, no dropdown links or fields found`);
-                navReport.push({ menu: next.text, item: next.text, result: "URL unchanged", url: page.url() });
-                await closePanel(page);
-                continue;
-            }
-        }
+                record(`Nav ${n}: "${next.text}" - nothing on hover, clicking`);
+                await smartClick(topLoc);
+                stats.interactions++;
+                await page.waitForTimeout(1200);
 
-        record(`Nav ${n}: dropdown opened with ${subs.length} link(s), URL unchanged so far`);
-
-        // ---- 3) click every link in the dropdown, one by one ----
-        for (let j = 0; j < subs.length; j++) {
-            if (totalLinks >= MAX_NAV_LINKS) {
-                record(`Nav link limit (${MAX_NAV_LINKS}) reached -> stopping nav pass`);
-                return;
-            }
-            totalLinks++;
-            const sub = subs[j];
-            const tag = `Nav ${n}.${j + 1}`;
-
-            try {
-
-            const pos = await ensureLink(next.text, sub.href, topPos);
-            if (!pos && !(await markMenuLink(page, sub.href))) {
-                record(`${tag}: "${sub.text}" not visible any more -> skipped`);
-                continue;
-            }
-            topPos = pos || topPos;
-
-            record(`${tag}: "${sub.text}" - clicking`);
-            const tabs = guard.tabs;
-            const fieldsBefore = await fieldKeys(page);
-
-            await moveAndClick(page, topPos, page.locator('[data-sub="1"]').first());
-            stats.interactions++;
-            await page.waitForTimeout(1500);
-
-            if (normalizeUrl(page.url()) !== guard.home) {
-                const newUrl = page.url();
-                record(`${tag}: URL changed to ${newUrl}`);
-                navReport.push({ menu: next.text, item: sub.text, result: "URL changed", url: newUrl });
-                await returnHome(page, guard, record);
-                record(`Nav ${n}: hovering "${next.text}" again`);
-                topPos = (await reopenTop(next.text, "hover")) || topPos;
-                continue;
-            }
-
-            if (guard.tabs > tabs) {
-                record(`${tag}: opened a new tab (${guard.lastTab}) -> closed`);
-                navReport.push({ menu: next.text, item: sub.text, result: "new tab", url: guard.lastTab });
-                continue;
-            }
-
-            record(`${tag}: URL unchanged`);
-            navReport.push({ menu: next.text, item: sub.text, result: "URL unchanged", url: page.url() });
-
-            const handled = await revealCheck({
-                page, guard, state, stats, record, before: fieldsBefore, label: `Nav: ${sub.text}`,
-            });
-            if (handled) {
-                await closePanel(page);
-                topPos = (await reopenTop(next.text, "hover")) || topPos;
-            }
-            } catch (err) {
-                // the click started a real navigation while we were still reading the page
-                record(`${tag}: page changed during the click -> checking the URL`);
-                await page.waitForLoadState("domcontentloaded", { timeout: 15000 }).catch(() => { });
                 if (normalizeUrl(page.url()) !== guard.home) {
-                    record(`${tag}: URL changed to ${page.url()}`);
-                    navReport.push({ menu: next.text, item: sub.text, result: "URL changed", url: page.url() });
+                    const newUrl = page.url();
+                    record(`Nav ${n}: URL changed to ${newUrl}`);
+                    navReport.push({ menu: next.text, item: next.text, result: "URL changed", url: newUrl });
+                    await returnHome(page, guard, record);
+                    continue;
                 }
-                await returnHome(page, guard, record);
-                topPos = (await reopenTop(next.text, "hover").catch(() => null)) || topPos;
-            }
-        }
+                if (guard.tabs > tabsBefore) {
+                    record(`Nav ${n}: opened a new tab (${guard.lastTab}) -> closed`);
+                    navReport.push({ menu: next.text, item: next.text, result: "new tab", url: guard.lastTab });
+                    continue;
+                }
 
-        await closePanel(page);
+                subs = await newMenuLinks(page, beforeLinks, guard.home, MAX_SUB);
+
+                if (!subs.length) {
+                    const handled = await revealCheck({
+                        page, guard, state, stats, record, before: beforeFields, label: `Nav: ${next.text}`,
+                    });
+                    if (!handled) record(`Nav ${n}: URL unchanged, no dropdown links or fields found`);
+                    navReport.push({ menu: next.text, item: next.text, result: "URL unchanged", url: page.url() });
+                    await closePanel(page);
+                    continue;
+                }
+            }
+
+            record(`Nav ${n}: dropdown opened with ${subs.length} link(s), URL unchanged so far`);
+
+            // ---- 3) click every link in the dropdown, one by one ----
+            for (let j = 0; j < subs.length; j++) {
+                if (totalLinks >= MAX_NAV_LINKS) {
+                    record(`Nav link limit (${MAX_NAV_LINKS}) reached -> stopping nav pass`);
+                    return;
+                }
+                totalLinks++;
+                const sub = subs[j];
+                const tag = `Nav ${n}.${j + 1}`;
+
+                try {
+
+                    const pos = await ensureLink(next.text, sub.href, topPos);
+                    if (!pos && !(await markMenuLink(page, sub.href))) {
+                        record(`${tag}: "${sub.text}" not visible any more -> skipped`);
+                        continue;
+                    }
+                    topPos = pos || topPos;
+
+                    record(`${tag}: "${sub.text}" - clicking`);
+                    const tabs = guard.tabs;
+                    const fieldsBefore = await fieldKeys(page);
+
+                    await moveAndClick(page, topPos, page.locator('[data-sub="1"]').first());
+                    stats.interactions++;
+                    await page.waitForTimeout(1500);
+
+                    if (normalizeUrl(page.url()) !== guard.home) {
+                        const newUrl = page.url();
+                        record(`${tag}: URL changed to ${newUrl}`);
+                        navReport.push({ menu: next.text, item: sub.text, result: "URL changed", url: newUrl });
+                        await returnHome(page, guard, record);
+                        record(`Nav ${n}: hovering "${next.text}" again`);
+                        topPos = (await reopenTop(next.text, "hover")) || topPos;
+                        continue;
+                    }
+
+                    if (guard.tabs > tabs) {
+                        record(`${tag}: opened a new tab (${guard.lastTab}) -> closed`);
+                        navReport.push({ menu: next.text, item: sub.text, result: "new tab", url: guard.lastTab });
+                        continue;
+                    }
+
+                    record(`${tag}: URL unchanged`);
+                    navReport.push({ menu: next.text, item: sub.text, result: "URL unchanged", url: page.url() });
+
+                    const handled = await revealCheck({
+                        page, guard, state, stats, record, before: fieldsBefore, label: `Nav: ${sub.text}`,
+                    });
+                    if (handled) {
+                        await closePanel(page);
+                        topPos = (await reopenTop(next.text, "hover")) || topPos;
+                    }
+                } catch (err) {
+                    // the click started a real navigation while we were still reading the page
+                    record(`${tag}: page changed during the click -> checking the URL`);
+                    await page.waitForLoadState("domcontentloaded", { timeout: 15000 }).catch(() => { });
+                    if (normalizeUrl(page.url()) !== guard.home) {
+                        record(`${tag}: URL changed to ${page.url()}`);
+                        navReport.push({ menu: next.text, item: sub.text, result: "URL changed", url: page.url() });
+                    }
+                    await returnHome(page, guard, record);
+                    topPos = (await reopenTop(next.text, "hover").catch(() => null)) || topPos;
+                }
+            }
+
+            await closePanel(page);
         } catch (err) {
             record(`Nav ${n}: page changed during the click -> checking the URL`);
             await page.waitForLoadState("domcontentloaded", { timeout: 15000 }).catch(() => { });
@@ -1592,21 +1605,15 @@ async function runQuoteFlowUntilPhone(page, log) {
 // Main screenshot API
 // --------------------------------------------------
 app.post("/api/screenshot", async (req, res) => {
-    const { url, selector } = req.body;
+    const { url, selector } = req.body || {};
 
-    if (!url) {
-        return res.status(400).json({ error: "URL is required" });
-    }
-
+    // criterion 3: an invalid URL gets a clear error (the message says what to enter)
     let parsedUrl;
     try {
-        parsedUrl = new URL(url);
-    } catch {
-        return res.status(400).json({ error: "Invalid URL" });
-    }
-
-    if (!["http:", "https:"].includes(parsedUrl.protocol)) {
-        return res.status(400).json({ error: "Only HTTP and HTTPS URLs are supported" });
+        parsedUrl = capture.validateUrl(url);
+    } catch (e) {
+        if (e instanceof capture.RenderError) return res.status(e.httpStatus).json({ error: e.message, code: e.code });
+        throw e;
     }
 
     let browser;
@@ -1630,6 +1637,7 @@ app.post("/api/screenshot", async (req, res) => {
         homeFull: parsedUrl.href,
     };
     const state = { ts: Date.now(), shots: [], keys: new Set() };
+    const domStates = []; // E2-02: the DOM and styles saved for each state
 
     const scanId = `scan-${state.ts}`;
     const startedAt = new Date().toISOString();
@@ -1651,6 +1659,7 @@ app.post("/api/screenshot", async (req, res) => {
             fieldsFilled: stats.fieldsFilled,
             stepsVisited: stats.stepsVisited,
             popupsHandled: stats.popupsHandled,
+            domStates,
             navLinksChecked: navReport.length,
             ...extra,
             actionLog: actions,
@@ -1659,40 +1668,70 @@ app.post("/api/screenshot", async (req, res) => {
         return summary;
     };
 
+    // E2-02: save the DOM and the computed styles of the page for one state.
+    // The element asked for in the request (selector) is always stored first.
+    let snapshotStartUrl = null; // the one URL this scan was given
+    const snapshot = async (page, name) => {
+        try {
+            if (snapshotStartUrl === null) snapshotStartUrl = normalizeUrl(page.url());
+
+            // the scan was given ONE url: if the engine ended up on another page (a menu link,
+            // a client-side route), go back to it first, so the saved state belongs to the given url
+            if (normalizeUrl(page.url()) !== snapshotStartUrl) {
+                record(`State "${name}": the page is ${page.url()}, going back to ${guard.homeFull}`);
+                await returnHome(page, guard, record);
+            }
+
+            const saved = await captureState(page, {
+                name,
+                index: domStates.length + 1,
+                dir: snapshotDir,
+                filePrefix: scanId,
+                selectors: selector ? [selector] : null,
+                includeDefaults: true,
+                log: (m) => record(m),
+            });
+            saved.onStartPage = normalizeUrl(page.url()) === snapshotStartUrl;
+            domStates.push(saved);
+
+            record(`DOM and styles saved for state "${name}"`, { dom: saved.dom.file, styles: saved.styles.file });
+            if (!saved.onStartPage) {
+                record(`State "${name}" could not be brought back to the given URL: ${page.url()}`);
+            }
+        } catch (e) {
+            record(`DOM capture skipped for "${name}": ${String(e.message).split("\n")[0]}`);
+        }
+    };
+
     try {
-        // Set headless: false and slowMo: 300 to watch it run while debugging
-        browser = await chromium.launch({ headless: true });
+        // criteria 1 and 2: a real browser (JavaScript runs), a fixed viewport, waits for the
+        // network to go idle, and stops with a timeout after 30 seconds (see capture.config.js)
+        const rendered = await capture.render(parsedUrl.href, {
+            log: (m) => record(m),
+            // runs BEFORE the page is opened, so the guard and the dialog handler see the first load
+            onPage: async (page, context) => {
+                await setupNavigationGuard(page, context, guard, (m) => record(m));
 
-        const context = await browser.newContext({
-            viewport: { width: 1366, height: 900 },
-            deviceScaleFactor: 1,
+                // Dismiss JS alert/confirm/prompt dialogs
+                page.on("dialog", async (dialog) => {
+                    try {
+                        const msg = dialog.message();
+                        const type = dialog.type();
+                        await dialog.dismiss();
+                        if (type === "beforeunload") {
+                            guard.attempts++;
+                            record("Page tried to navigate away -> cancelled, staying on this URL");
+                        } else {
+                            stats.interactions++;
+                            stats.popupsHandled++;
+                            record(`JavaScript dialog dismissed: "${msg}"`, { type });
+                        }
+                    } catch { }
+                });
+            },
         });
-
-        const page = await context.newPage();
-
-        await setupNavigationGuard(page, context, guard, (m) => record(m));
-
-        // Dismiss JS alert/confirm/prompt dialogs
-        page.on("dialog", async (dialog) => {
-            try {
-                const msg = dialog.message();
-                const type = dialog.type();
-                await dialog.dismiss();
-                if (type === "beforeunload") {
-                    guard.attempts++;
-                    record("Page tried to navigate away -> cancelled, staying on this URL");
-                } else {
-                    stats.interactions++;
-                    stats.popupsHandled++;
-                    record(`JavaScript dialog dismissed: "${msg}"`, { type });
-                }
-            } catch { }
-        });
-
-        record(`Opening ${parsedUrl.href}`);
-        await page.goto(parsedUrl.href, { waitUntil: "domcontentloaded", timeout: 60000 });
-        await page.waitForTimeout(2500);
-
+        browser = rendered.browser; // closed by the existing code below and in `finally`
+        const page = rendered.page;
         // ---------- Aditya Birla quote flow ----------
         if (parsedUrl.hostname.includes("adityabirlahealthinsurance.com")) {
             const quoteResult = await runQuoteFlowUntilPhone(page, (m) => record(m));
@@ -1704,6 +1743,8 @@ app.post("/api/screenshot", async (req, res) => {
                 if (await captureSelectorCrop(page, selector, path.join(screenshotDir, cropFile), (m) => record(m))) {
                     selectorCropUrl = `/screenshots/${cropFile}`;
                 }
+
+                await snapshot(page, "phone step");
 
                 await browser.close();
                 browser = null;
@@ -1740,6 +1781,7 @@ app.post("/api/screenshot", async (req, res) => {
         const fullFilename = `full-${state.ts}.png`;
         await takeFullPage(page, path.join(screenshotDir, fullFilename), (m) => record(m));
         record("Full-page screenshot saved (before any interaction)", { filename: fullFilename });
+        await snapshot(page, "initial page");
 
         // 2) From now on the browser must stay on this URL
         guard.home = normalizeUrl(page.url());
@@ -1821,6 +1863,8 @@ app.post("/api/screenshot", async (req, res) => {
             selectorCropUrl = `/screenshots/${cropFile}`;
         }
 
+        await snapshot(page, "final state");
+
         guard.on = false;
         await browser.close();
         browser = null;
@@ -1837,6 +1881,16 @@ app.post("/api/screenshot", async (req, res) => {
             navigationCheck: navReport,
         }));
     } catch (error) {
+        if (error instanceof capture.RenderError) {
+            record(`Scan stopped: ${error.message}`);
+            return res.status(error.httpStatus).json(finish(error.code === "timeout" ? "timeout" : "load_failed", {
+                error: error.message,
+                message: error.message,
+                errorCode: error.code,
+                elementScreenshots: state.shots,
+                navigationCheck: navReport,
+            }));
+        }
         console.error("Audit failed:", error.message);
 
         return res.status(500).json(finish("failed", {

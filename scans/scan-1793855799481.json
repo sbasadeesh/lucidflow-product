@@ -1,0 +1,36 @@
+{
+  "scanId": "scan-1793855799481",
+  "url": "https://www.adityabirlahealthinsurance.co/",
+  "status": "load_failed",
+  "startedAt": "2026-11-05T05:16:39.481Z",
+  "finishedAt": "2026-11-05T05:17:05.507Z",
+  "durationMs": 26026,
+  "states": 1,
+  "interactions": 0,
+  "interactionBreakdown": {
+    "clicks": 0,
+    "hovers": 0,
+    "fieldsFilled": 0,
+    "selections": 0,
+    "dialogsHandled": 0
+  },
+  "fieldsFilled": 0,
+  "stepsVisited": 1,
+  "popupsHandled": 0,
+  "navLinksChecked": 0,
+  "error": "The website \"www.adityabirlahealthinsurance.co\" could not be found. Check the spelling of the address.",
+  "message": "The website \"www.adityabirlahealthinsurance.co\" could not be found. Check the spelling of the address.",
+  "errorCode": "load_failed",
+  "elementScreenshots": [],
+  "navigationCheck": [],
+  "actionLog": [
+    {
+      "action": "Opening https://www.adityabirlahealthinsurance.co/",
+      "time": "2026-11-05T05:17:02.614Z"
+    },
+    {
+      "action": "Scan stopped: The website \"www.adityabirlahealthinsurance.co\" could not be found. Check the spelling of the address.",
+      "time": "2026-11-05T05:17:05.505Z"
+    }
+  ]
+}
