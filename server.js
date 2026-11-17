@@ -1,4 +1,4 @@
-﻿const express = require("express");
+const express = require("express");
 const cors = require("cors");
 const { chromium } = require("playwright");
 const path = require("path");
@@ -19,9 +19,12 @@ const {
     compareImages,
 } = require("./screenshotStabilizer");
 const stabilizerConfig = require("./stabilizer.config");
+const { runStateScript, parseScript, ScriptError } = require("./stateScriptRunner");
+const stateScriptConfig = require("./stateScript.config");
+const { checkSecurityGuards } = require("./security-guard/securityGuard");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // Set to false to leave the optional email empty in the screenshots
 const FILL_EMAIL = true;
@@ -34,6 +37,119 @@ const CONNECTION_BLOCK_ERRORS =
 function errorCode(err) {
     const m = String((err && err.message) || "").match(/net::(ERR_[A-Z0-9_]+)/);
     return m ? m[1] : "unknown";
+}
+
+// Statuses where the page really was assessed. Every other status means "could not assess".
+const ASSESSED_STATUSES = ["completed", "completed_with_failures", "stopped"];
+
+// HTTP status of every redirect the first request went through
+async function redirectChainOf(response) {
+    const hops = [];
+    let request = response ? response.request() : null;
+    while (request && request.redirectedFrom()) {
+        const from = request.redirectedFrom();
+        const r = await from.response().catch(() => null);
+        hops.unshift({ url: from.url(), status: r ? r.status() : null });
+        request = from;
+    }
+    return hops;
+}
+
+// A short page that says "not found" / "error" even though the status was 200
+async function softErrorText(page) {
+    return page
+        .evaluate(() => {
+            const body = ((document.body && document.body.innerText) || "").trim();
+            const head = ((document.title || "") + " " + body.slice(0, 300)).toLowerCase();
+            const m = head.match(
+                /page not found|not found|internal server error|service unavailable|something went wrong|this site can.t be reached|\b(404|500|502|503)\b.{0,40}(error|not found|unavailable)/
+            );
+            return body.length < 1500 && m ? m[0] : null;
+        })
+        .catch(() => null);
+}
+
+// Opens the page and says whether it can be assessed.
+// Returns { assessable, status, reason, errorCode?, loadInfo }
+async function openAndCheckPage(page, url, record) {
+    const loadInfo = { requestedUrl: url, finalUrl: url, redirected: false, redirectChain: [], statusCode: null };
+    const fail = (status, reason, extra = {}) => {
+        record(`Could not assess: ${reason}`);
+        return { assessable: false, status, reason, loadInfo, ...extra };
+    };
+
+    // 1. open the page (one more try when the site cuts the connection)
+    let response = null;
+    let loadError = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+            response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
+            loadError = null;
+            break;
+        } catch (e) {
+            loadError = e;
+            if (!CONNECTION_BLOCK_ERRORS.test(e.message) || attempt === 2) break;
+            record(`First page load failed (${errorCode(e)}) -> trying once more`);
+            await page.waitForTimeout(3000);
+        }
+    }
+    if (loadError) {
+        const code = errorCode(loadError);
+        if (CONNECTION_BLOCK_ERRORS.test(loadError.message)) {
+            return fail("blocked", "The site closed the connection (it blocks automated browsers)", { errorCode: code });
+        }
+        if (code === "ERR_NAME_NOT_RESOLVED") {
+            return fail("load_failed", "The address does not exist (DNS lookup failed)", { errorCode: code });
+        }
+        if (/timeout/i.test(loadError.message)) {
+            return fail("load_failed", "The page did not load in time", { errorCode: "TIMEOUT" });
+        }
+        return fail("load_failed", `The page could not be loaded (${code})`, { errorCode: code });
+    }
+
+    // 2. HTTP status and redirects
+    loadInfo.statusCode = response ? response.status() : null;
+    loadInfo.redirectChain = await redirectChainOf(response);
+    loadInfo.finalUrl = page.url();
+    loadInfo.redirected =
+        loadInfo.redirectChain.length > 0 || normalizeUrl(loadInfo.finalUrl) !== normalizeUrl(url);
+
+    if (loadInfo.redirected) {
+        const hops = [...loadInfo.redirectChain.map((h) => `${h.url} (${h.status})`), loadInfo.finalUrl].join(" -> ");
+        record(`Redirected: ${hops}`);
+        try {
+            if (new URL(loadInfo.finalUrl).hostname !== new URL(url).hostname) {
+                record("Warning: the redirect leads to another domain");
+            }
+        } catch { }
+    }
+    record(`Final URL: ${loadInfo.finalUrl} (HTTP ${loadInfo.statusCode})`);
+
+    if (loadInfo.statusCode !== null && loadInfo.statusCode >= 400) {
+        // a 403 / 429 with a block page ("Access Denied", captcha...) is bot protection, not a missing page
+        const blockText = await isBlockedPage(page);
+        if (blockText) {
+            return fail("blocked", `The site refused the scan with HTTP ${loadInfo.statusCode} ("${blockText}")`, {
+                errorCode: `HTTP_${loadInfo.statusCode}`,
+            });
+        }
+        return fail("http_error", `The page answered with HTTP ${loadInfo.statusCode}`, {
+            errorCode: `HTTP_${loadInfo.statusCode}`,
+        });
+    }
+
+    // 3. let the page settle, then check again (JavaScript redirects, block pages, "not found" pages)
+    await page.waitForTimeout(2500);
+    loadInfo.finalUrl = page.url();
+    loadInfo.redirected = loadInfo.redirected || normalizeUrl(loadInfo.finalUrl) !== normalizeUrl(url);
+
+    const blockedText = await isBlockedPage(page);
+    if (blockedText) return fail("blocked", `The site answered with a block page ("${blockedText}")`);
+
+    const softText = await softErrorText(page);
+    if (softText) return fail("http_error", `The page looks like an error page ("${softText}")`);
+
+    return { assessable: true, loadInfo };
 }
 
 // Automatic popups (a banner that opens a few seconds after the page loads)
@@ -453,7 +569,7 @@ async function dismissOverlays(page, record = () => { }) {
                 if (!root) return false;
                 document.querySelectorAll("[data-popup-close]").forEach((e) => e.removeAttribute("data-popup-close"));
 
-                const wordRe = /^(close|dismiss|no,? ?thanks|skip|not now|maybe later|cancel|got it|Γ£ò|Γ£û|├ù|x)$/i;
+                const wordRe = /^(close|dismiss|no,? ?thanks|skip|not now|maybe later|cancel|got it|✕|✖|×|x)$/i;
                 const labelRe = /(close|dismiss)/i;
                 const classRe = /(^|[-_\s])(close|dismiss)([-_\s]|$)|btn-close|modal-close|popup-close|icon-close/i;
 
@@ -986,6 +1102,13 @@ async function fillAndAdvance(page, guard, stats, record) {
     let sensitive = null;
 
     for (let step = 0; step < MAX_STEPS; step++) {
+        // --- E2-07: Check Security Guards on EACH step ---
+        const security = await checkSecurityGuards(page);
+        if (security.blocked) {
+            record(`Security Guard Triggered: ${security.reason} (${security.details}) -> stopping.`);
+            return { sensitive: null, securityBlocked: security };
+        }
+        // ------------------------------------
         const closed = await clearPopups(page).catch(() => 0);
         stats.interactions += closed;
         stats.popupsHandled += closed;
@@ -1010,17 +1133,38 @@ async function fillAndAdvance(page, guard, stats, record) {
         if (!canClick) break;
 
         try {
-            await nextButton.click({ timeout: 2500 });
-            stats.interactions++;
-            stats.stepsVisited++;
-            record("Continue/Next clicked", { step: stats.stepsVisited });
-            await page.waitForTimeout(1200);
+            // Temporarily allow navigation to reach the next page
+            // Save prior state and restore in finally block for exception safety
+            const priorAllowNav = guard.allowNav;
+            guard.allowNav = true;
+            
+            try {
+                await nextButton.click({ timeout: 2500 });
+                
+                stats.interactions++;
+                stats.stepsVisited++;
+                record("Continue/Next clicked", { step: stats.stepsVisited });
+                
+                // Wait for navigation to commit before checking guard
+                await page.waitForLoadState("domcontentloaded", { timeout: 5000 }).catch(() => {});
+                await page.waitForTimeout(1200);
 
-            if (normalizeUrl(page.url()) !== guard.home) {
-                record(`URL changed to ${page.url()} -> going back and stopping`);
-                await page.goBack({ timeout: 15000 }).catch(() => { });
-                break;
+                if (normalizeUrl(page.url()) !== guard.home) {
+                    // Check if navigated-to page is protected BEFORE going back
+                    const navigatedSecurity = await checkSecurityGuards(page);
+                    if (navigatedSecurity.blocked) {
+                        record(`Security Guard Triggered on navigated URL ${page.url()}: ${navigatedSecurity.reason}`);
+                        return { sensitive: null, securityBlocked: navigatedSecurity };
+                    }
+                    
+                    record(`URL changed to ${page.url()} -> going back and stopping`);
+                    await page.goBack({ timeout: 15000 }).catch(() => { });
+                    break;
+                }
+            } finally {
+                guard.allowNav = priorAllowNav;
             }
+            break;
         } catch {
             record("Continue/Next could not be completed", { step: stats.stepsVisited });
             break;
@@ -1049,7 +1193,13 @@ async function revealCheck({ page, guard, state, stats, record, before, label })
     record(`${label}: ${newCount} new field(s) appeared, URL unchanged -> filling`);
     const anchorHandle = await newFields.first().elementHandle().catch(() => null);
 
-    const { sensitive } = await fillAndAdvance(page, guard, stats, record);
+    const { sensitive, securityBlocked } = await fillAndAdvance(page, guard, stats, record);
+
+    // --- E2-07: If guard blocked, propagate the blocked result to the caller ---
+    if (securityBlocked) {
+        record(`${label}: Security guard triggered: ${securityBlocked.reason} (${securityBlocked.details})`);
+        return { blocked: true, securityBlocked };
+    }
 
     if (sensitive) {
         record(`${label}: sensitive field "${sensitive.label}" reached -> stopped for this form`);
@@ -1140,6 +1290,10 @@ async function explorePass({ page, kind, title, maxItems, scan, guard, state, st
         const handled = await revealCheck({
             page, guard, state, stats, record, before, label: `${title}: ${next.text}`,
         });
+        if (handled && handled.blocked) {
+            // Guard was triggered, propagate up
+            return { blocked: true, securityBlocked: handled.securityBlocked };
+        }
         if (!handled) record(`${title} ${n}: opened, URL unchanged, no fields found`);
 
         await closePanel(page);
@@ -1327,6 +1481,11 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
                 const handled = await revealCheck({
                     page, guard, state, stats, record, before: beforeFields, label: `Nav: ${next.text}`,
                 });
+                if (handled && handled.blocked) {
+                    // Guard was triggered, stop navigation pass
+                    record(`Security guard triggered during nav pass: ${handled.securityBlocked.reason}`);
+                    return { blocked: true, securityBlocked: handled.securityBlocked };
+                }
                 if (!handled) record(`Nav ${n}: URL unchanged, no dropdown links or fields found`);
                 navReport.push({ menu: next.text, item: next.text, result: "URL unchanged", url: page.url() });
                 await closePanel(page);
@@ -1389,6 +1548,11 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
             const handled = await revealCheck({
                 page, guard, state, stats, record, before: fieldsBefore, label: `Nav: ${sub.text}`,
             });
+            if (handled && handled.blocked) {
+                // Guard was triggered, stop nav pass immediately without further interactions
+                record(`Security guard triggered during nested nav: ${handled.securityBlocked.reason}`);
+                return { blocked: true, securityBlocked: handled.securityBlocked };
+            }
             if (handled) {
                 await closePanel(page);
                 topPos = (await reopenTop(next.text, "hover")) || topPos;
@@ -1900,22 +2064,33 @@ app.post("/api/screenshot", async (req, res) => {
     const scanId = `scan-${state.ts}`;
     const startedAt = new Date().toISOString();
 
+    // What happened when the page was opened (status code, redirects, final URL)
+    const loadInfo = { requestedUrl: parsedUrl.href, finalUrl: parsedUrl.href, redirected: false, redirectChain: [], statusCode: null };
+
     // Builds the scan summary (states + interactions counted one way for every
     // flow), saves it to /scans/<scanId>.json and returns it for the response.
     const finish = (status, extra = {}) => {
         const m = computeScanMetrics(actions, navReport);
+        // a page that was never scanned has no states and no steps
+        const scanned = ASSESSED_STATUSES.includes(status) || Boolean(extra.screenshotUrl);
         const summary = {
             scanId,
             url: parsedUrl.href,
             status,
+            result: ASSESSED_STATUSES.includes(status) ? "assessed" : "could not assess",
+            statusCode: loadInfo.statusCode,
+            requestedUrl: loadInfo.requestedUrl,
+            finalUrl: loadInfo.finalUrl,
+            redirected: loadInfo.redirected,
+            redirectChain: loadInfo.redirectChain,
             startedAt,
             finishedAt: new Date().toISOString(),
             durationMs: Date.now() - state.ts,
-            states: m.states,
-            interactions: m.interactions,
+            states: scanned ? m.states : 0,
+            interactions: scanned ? m.interactions : 0,
             interactionBreakdown: m.breakdown,
             fieldsFilled: stats.fieldsFilled,
-            stepsVisited: stats.stepsVisited,
+            stepsVisited: scanned ? stats.stepsVisited : 0,
             popupsHandled: stats.popupsHandled,
             navLinksChecked: navReport.length,
             stabilizer: state.stab,
@@ -1964,59 +2139,37 @@ app.post("/api/screenshot", async (req, res) => {
             try {
                 const msg = dialog.message();
                 const type = dialog.type();
-                await dialog.dismiss();
-                if (type === "beforeunload") {
+                if (type === "beforeunload" && !guard.allowNav) {
+                    // Only dismiss beforeunload if navigation is not allowed
+                    await dialog.dismiss();
                     guard.attempts++;
                     record("Page tried to navigate away -> cancelled, staying on this URL");
                 } else {
-                    stats.interactions++;
-                    stats.popupsHandled++;
-                    record(`JavaScript dialog dismissed: "${msg}"`, { type });
+                    // Allow beforeunload when guard.allowNav is true, or handle other dialogs
+                    if (type === "beforeunload") {
+                        await dialog.accept();
+                    } else {
+                        await dialog.dismiss();
+                        stats.interactions++;
+                        stats.popupsHandled++;
+                        record(`JavaScript dialog dismissed: "${msg}"`, { type });
+                    }
                 }
             } catch { }
         });
 
         record(`Opening ${parsedUrl.href}`);
 
-        // The first page load. If the site cuts the connection (what bot protection
-        // usually does), try once more, then report "blocked" instead of "failed".
-        let loadError = null;
-        for (let attempt = 1; attempt <= 2; attempt++) {
-            try {
-                await page.goto(parsedUrl.href, { waitUntil: "domcontentloaded", timeout: 60000 });
-                loadError = null;
-                break;
-            } catch (e) {
-                loadError = e;
-                if (!CONNECTION_BLOCK_ERRORS.test(e.message) || attempt === 2) break;
-                record(`First page load failed (${errorCode(e)}) -> trying once more`);
-                await page.waitForTimeout(3000);
-            }
-        }
+        const opened = await openAndCheckPage(page, parsedUrl.href, record);
+        Object.assign(loadInfo, opened.loadInfo);
 
-        if (loadError) {
-            if (!CONNECTION_BLOCK_ERRORS.test(loadError.message)) throw loadError;
-
-            record(`The site closed the connection (${errorCode(loadError)}) -> it is blocking automated browsers. Nothing to scan.`);
+        if (!opened.assessable) {
             await browser.close();
             browser = null;
-            return res.json(finish("blocked", {
-                message: "The site closed the connection before the page loaded. This is how bot protection usually blocks automated browsers.",
-                errorCode: errorCode(loadError),
-                screenshotUrl: null,
-                elementScreenshotUrl: null,
-                elementScreenshots: [],
-            }));
-        }
-        await page.waitForTimeout(2500);
-
-        const blockedAtStart = await isBlockedPage(page);
-        if (blockedAtStart) {
-            record(`The site refused the first page load ("${blockedAtStart}") -> nothing to scan. Try https:// in the URL, or ask the site owner to allow your IP.`);
-            await browser.close();
-            browser = null;
-            return res.json(finish("blocked", {
-                message: "The site blocked the scan on the first page load",
+            return res.json(finish(opened.status, {
+                message: opened.reason,
+                reason: opened.reason,
+                errorCode: opened.errorCode || null,
                 screenshotUrl: null,
                 elementScreenshotUrl: null,
                 elementScreenshots: [],
@@ -2093,8 +2246,23 @@ app.post("/api/screenshot", async (req, res) => {
         await page.evaluate(() => window.scrollTo(0, 0));
         guard.allowNav = true;
         await page.evaluate(() => { window.__navGuard = false; }).catch(() => { });
-        await safePhase("Nav pass", () => navDeepPass({ page, guard, state, stats, record, navReport }), page, guard, record);
+        const navResult = await safePhase("Nav pass", () => navDeepPass({ page, guard, state, stats, record, navReport }), page, guard, record);
         guard.allowNav = false;
+        if (navResult && navResult.blocked) {
+            record(`Security guard blocked during nav pass: ${navResult.securityBlocked.reason}`);
+            await browser.close();
+            browser = null;
+            return res.json(finish("blocked", {
+                message: `The site triggered a security guard during navigation: ${navResult.securityBlocked.reason}. The full-page screenshot and nav results above were captured before the block.`,
+                reason: navResult.securityBlocked.reason,
+                details: navResult.securityBlocked.details,
+                securityBlocked: true,
+                screenshotUrl: `/screenshots/${fullFilename}`,
+                elementScreenshotUrl: state.shots[0] ? state.shots[0].url : null,
+                elementScreenshots: state.shots,
+                navigationCheck: navReport,
+            }));
+        }
         await page.evaluate(() => { window.__navGuard = true; }).catch(() => { });
         record(`Nav bar pass finished: ${navReport.length} link(s) checked`);
 
@@ -2138,8 +2306,27 @@ app.post("/api/screenshot", async (req, res) => {
         record("Quote button pass finished");
 
         // 6) Fill whatever is on the page now and follow Continue/Next,
-        //    stopping at the first sensitive field.
-        const { sensitive } = await fillAndAdvance(page, guard, stats, record);
+        //    stopping at the first sensitive field or security guard.
+        const { sensitive, securityBlocked } = await fillAndAdvance(page, guard, stats, record);
+
+        // --- E2-07: Check for guard block BEFORE any further page interaction ---
+        if (securityBlocked) {
+            record(`Guard blocked: ${securityBlocked.reason} (${securityBlocked.details})`);
+            guard.on = false;
+            await browser.close();
+            browser = null;
+            return res.json(finish("blocked", {
+                message: `Scan stopped: ${securityBlocked.reason}`,
+                reason: securityBlocked.reason,
+                details: securityBlocked.details,
+                screenshotUrl: `/screenshots/${fullFilename}`,
+                elementScreenshots: state.shots,
+                stoppedBeforeSensitiveField: true,
+                securityBlocked: true
+            }));
+        }
+
+        // Only interact with popups if NOT blocked
         stats.popupsHandled += await clearPopups(page).catch(() => 0);
 
         if (sensitive) {
@@ -2216,6 +2403,179 @@ app.post("/api/screenshot", async (req, res) => {
 // Scan history: how many scans ran, and the states / interactions of each
 // --------------------------------------------------
 // --------------------------------------------------
+// State script runner
+//   POST /api/script
+//   body: {
+//     "url": "https://...",            (or "url" inside the script)
+//     "script": { "name": "...", "steps": [ ... ] }   (an object, a JSON string or YAML text)
+//     "maxStates": 10,                 (optional state cap)
+//     "stabilize": false,              (optional, default on)
+//     "mask": [".chat"]                (optional volatile elements to cover)
+//   }
+// Runs the steps (click, type, wait, capture) on ONE page and saves every
+// captured state in order. A failed step is logged with its reason; the run
+// carries on. The scan is saved like every other scan (see /api/scans).
+// --------------------------------------------------
+app.post("/api/script", async (req, res) => {
+    const body = req.body || {};
+    const scriptInput = body.script !== undefined ? body.script : body.steps ? body : undefined;
+
+    if (scriptInput === undefined) {
+        return res.status(400).json({ error: 'Send a "script" with a list of "steps".' });
+    }
+
+    let parsed;
+    try {
+        parsed = parseScript(scriptInput, stateScriptConfig);
+    } catch (e) {
+        if (e instanceof ScriptError) return res.status(400).json({ error: e.message });
+        throw e;
+    }
+
+    const url = body.url || parsed.url;
+    let parsedUrl;
+    try {
+        parsedUrl = new URL(url);
+    } catch {
+        return res.status(400).json({ error: 'Send the page address as "url" (in the request or in the script).' });
+    }
+    if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+        return res.status(400).json({ error: "Only HTTP and HTTPS URLs are supported" });
+    }
+
+    const ts = Date.now();
+    const scanId = `scan-${ts}`;
+    const startedAt = new Date().toISOString();
+    const actions = [];
+    const record = (action, details = {}) => {
+        console.log(action);
+        actions.push({ action, time: new Date().toISOString(), ...details });
+    };
+
+    const loadInfo = { requestedUrl: parsedUrl.href, finalUrl: parsedUrl.href, redirected: false, redirectChain: [], statusCode: null };
+
+    const summarize = (status, extra = {}) => {
+        const summary = {
+            scanId,
+            type: "script",
+            url: parsedUrl.href,
+            scriptName: parsed.name,
+            status,
+            result: ASSESSED_STATUSES.includes(status) ? "assessed" : "could not assess",
+            statusCode: loadInfo.statusCode,
+            requestedUrl: loadInfo.requestedUrl,
+            finalUrl: loadInfo.finalUrl,
+            redirected: loadInfo.redirected,
+            redirectChain: loadInfo.redirectChain,
+            startedAt,
+            finishedAt: new Date().toISOString(),
+            durationMs: Date.now() - ts,
+            ...extra,
+            actionLog: actions,
+        };
+        try { saveScanSummary(scansDir, summary); } catch { }
+        return summary;
+    };
+
+    let browser;
+    try {
+        browser = await chromium.launch({ headless: true });
+        const context = await browser.newContext({
+            viewport: { width: 1366, height: 900 },
+            deviceScaleFactor: 1,
+            userAgent: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${browser.version()} Safari/537.36`,
+            locale: "en-IN",
+            timezoneId: "Asia/Kolkata",
+        });
+        const page = await context.newPage();
+
+        // JavaScript alerts/confirms are dismissed and logged
+        page.on("dialog", async (dialog) => {
+            try {
+                record(`JavaScript dialog dismissed: "${dialog.message()}"`);
+                await dialog.dismiss();
+            } catch { }
+        });
+
+        // ---- open the page ----
+        record(`Opening ${parsedUrl.href}`);
+
+        const opened = await openAndCheckPage(page, parsedUrl.href, record);
+        Object.assign(loadInfo, opened.loadInfo);
+
+        if (!opened.assessable) {
+            await browser.close();
+            browser = null;
+            return res.json(summarize(opened.status, {
+                message: opened.reason,
+                reason: opened.reason,
+                errorCode: opened.errorCode || null,
+                capturedStates: [],
+                states: 0,
+                interactions: 0,
+                counts: { steps: parsed.steps.length, ok: 0, failed: 0, skipped: parsed.steps.length, statesCaptured: 0, statesSkipped: 0, interactions: 0 },
+            }));
+        }
+
+        // popups that open by themselves would sit on top of every state
+        await waitAndDismissPopups(page, record, { waitMs: 4000, minWaitMs: 1500 });
+
+        // ---- keep every state steady (animations off, volatile parts masked) ----
+        const stabilizeOn = body.stabilize !== false;
+        const prep = stabilizeOn
+            ? async () => {
+                try {
+                    await stabilizePage(
+                        page,
+                        { maskSelectors: Array.isArray(body.mask) ? body.mask : [] },
+                        (m) => record(m)
+                    );
+                } catch (e) {
+                    record(`Stabilizer skipped: ${String(e.message).split("\n")[0]}`);
+                }
+            }
+            : null;
+
+        // ---- run the script ----
+        const result = await runStateScript(page, parsed, {
+            maxStates: body.maxStates,
+            outDir: screenshotDir,
+            filePrefix: `state-${scanId}`,
+            fileUrl: (file) => `/screenshots/${file}`,
+            prep,
+            log: (m) => record(m),
+        });
+
+        await browser.close();
+        browser = null;
+
+        return res.json(summarize(result.status, {
+            // same two numbers as every other scan: states captured, interactions done
+            states: result.counts.statesCaptured,
+            interactions: result.counts.interactions,
+            stateCap: result.stateCap,
+            capped: result.capped,
+            capturedStates: result.states,
+            skippedStates: result.skippedStates,
+            warnings: result.warnings,
+            counts: result.counts,
+            steps: result.steps,
+        }));
+    } catch (error) {
+        console.error("Script run failed:", error.message);
+        return res.status(500).json(summarize("failed", {
+            error: "State script run failed",
+            details: error.message,
+            capturedStates: [],
+            states: 0,
+            interactions: 0,
+        }));
+    } finally {
+        if (browser) await browser.close().catch(() => { });
+    }
+});
+
+// --------------------------------------------------
 // Compare two screenshots from the screenshots folder.
 //   GET /api/compare?a=full-111.png&b=full-222.png[&threshold=0.01]
 // --------------------------------------------------
@@ -2268,5 +2628,5 @@ app.get("/api/scans/:id", (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Backend running at http://localhost:${PORT}`);
+    process.stdout.write(`Backend running at http://localhost:${PORT}\n`);
 });

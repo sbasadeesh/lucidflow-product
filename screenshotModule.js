@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------
+// --------------------------------------------------
 // Screenshot module
 //  - full-page capture (scrolls first so lazy content is loaded)
 //  - layout screenshot around a form / element

@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------
+// --------------------------------------------------
 // Screenshot stabilizer
 //  - stabilizePage:   make a page hold still before a screenshot
 //                     (disable animations, pause media, mask volatile regions,

@@ -712,6 +712,12 @@ body {
   color: var(--muted-soft);
   font-size: var(--fs-s);
 }
+.shot-img {
+  width: 100%;
+  height: 81mm;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
 .card-red {
   padding: 10px 12px;
   border: 1px solid var(--border);

@@ -1,4 +1,4 @@
-﻿// Settings for the screenshot stabilizer.
+// Settings for the screenshot stabilizer.
 // All numbers, limits and defaults live here, not in the code.
 
 module.exports = {

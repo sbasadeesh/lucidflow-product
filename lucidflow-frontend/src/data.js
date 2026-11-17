@@ -1,5 +1,5 @@
 import { padId, titleCase } from "./utils/format.js";
-import { REPORT } from "./config.js";
+import { REPORT, SEVERITY_ORDER } from "./config.js";
 
 export const recentScans = [
   {
@@ -121,6 +121,8 @@ export function buildReport(scan) {
     ? SAMPLE_PATHS.map((p) => `https://${scan.host}${p === "/" ? "" : p}`)
     : scan.urls;
   const assessed = isDomain ? 214 : scan.urls.length;
+  // States metric from backend E2-03 scan: explicit 0 or undefined/null
+  const stateCount = scan.states !== undefined && scan.states !== null ? scan.states : "unavailable";
 
   // group pages by website
   const byHost = {};
@@ -130,29 +132,48 @@ export function buildReport(scan) {
   });
   const hosts = Object.keys(byHost);
 
-  // round-robin, so the findings cover every website
-  const queues = hosts.map((h) => [...byHost[h]]);
-  const ordered = [];
-  while (queues.some((q) => q.length)) {
-    queues.forEach((q) => q.length && ordered.push(q.shift()));
-  }
+  // Findings handling:
+  // 1. If scan.findings is supplied (including empty array), use it as-is.
+  // 2. If scan.isDemo === true, generate findings from TEMPLATES (demo mode only).
+  // 3. Otherwise, no findings available (assessment data unavailable).
+  let findings;
+  let isDemo = false;  // Track if output is demo/synthetic
+  
+  if (Array.isArray(scan.findings)) {
+    // Case 1: Supplied findings (including empty array) — use faithfully
+    findings = scan.findings;
+  } else if (scan.isDemo === true) {
+    // Case 2: Explicit demo mode — generate from TEMPLATES
+    isDemo = true;
+    const queues = hosts.map((h) => [...byHost[h]]);
+    const ordered = [];
+    while (queues.some((q) => q.length)) {
+      queues.forEach((q) => q.length && ordered.push(q.shift()));
+    }
 
-  const findings = TEMPLATES.slice(0, Math.min(REPORT.maxFindings, ordered.length)).map((t, i) => {
-    const company = hostOf(ordered[i]);
-    return {
-      ...t,
-      id: `FINDING -00${i + 1}`,
-      company,
-      title: `${company} - ${t.title}`,
-      url: ordered[i],
-    };
-  });
+    findings = TEMPLATES.slice(0, Math.min(REPORT.maxFindings, ordered.length)).map((t, i) => {
+      const company = hostOf(ordered[i]);
+      return {
+        ...t,
+        id: `FINDING -00${i + 1}`,
+        company,
+        title: `${company} - ${t.title}`,
+        url: ordered[i],
+      };
+    });
+  } else {
+    // Case 3: Ordinary scan without findings — assessment data unavailable
+    findings = [];
+  }
 
   const counts = {};
   findings.forEach((f) => {
     const name = titleCase(f.pattern);
     counts[name] = (counts[name] || 0) + 1;
   });
+
+  // E7-06: count findings by severity
+  const countSeverity = (...names) => findings.filter((f) => names.includes(f.severity)).length;
 
   const names =
     hosts.length > 1 ? `${hosts.slice(0, -1).join(", ")} and ${hosts[hosts.length - 1]}` : hosts[0];
@@ -165,7 +186,13 @@ export function buildReport(scan) {
     scope: isDomain
       ? `${hosts[0]} (whole domain)`
       : hosts
-          .map((h) => `${h} (${byHost[h].length} page${byHost[h].length > 1 ? "s" : ""})`)
+          .map((h) => {
+            const pageCount = byHost[h].length;
+            const stateLabel = stateCount === "unavailable" 
+              ? ", state count unavailable" 
+              : `, ${stateCount} state${stateCount !== 1 ? "s" : ""}`;
+            return `${h} (${pageCount} page${pageCount > 1 ? "s" : ""}${stateLabel})`;
+          })
           .join(", "),
     id: `LF-${hosts.length > 1 ? "MULTI" : hosts[0].split(".")[0].toUpperCase()}-2026-001`,
     version: "V1.0",
@@ -173,11 +200,18 @@ export function buildReport(scan) {
     stats: [
       { value: assessed, label: "Pages / screens assessed" },
       { value: findings.length, label: "Potential findings" },
-      { value: findings.filter((f) => f.severity === "HIGH").length, label: "High / critical" },
+      { value: countSeverity("HIGH", "CRITICAL"), label: "High / critical" },
       { value: 0, label: "Revalidated closed" },
     ],
     distribution: Object.entries(counts).map(([name, count]) => ({ name, count })),
-    posture: `The assessment of ${names} identified dark-pattern concerns including forced action and nagging. These patterns influence how users interact with the journey, accept terms and provide personal information.`,
+    // E7-06: severity split, computed from findings
+    severitySplit: Object.fromEntries(
+      SEVERITY_ORDER.map((s) => [s, countSeverity(s.toUpperCase())]),
+    ),
+    // E7-06: AI text slots (empty until AI connected; Summary shows placeholder text)
+    posture: scan.posture ?? "",
+    themes: scan.themes ?? ["", "", ""],
+    limitations: "This assessment is limited to the pages, states, and evidence included in the supplied scan data. Content or interactions outside that scope may not have been assessed. An absence of findings does not establish an absence of potential issues. Findings require human review and are not a legal determination.",
     findings,
     // Corrective action plan register (PDF + Excel)
     cap: findings.map((f, i) => ({
@@ -194,6 +228,9 @@ export function buildReport(scan) {
       due: "[Date]",
       status: "OPEN",
     })),
+    // Metadata flags for output classification
+    isDemo: isDemo,  // True if output uses template/synthetic findings (demo mode)
+    isDataAvailable: Array.isArray(scan.findings),  // True if findings were supplied or generated from actual scan
   };
 }
 

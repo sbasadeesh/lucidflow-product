@@ -1,16 +1,81 @@
 import { ABOUT, CATEGORIES, PRIORITY_THEMES } from "../data.js";
-import { REPORT } from "../config.js";
+import { REPORT, SUMMARY_AI_PLACEHOLDER, SEVERITY_ORDER } from "../config.js";
+import { useLayoutEffect, useRef } from "react";
 
 const FOOTER_URL = "https://ww1.sbainfo.in/lucidflow";
 
+// 1px covers subpixel rounding. Larger overflow is a real miss.
+const FIT_TOLERANCE_PX = 1;
+
+// Shared by the on-screen preview and the print sheets.
+// Returns false when the sheet is not laid out yet (hidden print sheets
+// report 0×0). Callers must run again once print dimensions exist.
+export function fitSheetContent(box, content) {
+  if (!box || !content || box.clientHeight <= 0) return false;
+  const fits = () => box.scrollHeight - box.clientHeight <= FIT_TOLERANCE_PX;
+
+  content.style.zoom = "1";
+  if (fits()) {
+    delete content.dataset.overflow;
+    content.dataset.fitted = "1";
+    return true;
+  }
+
+  let low = 0.6;
+  let high = 1;
+  for (let i = 0; i < 8; i++) {
+    const mid = (low + high) / 2;
+    content.style.zoom = String(mid);
+    if (fits()) low = mid;
+    else high = mid;
+  }
+  content.style.zoom = String(low);
+  content.dataset.fitted = "1";
+  // 60% is the floor. Still-taller content is marked; it is not shrunk further.
+  if (!fits()) content.dataset.overflow = "below-min-zoom";
+  else delete content.dataset.overflow;
+  return true;
+}
+
 // One A4 page: logo top right, footer with page number
+// If the content is taller than the page, it shrinks to fit (never cut, never touches the footer)
 export function Sheet({ n, children }) {
+  const body = useRef(null);
+  const inner = useRef(null);
+
+  useLayoutEffect(() => {
+    const box = body.current;
+    const content = inner.current;
+    let frame = 0;
+    // Print media is applied after beforeprint. Two frames wait for that
+    // layout instead of measuring the hidden 0×0 sheet.
+    const refit = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        frame = requestAnimationFrame(() => fitSheetContent(box, content));
+      });
+    };
+    fitSheetContent(box, content);
+    const media = typeof window.matchMedia === "function" ? window.matchMedia("print") : null;
+    if (media) media.addEventListener("change", refit);
+    window.addEventListener("beforeprint", refit);
+    window.addEventListener("afterprint", refit);
+    return () => {
+      cancelAnimationFrame(frame);
+      if (media) media.removeEventListener("change", refit);
+      window.removeEventListener("beforeprint", refit);
+      window.removeEventListener("afterprint", refit);
+    };
+  });
+
   return (
     <div className="sheet">
       <div className="s-head">
         <img src="/logo.png" alt="LucidFlow" />
       </div>
-      <div className="s-body">{children}</div>
+      <div className="s-body" ref={body}>
+        <div ref={inner}>{children}</div>
+      </div>
       <div className="s-foot">
         <span>LucidFlow™ | SBA Info Solutions Pvt Ltd | {FOOTER_URL}</span>
         <span>Page {n}</span>
@@ -81,24 +146,28 @@ function Summary({ r }) {
         <div className="dist" key={d.name}>
           <span>{d.name}</span>
           <div className="dbar">
-            <i style={{ width: `${(d.count / max) * 100}%` }} />
+            <i style={{ width: `${Math.min(d.count * REPORT.barUnitPct, 100)}%` }} />
           </div>
           <b>{d.count}</b>
         </div>
       ))}
+      <p className="sev-split">
+        <b>Severity split</b>{" "}
+        {SEVERITY_ORDER.map((s) => `${s} ${r.severitySplit?.[s] ?? 0}`).join(" ┬╖ ")}
+      </p>
 
       <h3 className="sub">Executive assessment</h3>
       <div className="prep">
         <span className="label-red">OVERALL POSTURE</span>
-        <p>{r.posture}</p>
+        <p>{r.posture ?? SUMMARY_AI_PLACEHOLDER.posture}</p>
       </div>
 
       <h3 className="sub">Priority themes</h3>
       <div className="grid3 themes">
-        {PRIORITY_THEMES.map((t) => (
+        {PRIORITY_THEMES.map((t, i) => (
           <div key={t.title}>
             <span className="label-red">{t.title}</span>
-            <p>{t.text}</p>
+            <p>{r.themes?.[i] ?? SUMMARY_AI_PLACEHOLDER.theme}</p>
           </div>
         ))}
       </div>
@@ -133,7 +202,11 @@ function Finding({ f }) {
       </div>
 
       <div className="grid-shot">
-        <div className="shot">Screenshot</div>
+        {f.screenshot ? (
+          <img src={f.screenshot} alt={`Screenshot of ${f.url}`} className="shot-img" />
+        ) : (
+          <div className="shot">Screenshot placeholder</div>
+        )}
         <div className="card-red">
           <span className="label-red">EVIDENCE-LED FINDING</span>
           <p>{f.evidence}</p>
@@ -154,6 +227,26 @@ function Finding({ f }) {
           </ul>
         </div>
       </div>
+    </div>
+  );
+}
+
+function Limitations({ r }) {
+  return (
+    <div className="limitations">
+      <p className="eyebrow">ASSESSMENT LIMITATIONS</p>
+      <h2 className="title">Scope and constraints</h2>
+      <p className="para">{r.limitations}</p>
+    </div>
+  );
+}
+
+function DataUnavailable() {
+  return (
+    <div className="data-unavailable">
+      <p className="eyebrow">ASSESSMENT DATA</p>
+      <h2 className="title">No scan data available</h2>
+      <p className="para">This report cannot be completed. Assessment data (findings, scope, or scan details) was not supplied or could not be retrieved. Please run a scan and provide complete scan results to generate a report.</p>
     </div>
   );
 }
@@ -248,13 +341,27 @@ function capPages(r) {
   return groups.map((g, i) => <CapRegister key={`cap-${i}`} rows={g} first={i === 0} />);
 }
 
-// Page order: cover, summary, one page per finding, CAP register, about + categories
+// Page order: cover, summary, one page per finding, CAP register, limitations, about + categories
+// If assessment data unavailable (no findings supplied and not demo): show data-unavailable page instead
 export function getPages(r) {
+  // If findings were not supplied and this is not demo output, render unavailable page
+  if (!r.isDataAvailable && !r.isDemo) {
+    return [
+      <Cover r={r} key="cover" />,
+      <Summary r={r} key="summary" />,
+      <DataUnavailable key="data-unavailable" />,
+      <Limitations r={r} key="limitations" />,
+      <About key="about" />,
+    ];
+  }
+  
+  // Normal case: supplied findings (including []) or demo mode
   return [
     <Cover r={r} key="cover" />,
     <Summary r={r} key="summary" />,
     ...r.findings.map((f) => <Finding f={f} key={f.id} />),
     ...capPages(r),
+    <Limitations r={r} key="limitations" />,
     <About key="about" />,
   ];
 }
