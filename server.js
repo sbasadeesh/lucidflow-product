@@ -21,6 +21,7 @@ const {
 const stabilizerConfig = require("./stabilizer.config");
 const { runStateScript, parseScript, ScriptError } = require("./stateScriptRunner");
 const stateScriptConfig = require("./stateScript.config");
+const { checkSecurityGuards } = require("./security-guard/securityGuard");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -1101,6 +1102,13 @@ async function fillAndAdvance(page, guard, stats, record) {
     let sensitive = null;
 
     for (let step = 0; step < MAX_STEPS; step++) {
+        // --- E2-07: Check Security Guards on EACH step ---
+        const security = await checkSecurityGuards(page);
+        if (security.blocked) {
+            record(`Security Guard Triggered: ${security.reason} (${security.details}) -> stopping.`);
+            return { sensitive: null, securityBlocked: security };
+        }
+        // ------------------------------------
         const closed = await clearPopups(page).catch(() => 0);
         stats.interactions += closed;
         stats.popupsHandled += closed;
@@ -1125,17 +1133,38 @@ async function fillAndAdvance(page, guard, stats, record) {
         if (!canClick) break;
 
         try {
-            await nextButton.click({ timeout: 2500 });
-            stats.interactions++;
-            stats.stepsVisited++;
-            record("Continue/Next clicked", { step: stats.stepsVisited });
-            await page.waitForTimeout(1200);
+            // Temporarily allow navigation to reach the next page
+            // Save prior state and restore in finally block for exception safety
+            const priorAllowNav = guard.allowNav;
+            guard.allowNav = true;
+            
+            try {
+                await nextButton.click({ timeout: 2500 });
+                
+                stats.interactions++;
+                stats.stepsVisited++;
+                record("Continue/Next clicked", { step: stats.stepsVisited });
+                
+                // Wait for navigation to commit before checking guard
+                await page.waitForLoadState("domcontentloaded", { timeout: 5000 }).catch(() => {});
+                await page.waitForTimeout(1200);
 
-            if (normalizeUrl(page.url()) !== guard.home) {
-                record(`URL changed to ${page.url()} -> going back and stopping`);
-                await page.goBack({ timeout: 15000 }).catch(() => { });
-                break;
+                if (normalizeUrl(page.url()) !== guard.home) {
+                    // Check if navigated-to page is protected BEFORE going back
+                    const navigatedSecurity = await checkSecurityGuards(page);
+                    if (navigatedSecurity.blocked) {
+                        record(`Security Guard Triggered on navigated URL ${page.url()}: ${navigatedSecurity.reason}`);
+                        return { sensitive: null, securityBlocked: navigatedSecurity };
+                    }
+                    
+                    record(`URL changed to ${page.url()} -> going back and stopping`);
+                    await page.goBack({ timeout: 15000 }).catch(() => { });
+                    break;
+                }
+            } finally {
+                guard.allowNav = priorAllowNav;
             }
+            break;
         } catch {
             record("Continue/Next could not be completed", { step: stats.stepsVisited });
             break;
@@ -1164,7 +1193,13 @@ async function revealCheck({ page, guard, state, stats, record, before, label })
     record(`${label}: ${newCount} new field(s) appeared, URL unchanged -> filling`);
     const anchorHandle = await newFields.first().elementHandle().catch(() => null);
 
-    const { sensitive } = await fillAndAdvance(page, guard, stats, record);
+    const { sensitive, securityBlocked } = await fillAndAdvance(page, guard, stats, record);
+
+    // --- E2-07: If guard blocked, propagate the blocked result to the caller ---
+    if (securityBlocked) {
+        record(`${label}: Security guard triggered: ${securityBlocked.reason} (${securityBlocked.details})`);
+        return { blocked: true, securityBlocked };
+    }
 
     if (sensitive) {
         record(`${label}: sensitive field "${sensitive.label}" reached -> stopped for this form`);
@@ -1255,6 +1290,10 @@ async function explorePass({ page, kind, title, maxItems, scan, guard, state, st
         const handled = await revealCheck({
             page, guard, state, stats, record, before, label: `${title}: ${next.text}`,
         });
+        if (handled && handled.blocked) {
+            // Guard was triggered, propagate up
+            return { blocked: true, securityBlocked: handled.securityBlocked };
+        }
         if (!handled) record(`${title} ${n}: opened, URL unchanged, no fields found`);
 
         await closePanel(page);
@@ -1442,6 +1481,11 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
                 const handled = await revealCheck({
                     page, guard, state, stats, record, before: beforeFields, label: `Nav: ${next.text}`,
                 });
+                if (handled && handled.blocked) {
+                    // Guard was triggered, stop navigation pass
+                    record(`Security guard triggered during nav pass: ${handled.securityBlocked.reason}`);
+                    return { blocked: true, securityBlocked: handled.securityBlocked };
+                }
                 if (!handled) record(`Nav ${n}: URL unchanged, no dropdown links or fields found`);
                 navReport.push({ menu: next.text, item: next.text, result: "URL unchanged", url: page.url() });
                 await closePanel(page);
@@ -1504,6 +1548,11 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
             const handled = await revealCheck({
                 page, guard, state, stats, record, before: fieldsBefore, label: `Nav: ${sub.text}`,
             });
+            if (handled && handled.blocked) {
+                // Guard was triggered, stop nav pass immediately without further interactions
+                record(`Security guard triggered during nested nav: ${handled.securityBlocked.reason}`);
+                return { blocked: true, securityBlocked: handled.securityBlocked };
+            }
             if (handled) {
                 await closePanel(page);
                 topPos = (await reopenTop(next.text, "hover")) || topPos;
@@ -2090,14 +2139,21 @@ app.post("/api/screenshot", async (req, res) => {
             try {
                 const msg = dialog.message();
                 const type = dialog.type();
-                await dialog.dismiss();
-                if (type === "beforeunload") {
+                if (type === "beforeunload" && !guard.allowNav) {
+                    // Only dismiss beforeunload if navigation is not allowed
+                    await dialog.dismiss();
                     guard.attempts++;
                     record("Page tried to navigate away -> cancelled, staying on this URL");
                 } else {
-                    stats.interactions++;
-                    stats.popupsHandled++;
-                    record(`JavaScript dialog dismissed: "${msg}"`, { type });
+                    // Allow beforeunload when guard.allowNav is true, or handle other dialogs
+                    if (type === "beforeunload") {
+                        await dialog.accept();
+                    } else {
+                        await dialog.dismiss();
+                        stats.interactions++;
+                        stats.popupsHandled++;
+                        record(`JavaScript dialog dismissed: "${msg}"`, { type });
+                    }
                 }
             } catch { }
         });
@@ -2190,8 +2246,23 @@ app.post("/api/screenshot", async (req, res) => {
         await page.evaluate(() => window.scrollTo(0, 0));
         guard.allowNav = true;
         await page.evaluate(() => { window.__navGuard = false; }).catch(() => { });
-        await safePhase("Nav pass", () => navDeepPass({ page, guard, state, stats, record, navReport }), page, guard, record);
+        const navResult = await safePhase("Nav pass", () => navDeepPass({ page, guard, state, stats, record, navReport }), page, guard, record);
         guard.allowNav = false;
+        if (navResult && navResult.blocked) {
+            record(`Security guard blocked during nav pass: ${navResult.securityBlocked.reason}`);
+            await browser.close();
+            browser = null;
+            return res.json(finish("blocked", {
+                message: `The site triggered a security guard during navigation: ${navResult.securityBlocked.reason}. The full-page screenshot and nav results above were captured before the block.`,
+                reason: navResult.securityBlocked.reason,
+                details: navResult.securityBlocked.details,
+                securityBlocked: true,
+                screenshotUrl: `/screenshots/${fullFilename}`,
+                elementScreenshotUrl: state.shots[0] ? state.shots[0].url : null,
+                elementScreenshots: state.shots,
+                navigationCheck: navReport,
+            }));
+        }
         await page.evaluate(() => { window.__navGuard = true; }).catch(() => { });
         record(`Nav bar pass finished: ${navReport.length} link(s) checked`);
 
@@ -2235,8 +2306,27 @@ app.post("/api/screenshot", async (req, res) => {
         record("Quote button pass finished");
 
         // 6) Fill whatever is on the page now and follow Continue/Next,
-        //    stopping at the first sensitive field.
-        const { sensitive } = await fillAndAdvance(page, guard, stats, record);
+        //    stopping at the first sensitive field or security guard.
+        const { sensitive, securityBlocked } = await fillAndAdvance(page, guard, stats, record);
+
+        // --- E2-07: Check for guard block BEFORE any further page interaction ---
+        if (securityBlocked) {
+            record(`Guard blocked: ${securityBlocked.reason} (${securityBlocked.details})`);
+            guard.on = false;
+            await browser.close();
+            browser = null;
+            return res.json(finish("blocked", {
+                message: `Scan stopped: ${securityBlocked.reason}`,
+                reason: securityBlocked.reason,
+                details: securityBlocked.details,
+                screenshotUrl: `/screenshots/${fullFilename}`,
+                elementScreenshots: state.shots,
+                stoppedBeforeSensitiveField: true,
+                securityBlocked: true
+            }));
+        }
+
+        // Only interact with popups if NOT blocked
         stats.popupsHandled += await clearPopups(page).catch(() => 0);
 
         if (sensitive) {
@@ -2538,5 +2628,5 @@ app.get("/api/scans/:id", (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Backend running at http://localhost:${PORT}`);
+    process.stdout.write(`Backend running at http://localhost:${PORT}\n`);
 });
