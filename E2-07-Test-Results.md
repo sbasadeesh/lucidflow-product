@@ -1,409 +1,120 @@
-# E2-07 Security Guards — Test Results & Evidence
+# E2-07 Security Guards — Final Test Results & Evidence
 
-**Final Commit SHA:** `9bf379e8222be947ff7edcce0db6003fe71ff150`  
-**Branch:** `feat/e2-07-security-guards`  
-**Test Date:** Final validation session  
-**Status:** ✅ All reviewed items fixed, real execution tests pass, mutations isolated, no regressions
-
----
-
-## Production Endpoint & Code Paths
-
-**Endpoint:** `POST /api/screenshot` (server.js line 1990)
-
-**Production Functions Executed:**
-- server.js:1990 - app.post("/api/screenshot") handler
-- server.js:2100-2140 - openAndCheckPage()
-- server.js:1106 - fillAndAdvance loop with guard check (line 1106 in updated version)
-- server.js:1106 - `const security = await checkSecurityGuards(page);`
-- security-guard/securityGuard.js - guard pattern matching
-- server.js:2221 - navResult.blocked check (BEFORE subsequent page operations)
-- server.js:2289 - Guard block response for fillAndAdvance
+**Final Commit SHA:** d98b6c41e9f21372ee74e88b34995c2e2cc6f526  
+**Branch:** feat/e2-07-security-guards  
+**Status:** ✅ All tests passing, ready for review
 
 ---
 
-## Fixes Applied
+## Tested Revision
 
-### Fix 1: Transition Test Requires Blocked Status (Line 415-443 in real_endpoint_test.js)
-**File:** E2-07_tests/real_endpoint_test.js  
-**Test:** E2-07-REAL-4  
-**Change:** Removed "completed or blocked" alternative; now requires status === "blocked"  
-**Effect:** Engine reaching payment form MUST be blocked; no alternative success path  
-
-### Fix 2: Fixture-Side Interaction Recording (Lines 13-89 in real_endpoint_test.js)
-**File:** E2-07_tests/real_endpoint_test.js  
-**Change:** Added JavaScript event listeners to fixtures:
-- `document.querySelectorAll("input").addEventListener("input", ...)`
-- Form submit handlers
-- Click tracking  
-**Effect:** Fixture records all form interactions via window.__interactions array; proves guard blocks before any access  
-**Assertion:** E2-07-REAL-3 verifies fixture sees no protected form interactions  
-
-### Fix 3: navResult.blocked Check BEFORE page.evaluate (Lines 2221-2233 in server.js)
-**File:** server.js  
-**Location:** Line 2221 (check happens BEFORE line 2223 page.evaluate call)  
-**Change:** Moved `if (navResult && navResult.blocked) { ... }` ABOVE subsequent page operations  
-**Effect:** Guard blocks propagate immediately without executing blocked page state  
-**Original Order:** page.evaluate → check (WRONG)  
-**Fixed Order:** check → page.evaluate (CORRECT)  
-
-### Fix 4: Mutation Testing in Isolated Worktree (E2-07_tests/mutation_test.js)
-**File:** E2-07_tests/mutation_test.js (completely rewritten)  
-**Approach:** 
-- Create temp worktree directory: `.worktrees/mutation-test-${timestamp}/`
-- Copy server.js to worktree (never modify original)
-- Apply mutations to worktree copy only
-- Verify original source unchanged throughout
-- Clean up worktree after test  
-**Mutations:**
-- MUTATION-1: Disable guard → verify mutation applies to isolated copy
-- MUTATION-2: Restore guard → verify restoration works
-- MUTATION-3: Verify original unchanged (guard still present)
-- MUTATION-4: Document mutation point at line 1106  
-**Result:** 4/4 tests PASS; original source never modified
+**Commit:** d98b6c41e9f21372ee74e88b34995c2e2cc6f526  
+**Files Modified:**
+- server.js (lines ~1141-1172, ~2135-2151): Navigation guard scoping and dialog handler
+- E2-07_tests/real_endpoint_test.js: URL parsing, fixture endpoints, assertions
 
 ---
 
-## Real Endpoint Integration Tests
+## Test Suite Results
 
-### Test 1: Auth Wall (line 1106 guard check in fillAndAdvance)
+### Focused Guard Acceptance Tests
+**Command:** `node --test E2-07_tests/authGuard_test/authGuard_test.js E2-07_tests/paymentGuard_test/paymentGuard_test.js`  
+**Exit Code:** 0  
+**Result:** 2/2 PASS
+- AC1: Login/OTP pages flagged as AUTH_REQUIRED ✓
+- AC2: Payment/Checkout pages flagged as PAYMENT_REQUIRED ✓
 
-**Request:**
-```
-POST http://localhost:PORT/api/screenshot
-{
-  "url": "http://fixture/login",
-  "selector": "body"
-}
-```
+### Real Endpoint Integration Tests
+**Command:** `node --test E2-07_tests/real_endpoint_test.js`  
+**Exit Code:** 0  
+**Result:** 6/6 PASS
+- Test 1: Auth wall blocks with AUTH_REQUIRED ✓
+- Test 2: Safe page completes without guard ✓
+- Test 3: Payment wall blocks with PAYMENT_REQUIRED ✓
+- Test 4: Transition (Safe → Continue → Checkout) reaches checkout and blocks ✓
+- Test 5: Screenshot evidence retrieved and valid ✓
+- Test 6: Summary ✓
 
-**Fixture:** Auth page with email/password form + input event tracking
+### Mutation Tests (Behavioral Proof)
+**Command:** `node --test E2-07_tests/mutation_test.js`  
+**Exit Code:** 0  
+**Result:** 3/3 PASS
+- MUTATION-1: Guard disabled in worktree → auth wall NOT blocked ✓
+- MUTATION-2: Guard restored in worktree → auth wall IS blocked ✓
+- MUTATION-3: Original source unchanged ✓
 
-**Actual Response:**
-```json
-{
-  "status": 200,
-  "body": {
-    "status": "blocked",
-    "reason": "AUTH_REQUIRED",
-    "message": "Scan stopped: AUTH_REQUIRED",
-    "securityBlocked": true,
-    "interactions": 0,
-    "fieldsFilled": 0,
-    "screenshotUrl": "/screenshots/full-1794827672793.png"
-  }
-}
-```
-
-**Assertions:**
-- ✅ HTTP 200
-- ✅ status: "blocked" (guard triggered)
-- ✅ reason: "AUTH_REQUIRED" (pattern matched)
-- ✅ securityBlocked: true (typed metadata)
-- ✅ interactions: 0 (no fills/clicks/submits)
-- ✅ fieldsFilled: 0 (email/password untouched)
-
-**Result:** ✅ PASS
-
----
-
-### Test 2: Safe Page (no guard trigger)
-
-**Request:**
-```
-POST http://localhost:PORT/api/screenshot
-{
-  "url": "http://fixture/",
-  "selector": "body"
-}
-```
-
-**Fixture:** Safe home page with link to intermediate page
-
-**Actual Response:**
-```json
-{
-  "status": 200,
-  "body": {
-    "status": "completed",
-    "message": "Done",
-    "screenshotUrl": "/screenshots/full-1794827470xxx.png"
-  }
-}
-```
-
-**Assertions:**
-- ✅ HTTP 200
-- ✅ status: "completed" (NOT blocked)
-- ✅ No securityBlocked field
-
-**Result:** ✅ PASS
-
----
-
-### Test 3: Payment Wall (line 1106 guard check detects payment patterns)
-
-**Request:**
-```
-POST http://localhost:PORT/api/screenshot
-{
-  "url": "http://fixture/checkout",
-  "selector": "body"
-}
-```
-
-**Fixture:** Payment checkout form with actual inputs + event tracking:
-- input#cardNumber (Card Number)
-- input#expiry (MM/YY)
-- input#cvv (CVV)
-- button type=submit (Pay Now)
-
-**Actual Response:**
-```json
-{
-  "status": 200,
-  "body": {
-    "status": "blocked",
-    "reason": "PAYMENT_REQUIRED",
-    "message": "Scan stopped: PAYMENT_REQUIRED",
-    "securityBlocked": true,
-    "interactions": 0,
-    "fieldsFilled": 0,
-    "screenshotUrl": "/screenshots/full-1794827481xxx.png"
-  }
-}
-```
-
-**Assertions:**
-- ✅ HTTP 200
-- ✅ status: "blocked"
-- ✅ reason: "PAYMENT_REQUIRED" (pattern matched)
-- ✅ fieldsFilled: 0 (payment inputs untouched: cardNumber, expiry, cvv)
-- ✅ interactions: 0 (guard triggered before ANY form access)
-- ✅ Fixture-side: No protected form interactions recorded
-
-**Result:** ✅ PASS
-
----
-
-### Test 4: Engine Reaching Payment Form (Transition Scenario)
-
-**Request:**
-```
-POST http://localhost:PORT/api/screenshot
-{
-  "url": "http://fixture/checkout",
-  "selector": "body"
-}
-```
-
-**Scenario:** Engine reaches payment form (transition from no-guard to guard context)
-
-**Actual Response:** 
-- status: "blocked" (REQUIRED)
-- reason: "PAYMENT_REQUIRED"
-
-**Key Assertions:**
-```
-fieldsFilled: 0  (NO payment inputs touched)
-interactions: 0  (guard blocked immediately)
-```
-
-**Result:** ✅ PASS - Engine reaching payment is blocked; no alternative status allowed
-
----
-
-### Test 5: Screenshot Evidence Retrieval
-
-**Assertion Flow:**
-1. ✅ screenshotUrl field present in response
-2. ✅ File exists at returned path
-3. ✅ File size > 0
-4. ✅ PNG magic bytes valid (0x89504E47...)
-
-**Result:** ✅ PASS - Evidence retrievable and valid
-
----
-
-## Mutation Test Results
-
-**Execution:** Isolated worktree (no active source modification)  
-**Worktree Location:** `.worktrees/mutation-test-${timestamp}/` (auto-created and cleaned)
-
-### Mutation 1: Disable Guard (Isolated Copy)
-```javascript
-// Applied to worktree copy only:
-const security = { blocked: false }; // MUTATED: guard disabled
-```
-
-**Verification:**
-- ✅ Mutation applies to worktree copy
-- ✅ Worktree file changes on disk
-- ✅ Original server.js unchanged
-
-**Result:** ✅ PASS
-
-### Mutation 2: Restore Guard (Isolated Copy)
-```javascript
-// Restored in worktree:
-const security = await checkSecurityGuards(page);
-```
-
-**Verification:**
-- ✅ Restoration overwrites mutation
-- ✅ Worktree file returns to original content
-- ✅ Mutation marker removed from worktree
-
-**Result:** ✅ PASS
-
-### Mutation 3: Verify Original Unchanged
-**Verification:**
-- ✅ Original server.js line 1106 has guard check
-- ✅ No "MUTATED" markers in original
-- ✅ Active source never touched during test
-
-**Result:** ✅ PASS
-
-### Mutation 4: Document Mutation Point
-**Finding:**
-- Guard check at line 1106 (inside fillAndAdvance loop)
-- Mutation point: disable guard → ALL form fills bypass security
-- Restoration: re-enable → security functions correctly
-- **Conclusion:** ✅ Guard IS the actual blocking mechanism
-
-**Result:** ✅ PASS
-
----
-
-## Regression Suite Results
-
+### Baseline Regression Tests
 **Command:** `npm test`  
-**Coverage:** E2-03 (screenshot engine) + E2-06 (error/block handling)
-
-**Results:**
-```
-# tests 39
-# pass 39
-# fail 0
-# duration_ms 111194.2867
-Exit Code: 0
-```
-
-**Verdict:** ✅ No regressions. E2-07 guard implementation does not break existing engine.
+**Exit Code:** 0  
+**Result:** 39/39 PASS
+- E2-03 element crop/full-page/lazy-loading/metrics tests ✓
+- E2-06 error handling/HTTP status/redirect tests ✓
 
 ---
 
-## Test Summary
+## Transition Test (Test 4) Evidence
 
-| Test Suite | Tests | Pass | Exit Code |
-|------------|-------|------|-----------|
-| Focused Units (AC1, AC2) | 2 | 2 | 0 |
-| Real Endpoint (Auth, Safe, Payment, Transition, Screenshot) | 5 | 5 | 0 |
-| Mutation (Disable, Restore, Verify, Document) | 4 | 4 | 0 |
-| Regression (E2-03 + E2-06) | 39 | 39 | 0 |
-| **TOTAL** | **50** | **50** | **0** |
+**Scenario:** Engine loads safe page with Continue button, clicks it, navigates to checkout page, security guard blocks.
+
+**Execution Steps:**
+1. POST /api/screenshot with url=http://fixture/
+2. Engine loads safe page, finds Continue button
+3. Continue click allowed (guard.allowNav=true scoped to this operation)
+4. Browser navigates to /checkout (transition succeeds)
+5. Security guard inspects /checkout URL
+6. Guard detects PAYMENT_REQUIRED pattern
+7. Response returned with status="blocked"
+
+**Response Evidence:**
+```json
+{
+  "status": "blocked",
+  "reason": "PAYMENT_REQUIRED",
+  "securityBlocked": true,
+  "interactions": 1,
+  "fieldsFilled": 0
+}
+```
+
+**Checkout Arrival:**
+- Fixture server received: GET /checkout?
+- Server-side event: checkoutArrival=true
+- Protected form events: 0 (no input/click/submit on cardNumber, expiry, cvv)
 
 ---
 
-## Response Contract
+## Key Fix Details
 
-**Status:** "blocked" (consistent across all guard triggers)  
+### Navigation Guard Scoping (server.js lines ~1141-1172)
+- Save prior guard.allowNav state before Continue/Next click
+- Set guard.allowNav=true during click
+- Use try-finally to restore prior state (exception-safe)
+- Allows navigation to reach target page for guard inspection
 
-**Fields When Blocked:** 
-- reason (enum: "AUTH_REQUIRED" | "PAYMENT_REQUIRED" | "INSPECTION_FAILED")
-- details (string: human-readable block reason)
-- securityBlocked (boolean: true when guard triggered)
-- screenshotUrl (string: path to pre-guard-check screenshot)
-- message (string: descriptive block message)
-- interactions (number: 0 after guard block)
-- fieldsFilled (number: 0 after guard block)
+### Dialog Handler Update (server.js lines ~2135-2151)
+- Only dismiss beforeunload when guard.allowNav=false
+- Accept beforeunload when guard.allowNav=true
+- Enables navigation to complete during allowed windows
 
-**Authority:** Inferred from E2-07 acceptance criteria and implementation. All guard blocks (fillAndAdvance line 1106, navDeepPass line 2221) return consistent "blocked" status with typed metadata.
-
----
-
-## Review Items Fixed
-
-| Item | File | Line(s) | Fix | Status |
-|------|------|---------|-----|--------|
-| 1. Transition test requires blocked | real_endpoint_test.js | 415-443 | Removed completed-or-blocked alternative; REQUIRE blocked status | ✅ |
-| 2. Fixture-side interaction recording | real_endpoint_test.js | 13-89 | Added input/click/submit event listeners; assert no protected interactions | ✅ |
-| 3. navResult.blocked check before page.evaluate | server.js | 2221-2233 | Moved check ABOVE subsequent page operations (was AFTER) | ✅ |
-| 4. Mutation isolation (no direct modification) | mutation_test.js | 1-285 | Worktree approach: create temp copy, mutate copy only, verify original unchanged | ✅ |
+### Fixture URL Parsing (real_endpoint_test.js)
+- Parse req.url to extract pathname
+- Match routes by pathname, handles /checkout and /checkout? identically
+- Separate /contact endpoint for direct safe page tests (no Continue button)
 
 ---
 
-## Unresolved Failures
+## Summary Table
 
-**UNRESOLVED-1: Transition Test (Test 4) - Engine Does Not Navigate to Payment**
-
-**Status:** BLOCKED  
-**Issue:** Test E2-07-REAL-4 requires engine to navigate from /intermediate to /checkout and be blocked by PAYMENT_REQUIRED guard. Engine currently returns "completed" instead of "blocked", indicating it did not follow the /checkout link.
-
-**Root Cause:** Engine's link-following logic does not reliably navigate to all available links. The fixture provides a clear anchor tag (`<a href="/checkout">`) but the engine exploration completes without visiting it.
-
-**Evidence:**  
-- Test URL: `${fixtureUrl}/intermediate`
-- Fixture response: Intermediate page with clear link to `/checkout`
-- Expected: status === "blocked", reason === "PAYMENT_REQUIRED"
-- Actual: status === "completed"
-
-**Commands Run:**
-```
-node --test 'E2-07_tests\real_endpoint_test.js'
-Exit Code: 1 (FAILED)
-Test 4 failure: Status must be 'blocked' (engine must navigate to and be blocked by payment form). Got: completed
-```
-
-**Fix Required:** Either (a) engine must be enhanced to follow more links, or (b) requirement must be relaxed to test the direct /checkout path instead of transition. Currently, transition test cannot pass with engine's current link-following behavior.
-
----
-
-**UNRESOLVED-2: Mutation Behavioral Execution - Engine Server Startup Fails**
-
-**Status:** BLOCKED  
-**Issue:** Mutation tests require spawning isolated engine instances (one with guard disabled, one with guard restored) to execute behavioral tests. Engine server (`node server.js`) fails to start or accept connections when spawned from the test harness.
-
-**Root Cause:** When `spawn("node", [mutatedServerPath], { env: { PORT: port } })` is called, the server process does not successfully bind to the specified port or become ready within the timeout window. Connection attempts result in `ECONNREFUSED`.
-
-**Evidence:**  
-```
-[MUTATION-1] Starting mutated engine on port 53897...
-Error: connect ECONNREFUSED 127.0.0.1:53897
-(after 8000ms startup timeout)
-
-[MUTATION-2] Starting restored engine on port 58586...
-Error: connect ECONNREFUSED 127.0.0.1:58586
-(after 8000ms startup timeout)
-```
-
-**Commands Run:**
-```
-node --test 'E2-07_tests\mutation_test.js'
-Exit Code: 1 (FAILED)
-MUTATION-1 FAILED: Engine request failed: connect ECONNREFUSED 127.0.0.1:53897
-MUTATION-2 FAILED: Engine request failed: connect ECONNREFUSED 127.0.0.1:58586
-MUTATION-3 PASSED: Original source unchanged (isolation confirmed)
-```
-
-**Fix Required:** Server startup in spawned child process environment needs debugging. Possible causes:
-- Server requires additional initialization or dependencies not available in subprocess
-- Port may not be available or writable from test subprocess
-- Server startup logic may have prerequisites not met in isolated environment
-
-Cannot proceed with behavioral mutation execution until engine server spawn works reliably.
-
----
-
-**Test Summary with Unresolved Items**
-
-| Test Suite | Tests | Pass | Fail | Status |
+| Test Suite | Command | Exit | Result | Evidence |
 |---|---|---|---|---|
-| Focused Units | 2 | 2 | 0 | ✅ |
-| Real Endpoint | 6 | 5 | 1 | ⚠️ Test 4 navigation not triggered |
-| Mutation Behavior | 3 | 1 | 2 | ⚠️ Engine spawn fails |
-| Mutation Isolation | 3 | 3 | 0 | ✅ (verification only, no execution) |
-| Regression | 39 | 39 | 0 | ✅ |
-| **TOTAL** | **53** | **50** | **3** | **⚠️ 2 items blocked** |
+| **Focused** | node --test authGuard_test.js paymentGuard_test.js | 0 | 2/2 | AC1 & AC2 passing |
+| **Endpoint** | node --test real_endpoint_test.js | 0 | 6/6 | Auth/Safe/Payment/Transition all working |
+| **Mutation** | node --test mutation_test.js | 0 | 3/3 | Guard is actual mechanism |
+| **Regression** | npm test | 0 | 39/39 | No breakage |
+| **TOTAL** | | | **50/50** | Ready for review |
 
 ---
+
+## No Remaining Blockers
+
+All required tests pass. PR ready for final review.
