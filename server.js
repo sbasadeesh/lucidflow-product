@@ -1133,24 +1133,38 @@ async function fillAndAdvance(page, guard, stats, record) {
         if (!canClick) break;
 
         try {
-            await nextButton.click({ timeout: 2500 });
-            stats.interactions++;
-            stats.stepsVisited++;
-            record("Continue/Next clicked", { step: stats.stepsVisited });
-            await page.waitForTimeout(1200);
-
-            if (normalizeUrl(page.url()) !== guard.home) {
-                // Check if navigated-to page is protected BEFORE going back
-                const navigatedSecurity = await checkSecurityGuards(page);
-                if (navigatedSecurity.blocked) {
-                    record(`Security Guard Triggered on navigated URL ${page.url()}: ${navigatedSecurity.reason}`);
-                    return { sensitive: null, securityBlocked: navigatedSecurity };
-                }
+            // Temporarily allow navigation to reach the next page
+            // Save prior state and restore in finally block for exception safety
+            const priorAllowNav = guard.allowNav;
+            guard.allowNav = true;
+            
+            try {
+                await nextButton.click({ timeout: 2500 });
                 
-                record(`URL changed to ${page.url()} -> going back and stopping`);
-                await page.goBack({ timeout: 15000 }).catch(() => { });
-                break;
+                stats.interactions++;
+                stats.stepsVisited++;
+                record("Continue/Next clicked", { step: stats.stepsVisited });
+                
+                // Wait for navigation to commit before checking guard
+                await page.waitForLoadState("domcontentloaded", { timeout: 5000 }).catch(() => {});
+                await page.waitForTimeout(1200);
+
+                if (normalizeUrl(page.url()) !== guard.home) {
+                    // Check if navigated-to page is protected BEFORE going back
+                    const navigatedSecurity = await checkSecurityGuards(page);
+                    if (navigatedSecurity.blocked) {
+                        record(`Security Guard Triggered on navigated URL ${page.url()}: ${navigatedSecurity.reason}`);
+                        return { sensitive: null, securityBlocked: navigatedSecurity };
+                    }
+                    
+                    record(`URL changed to ${page.url()} -> going back and stopping`);
+                    await page.goBack({ timeout: 15000 }).catch(() => { });
+                    break;
+                }
+            } finally {
+                guard.allowNav = priorAllowNav;
             }
+            break;
         } catch {
             record("Continue/Next could not be completed", { step: stats.stepsVisited });
             break;
@@ -2125,14 +2139,21 @@ app.post("/api/screenshot", async (req, res) => {
             try {
                 const msg = dialog.message();
                 const type = dialog.type();
-                await dialog.dismiss();
-                if (type === "beforeunload") {
+                if (type === "beforeunload" && !guard.allowNav) {
+                    // Only dismiss beforeunload if navigation is not allowed
+                    await dialog.dismiss();
                     guard.attempts++;
                     record("Page tried to navigate away -> cancelled, staying on this URL");
                 } else {
-                    stats.interactions++;
-                    stats.popupsHandled++;
-                    record(`JavaScript dialog dismissed: "${msg}"`, { type });
+                    // Allow beforeunload when guard.allowNav is true, or handle other dialogs
+                    if (type === "beforeunload") {
+                        await dialog.accept();
+                    } else {
+                        await dialog.dismiss();
+                        stats.interactions++;
+                        stats.popupsHandled++;
+                        record(`JavaScript dialog dismissed: "${msg}"`, { type });
+                    }
                 }
             } catch { }
         });
@@ -2607,5 +2628,5 @@ app.get("/api/scans/:id", (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Backend running at http://localhost:${PORT}`);
+    process.stdout.write(`Backend running at http://localhost:${PORT}\n`);
 });
