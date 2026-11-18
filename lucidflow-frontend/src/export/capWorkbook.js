@@ -1,4 +1,5 @@
 import { COLORS, FONT_NAME } from "./excelTheme.js";
+import { CAP_AI_PLACEHOLDER } from "../config.js";
 
 const HEADER_ROW = 12; // logo + title block sit above this row
 const FIRST_COLUMN = 2; // column A is a narrow margin
@@ -17,12 +18,8 @@ export const CAP_COLUMNS = [
     value: (c) => ({ text: c.url, hyperlink: c.url }),
     link: true,
   },
-  { header: "Root cause", width: 38, value: (c) => c.rootCause },
-  {
-    header: "Corrective action",
-    width: 44,
-    value: (c) => c.action.map((a) => `• ${a}`).join("\n"),
-  },
+  { header: "Root cause", width: 38, value: () => CAP_AI_PLACEHOLDER.rootCause },
+  { header: "Corrective action", width: 44, value: () => CAP_AI_PLACEHOLDER.action },
   { header: "Owner", width: 26, value: (c) => c.owner },
   { header: "Due date", width: 11, value: () => "" },
   { header: "Status", width: 9, value: (c) => c.status, status: true },
@@ -45,7 +42,7 @@ const font = (overrides = {}) => ({
   ...overrides,
 });
 
-// Rough row height so wrapped text (corrective action bullets) is not cut off
+// Rough row height so wrapped text is not cut off
 function estimateRowHeight(cap) {
   const lines = cap.action.reduce((sum, a) => sum + Math.ceil(a.length / 40), 0);
   return Math.max(30, lines * 12 + 6);

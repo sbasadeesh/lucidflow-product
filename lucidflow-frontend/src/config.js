@@ -10,6 +10,22 @@ export const NAV_LINKS = [
   { to: "/settings", label: "Settings" },
 ];
 
+// Cautious wording policy: reports must contain "potential" and avoid "violation" or "non-compliant"
+export const WORDING = {
+  required: ["potential"],
+  forbidden: ["violation", "non-compliant"],
+};
+
+export const SEVERITY_ORDER = ["Medium", "Observed", "High", "Critical"];
+
+// AI text slots. Shown until the AI is connected.
+export const SUMMARY_AI_PLACEHOLDER = {
+  posture:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+  theme:
+    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+};
+
 export const HOME = {
   title: "Start a scan",
   runLabel: "Run scan",
@@ -45,4 +61,12 @@ export const SCAN = {
 export const REPORT = {
   maxFindings: 4,
   capRowsPerPage: 5,
+  barUnitPct: 12, // bar width for one finding (% of the bar track)
+};
+
+// CAP Excel: Root cause and Corrective action are AI columns.
+// They show this placeholder text until the AI is connected.
+export const CAP_AI_PLACEHOLDER = {
+  rootCause: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  action: "Sed do eiusmod tempor incididunt ut labore et dolore.",
 };
