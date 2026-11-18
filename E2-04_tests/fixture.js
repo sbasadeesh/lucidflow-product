@@ -1,4 +1,4 @@
-﻿// Shared fixture for the screenshot tests (not a test file itself).
+// Shared fixture for the screenshot tests (not a test file itself).
 // A page whose content never changes on its own, so every result is repeatable.
 //
 //   #title  blue box, 300 x 80, at the top
@@ -61,24 +61,4 @@ function removeDir(dir) {
     if (dir) fs.rmSync(dir, { recursive: true, force: true });
 }
 
-// <test folder>/evidence : where a test keeps its screenshots as proof.
-// Old images are cleared at the start of each run so the folder only holds
-// the evidence of the latest run.
-function prepareEvidenceDir(testFolder) {
-    const dir = path.join(testFolder, "evidence");
-    fs.mkdirSync(dir, { recursive: true });
-    for (const f of fs.readdirSync(dir)) {
-        if (/\.(png|json)$/i.test(f)) fs.rmSync(path.join(dir, f), { force: true });
-    }
-    return dir;
-}
-
-module.exports = {
-    VIEWPORT,
-    FIXTURE_HTML,
-    launchBrowser,
-    openFixture,
-    makeTmpDir,
-    removeDir,
-    prepareEvidenceDir,
-};
+module.exports = { VIEWPORT, FIXTURE_HTML, launchBrowser, openFixture, makeTmpDir, removeDir };

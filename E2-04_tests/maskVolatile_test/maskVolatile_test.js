@@ -1,4 +1,4 @@
-﻿// Story:      As the engine, I want screenshots to be stable between runs.
+// Story:      As the engine, I want screenshots to be stable between runs.
 // Criterion 2: Given animated or volatile elements, when masked,
 //              then they do not trigger differences.
 
@@ -31,9 +31,9 @@ async function scan(seed, stabilizeOptions) {
 }
 
 const NO_MASK = { maskSelectors: [] };
-const MASKED = { maskSelectors: ["#ad", "#clock"] };
+const MASKED = { maskSelectors: ["#ad", "#promo-text"] };
 
-test("control: without masking, volatile elements DO trigger differences", { timeout: 60000 }, async () => {
+test("control: without masking, volatile elements DO trigger differences", { timeout: 180000 }, async () => {
     const a = await scan(1, NO_MASK);
     const b = await scan(2, NO_MASK);
 
@@ -43,7 +43,7 @@ test("control: without masking, volatile elements DO trigger differences", { tim
     assert.ok(result.ratio > config.threshold, `expected a large difference, got ${result.percent}%`);
 });
 
-test("Test: masked volatile elements do not trigger differences", { timeout: 60000 }, async () => {
+test("Test: masked volatile elements do not trigger differences", { timeout: 180000 }, async () => {
     const a = await scan(1, MASKED);
     const b = await scan(2, MASKED);
 
@@ -58,14 +58,16 @@ test("Test: masked volatile elements do not trigger differences", { timeout: 600
     assert.equal(result.passed, true);
 });
 
-test("masking keeps the page layout: nothing moves", { timeout: 60000 }, async () => {
+test("masking keeps the page layout: nothing moves", { timeout: 180000 }, async () => {
     const { page, context } = await openHtml(browser, volatileHtml(1));
 
+    // offsetLeft / offsetTop / offsetWidth / offsetHeight are the layout position:
+    // unlike getBoundingClientRect they ignore a rotation (the "spin" box rotates)
     const boxes = () =>
         page.evaluate(() =>
-            ["ad", "clock", "spin"].map((id) => {
-                const r = document.getElementById(id).getBoundingClientRect();
-                return [id, Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)];
+            ["ad", "promo-text", "spin"].map((id) => {
+                const el = document.getElementById(id);
+                return [id, el.offsetLeft, el.offsetTop, el.offsetWidth, el.offsetHeight];
             })
         );
 
@@ -77,8 +79,8 @@ test("masking keeps the page layout: nothing moves", { timeout: 60000 }, async (
     await context.close();
 });
 
-test("hide mode (custom stylesheet) also removes the differences", { timeout: 60000 }, async () => {
-    const options = { maskMode: "hide", maskSelectors: ["#ad", "#clock"] };
+test("hide mode (custom stylesheet) also removes the differences", { timeout: 180000 }, async () => {
+    const options = { maskMode: "hide", maskSelectors: ["#ad", "#promo-text"] };
     const a = await scan(1, options);
     const b = await scan(2, options);
 

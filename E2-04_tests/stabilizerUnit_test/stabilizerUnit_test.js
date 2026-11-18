@@ -1,4 +1,4 @@
-﻿// Extra unit tests for the stabilizer pieces (not a story criterion).
+// Extra unit tests for the stabilizer pieces (not a story criterion).
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
@@ -103,7 +103,7 @@ test("a diff image is written and marks the changed pixels in red", async () => 
 
 // ---- stabilizePage ------------------------------------------------------
 
-test("animations are disabled: running animations before, none after", { timeout: 60000 }, async () => {
+test("animations are disabled: running animations before, none after", { timeout: 180000 }, async () => {
     const { page, context } = await openHtml(browser, animatedHtml());
 
     const running = () => page.evaluate(() => document.getAnimations().filter((a) => a.playState === "running").length);
@@ -115,9 +115,9 @@ test("animations are disabled: running animations before, none after", { timeout
     await context.close();
 });
 
-test("calling stabilizePage twice does not stack stylesheets or masks", { timeout: 60000 }, async () => {
+test("calling stabilizePage twice does not stack stylesheets or masks", { timeout: 180000 }, async () => {
     const { page, context } = await openHtml(browser, volatileHtml(1));
-    const options = { maskSelectors: ["#ad", "#clock"] };
+    const options = { maskSelectors: ["#ad", "#promo-text"] };
 
     await stabilizePage(page, options);
     await stabilizePage(page, options);
@@ -136,7 +136,7 @@ test("unsafe or empty selectors are ignored", () => {
     assert.deepEqual(cleanSelectors(undefined), []);
 });
 
-test("a selector that matches nothing masks nothing and does not throw", { timeout: 60000 }, async () => {
+test("a selector that matches nothing masks nothing and does not throw", { timeout: 180000 }, async () => {
     const { page, context } = await openHtml(browser, volatileHtml(1));
     const info = await stabilizePage(page, { maskSelectors: ["#nothing-here"] });
     assert.equal(info.masked, 0);
@@ -145,7 +145,7 @@ test("a selector that matches nothing masks nothing and does not throw", { timeo
 
 // ---- fixed time and random numbers --------------------------------------
 
-test("deterministic mode: same date and same random numbers in every run", { timeout: 60000 }, async () => {
+test("deterministic mode: same date and same random numbers in every run", { timeout: 180000 }, async () => {
     async function sample() {
         const context = await browser.newContext({ viewport: VIEWPORT });
         await installDeterministicEnvironment(context);

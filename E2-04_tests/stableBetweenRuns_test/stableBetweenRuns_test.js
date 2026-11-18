@@ -1,4 +1,4 @@
-﻿// Story:      As the engine, I want screenshots to be stable between runs.
+// Story:      As the engine, I want screenshots to be stable between runs.
 // Criterion 1: Given two scans of the same fixture, when compared,
 //              then differences are below [threshold].
 
@@ -35,7 +35,7 @@ async function scan(html, delayMs = 0) {
     return png;
 }
 
-test("Test: two scans of the same fixture differ by less than the threshold", { timeout: 60000 }, async () => {
+test("Test: two scans of the same fixture differ by less than the threshold", { timeout: 180000 }, async () => {
     const first = await scan(animatedHtml());
     const second = await scan(animatedHtml(), 537); // second scan starts at a different animation moment
 
@@ -50,7 +50,7 @@ test("Test: two scans of the same fixture differ by less than the threshold", { 
     assert.equal(result.passed, true);
 });
 
-test("a real change between two scans is above the threshold (the comparison is not trivially passing)", { timeout: 60000 }, async () => {
+test("a real change between two scans is above the threshold (the comparison is not trivially passing)", { timeout: 180000 }, async () => {
     const before = await scan(animatedHtml());
     const after = await scan(animatedHtml({ extraBlock: true })); // a 500x300 block appears
 

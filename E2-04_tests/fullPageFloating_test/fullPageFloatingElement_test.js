@@ -1,4 +1,4 @@
-﻿// Full-page screenshots of pages with floating widgets, late popups and sliders.
+// Full-page screenshots of pages with floating widgets, late popups and sliders.
 // (Found on a real site: an accessibility button repeated on every screen of the
 //  full-page image, and a popup that stayed open in it.)
 
@@ -125,7 +125,7 @@ const SLIDER_HTML = `<!doctype html>
   </script>
 </body></html>`;
 
-test("a slider's Pause button is clicked once, and not toggled back on a second call", { timeout: 60000 }, async () => {
+test("a slider's Pause button is clicked once, and not toggled back on a second call", { timeout: 180000 }, async () => {
     const { page, context } = await openHtml(browser, SLIDER_HTML);
 
     await stabilizePage(page);

@@ -1,4 +1,4 @@
-﻿// Fixture pages for the stabilizer tests (not a test file itself).
+// Fixture pages for the stabilizer tests (not a test file itself).
 // Both pages are fixed HTML: any difference between two scans comes from
 // animations or "volatile" content, not from the page changing on its own.
 
@@ -33,7 +33,7 @@ function animatedHtml({ extraBlock = false } = {}) {
 
 // A page with VOLATILE content:
 //   #ad     big box whose colour depends on `seed` (a different ad each visit)
-//   #clock  text that a script rewrites every 30 ms
+//   #banner  text that a script rewrites every 30 ms
 //   #spin   CSS animation
 // `seed` stands for "which visit is this": scan 1 uses seed 1, scan 2 uses seed 2.
 function volatileHtml(seed) {
@@ -43,7 +43,7 @@ function volatileHtml(seed) {
   body { margin: 0; font-family: monospace; background: #fff; }
   h1 { margin: 20px; font-size: 28px; }
   #ad { width: 500px; height: 300px; margin: 20px; background: ${adColour}; }
-  #clock { width: 320px; height: 40px; margin: 20px; font-size: 22px; overflow: hidden; background: #eee; }
+  #promo-text { width: 320px; height: 40px; margin: 20px; font-size: 22px; overflow: hidden; background: #eee; }
   #spin { width: 80px; height: 80px; margin: 20px; background: rgb(0, 120, 255);
           animation: spin 1s linear infinite; }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -51,11 +51,11 @@ function volatileHtml(seed) {
 <body>
   <h1>Offers</h1>
   <div id="ad">advert ${seed}</div>
-  <div id="clock"></div>
+  <div id="promo-text"></div>
   <div id="spin"></div>
   <script>
-    const clock = document.getElementById("clock");
-    const tick = () => { clock.textContent = new Date().toISOString() + " " + Math.random().toFixed(6); };
+    const promo-text = document.getElementById("promo-text");
+    const tick = () => { promo-text.textContent = new Date().toISOString() + " " + Math.random().toFixed(6); };
     tick();
     setInterval(tick, 30);
   </script>
@@ -67,6 +67,8 @@ async function openHtml(browser, html) {
     const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 1 });
     const page = await context.newPage();
     await page.setContent(html);
+    // ADD THIS LINE: Wait for the DOM and CSS to be fully rendered
+    await page.waitForTimeout(100); 
     return { page, context };
 }
 
