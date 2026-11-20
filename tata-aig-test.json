@@ -1,0 +1,41 @@
+{
+    "name": "Tata AIG home page",
+    "url": "https://www.tataaig.com",
+    "maxStates": 10,
+    "stopOnFail": false,
+    "steps": [
+        { "action": "capture", "name": "home page" },
+
+        { "action": "hover", "selector": "text=\"Personal\" >> visible=true" },
+        { "action": "wait", "ms": 700 },
+        { "action": "capture", "name": "personal menu open" },
+
+        { "action": "hover", "selector": "text=\"Business\" >> visible=true" },
+        { "action": "wait", "ms": 700 },
+        { "action": "capture", "name": "business menu open" },
+
+        { "action": "hover", "selector": "text=\"Renewal\" >> visible=true" },
+        { "action": "wait", "ms": 700 },
+        { "action": "capture", "name": "renewal menu open" },
+
+        { "action": "click", "selector": "text=\"Bike\" >> visible=true" },
+        { "action": "wait", "ms": 600 },
+        { "action": "capture", "name": "bike quote widget" },
+
+        { "action": "click", "selector": "text=\"Health\" >> visible=true" },
+        { "action": "wait", "ms": 600 },
+        { "action": "capture", "name": "health quote widget" },
+
+        { "action": "click", "selector": "text=\"Travel\" >> visible=true" },
+        { "action": "wait", "ms": 600 },
+        { "action": "capture", "name": "travel quote widget" },
+
+        { "action": "click", "selector": "text=\"More\" >> visible=true" },
+        { "action": "wait", "ms": 600 },
+        { "action": "capture", "name": "more products tab" },
+
+        { "action": "click", "selector": "text=\"Show More\" >> visible=true" },
+        { "action": "wait", "ms": 600 },
+        { "action": "capture", "name": "about section expanded" }
+    ]
+}
