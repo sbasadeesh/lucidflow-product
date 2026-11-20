@@ -28,18 +28,15 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: 'Code/package-lock.json'
+          cache-dependency-path: 'package-lock.json'
 
       - name: Install dependencies
-        working-directory: Code
         run: npm ci
 
       - name: Install Playwright browsers
-        working-directory: Code
         run: npx playwright install --with-deps chromium
 
       - name: Discover and verify E2-04 test files
-        working-directory: Code
         run: |
           echo "=== Environment ==="
           echo "Node version: $(node --version)"
@@ -61,7 +58,6 @@ jobs:
           echo "Tested revision: ${{ steps.pr-head.outputs.sha }}"
 
       - name: Run E2-04 tests on PR head
-        working-directory: Code
         timeout-minutes: 5
         run: |
           node --test E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js E2-04_tests/maskVolatile_test/maskVolatile_test.js E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js 2>&1 | tee test-output.log
@@ -74,7 +70,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: e2-04-pr-head-test-output
-          path: Code/test-output.log
+          path: test-output.log
           retention-days: 30
 
       - name: Upload E2-04 test artifacts
@@ -83,10 +79,10 @@ jobs:
         with:
           name: e2-04-pr-head-artifacts
           path: |
-            Code/E2-04_tests/**/screenshots/
-            Code/E2-04_tests/**/diff_images/
-            Code/E2-04_tests/**/test-output/
-            Code/E2-04_tests/**/logs/
+            E2-04_tests/**/screenshots/
+            E2-04_tests/**/diff_images/
+            E2-04_tests/**/test-output/
+            E2-04_tests/**/logs/
           retention-days: 30
 
   test-integration-with-main:
@@ -123,18 +119,15 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: 'Code/package-lock.json'
+          cache-dependency-path: 'package-lock.json'
 
       - name: Install dependencies
-        working-directory: Code
         run: npm ci
 
       - name: Install Playwright browsers
-        working-directory: Code
         run: npx playwright install --with-deps chromium
 
       - name: Discover and verify test files
-        working-directory: Code
         run: |
           echo "=== Environment ==="
           echo "Node version: $(node --version)"
@@ -158,7 +151,6 @@ jobs:
           echo "Total E2-04 test files: $TEST_COUNT"
 
       - name: Run E2-04 tests on integration candidate
-        working-directory: Code
         timeout-minutes: 5
         run: |
           node --test E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js E2-04_tests/maskVolatile_test/maskVolatile_test.js E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js 2>&1 | tee e2-04-test-output.log
@@ -167,7 +159,6 @@ jobs:
           exit $exit_code
 
       - name: Run npm test (E2-03 and E2-06 regressions)
-        working-directory: Code
         timeout-minutes: 5
         run: |
           npm test 2>&1 | tee regression-output.log
@@ -181,8 +172,8 @@ jobs:
         with:
           name: e2-04-integration-test-output
           path: |
-            Code/e2-04-test-output.log
-            Code/regression-output.log
+            e2-04-test-output.log
+            regression-output.log
           retention-days: 30
 
       - name: Upload E2-04 and regression test artifacts
@@ -191,8 +182,8 @@ jobs:
         with:
           name: e2-04-integration-artifacts
           path: |
-            Code/E2-04_tests/**/screenshots/
-            Code/E2-04_tests/**/diff_images/
-            Code/E2-04_tests/**/test-output/
-            Code/E2-04_tests/**/logs/
+            E2-04_tests/**/screenshots/
+            E2-04_tests/**/diff_images/
+            E2-04_tests/**/test-output/
+            E2-04_tests/**/logs/
           retention-days: 30
