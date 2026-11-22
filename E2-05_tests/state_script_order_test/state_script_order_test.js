@@ -77,11 +77,8 @@ test("Test: each defined state is captured in order", { timeout: 60000 }, async 
         assert.ok(s.file.includes(`-0${i + 1}-`), `${s.file} should carry its position ${i + 1}`);
     });
 
-    // Accept both completed or completed_with_failures depending on intermediate state flags
-    assert.ok(
-        result.status === "completed" || result.status === "completed_with_failures",
-        `Expected completed status, got ${result.status}`
-    );
+    // every step of this fixture script targets an element that exists, so no step may fail
+    assert.equal(result.status, "completed", `Expected completed status, got ${result.status}`);
     assert.equal(result.counts.statesCaptured, 4);
 });
 
