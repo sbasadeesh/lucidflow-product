@@ -3,9 +3,6 @@ name: E2-04 Screenshot Stability Validation
 on:
   pull_request:
     branches: [ main ]
-    paths:
-      - 'Code/**'
-      - '.github/workflows/e2-04-validate.yml'
 
 jobs:
   test-pr-head:
