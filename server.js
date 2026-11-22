@@ -12,11 +12,13 @@ const {
     saveScanSummary,
     listScans,
     readScan,
+    buildRawObservationManifest,   // [E2-04]
 } = require("./screenshotModule");
 const {
     stabilizePage,
     installDeterministicEnvironment,
     compareImages,
+    captureRawObservation,         // [E2-04]
 } = require("./screenshotStabilizer");
 const stabilizerConfig = require("./stabilizer.config");
 const { runStateScript, parseScript, ScriptError } = require("./stateScriptRunner");
@@ -24,7 +26,7 @@ const stateScriptConfig = require("./stateScript.config");
 const { checkSecurityGuards } = require("./security-guard/securityGuard");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT || 5000);
 
 // Set to false to leave the optional email empty in the screenshots
 const FILL_EMAIL = true;
@@ -1088,7 +1090,7 @@ async function saveRevealedShot(page, anchor, label, state, record) {
     const filename = `element-${state.ts}-${state.shots.length + 1}-${slug}.png`;
 
     try {
-        if (state.prep) await state.prep();
+        if (state.prep) await state.prep(`element-${slug}`);
         await captureElementShot(page, container, path.join(screenshotDir, filename));
         state.shots.push({ label, url: `/screenshots/${filename}` });
         record(`Element (layout) screenshot saved: ${label}`, { filename });
@@ -1598,6 +1600,29 @@ async function safePhase(name, fn, page, guard, record, fallback = null) {
     }
 }
 
+// [E2-04] Detect the temporal state (timer / overlay / banner) that a later
+// stabilized screenshot must NOT erase. Called BEFORE any stabilization.
+async function detectTemporalSignals(page) {
+    return page
+        .evaluate(() => {
+            const seen = [];
+            const text = (document.body && document.body.innerText) || "";
+            if (/\b\d{1,2}:\d{2}(:\d{2})?\b/.test(text)) seen.push("timer");
+            if (/\b(ends? in|expires? in|remaining|time left)\b/i.test(text)) seen.push("countdown");
+
+            const overlay = document.querySelector(
+                '[role="dialog"], [aria-modal="true"], .popup, .overlay, .modal, .banner, .toast, .snackbar'
+            );
+            if (overlay) {
+                const r = overlay.getBoundingClientRect();
+                if (r.width > 100 && r.height > 60) seen.push("overlay");
+            }
+            if (document.querySelector("[data-evidence]")) seen.push("evidence");
+            return seen;
+        })
+        .catch(() => []);
+}
+
 // --------------------------------------------------
 // Aditya Birla quote flow (stops when the phone field is reached)
 //   Members dropdown -> tick Self -> OK -> Get free quote
@@ -1619,7 +1644,7 @@ async function runQuoteFlowUntilPhone(page, log, prep = null) {
 
     const ts = Date.now();
     const fullFilename = `full-${ts}.png`;
-    if (prep) await prep();
+    if (prep) await prep("full-page");
     await takeFullPage(page, path.join(screenshotDir, fullFilename), log, { beforeTile: () => clearPopups(page) });
     log("Captured full-page screenshot (before filling anything)");
 
@@ -1988,7 +2013,7 @@ async function runQuoteFlowUntilPhone(page, log, prep = null) {
         if (box) heroHeight = Math.ceil(Math.min(box.y + box.height + 40, 1400));
     }
 
-    if (prep) await prep();
+    if (prep) await prep("quote-before-phone");
     await page.screenshot({
         path: path.join(screenshotDir, elementFilename),
         clip: { x: 0, y: 0, width: vp.width, height: heroHeight },
@@ -2059,7 +2084,10 @@ app.post("/api/screenshot", async (req, res) => {
         home: normalizeUrl(parsedUrl.href),
         homeFull: parsedUrl.href,
     };
-    const state = { ts: Date.now(), shots: [], keys: new Set(), prep: null, stab: { enabled: stabilizeOn } };
+    const state = {
+        ts: Date.now(), shots: [], keys: new Set(), prep: null, stab: { enabled: stabilizeOn },
+        rawObservations: [], signalsAtLoad: [],   // [E2-04]
+    };
 
     const scanId = `scan-${state.ts}`;
     const startedAt = new Date().toISOString();
@@ -2094,6 +2122,8 @@ app.post("/api/screenshot", async (req, res) => {
             popupsHandled: stats.popupsHandled,
             navLinksChecked: navReport.length,
             stabilizer: state.stab,
+            rawObservations: buildRawObservationManifest(state.rawObservations),   // [E2-04]
+            signalsAtLoad: state.signalsAtLoad,                                     // [E2-04]
             ...extra,
             actionLog: actions,
         };
@@ -2122,10 +2152,34 @@ app.post("/api/screenshot", async (req, res) => {
 
         // Make the page hold still before every screenshot (animations off,
         // volatile elements masked, wait until the page stops changing)
-        state.prep = async () => {
+        // [E2-04] The raw, untouched screenshot is saved FIRST, so stabilized
+        // evidence never replaces what was really on screen.
+        state.prep = async (label = "shot") => {
+            if (stabilizerConfig.preserveRaw !== false) {
+                const slug = String(label).replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").slice(0, 30) || "shot";
+                const rawFile = `raw-${state.ts}-${state.rawObservations.length + 1}-${slug}.png`;
+                const raw = await captureRawObservation(page, path.join(screenshotDir, rawFile), (m) => record(m));
+                state.rawObservations.push({
+                    label,
+                    rawPath: raw.ok ? path.join(screenshotDir, rawFile) : null,
+                    rawUrl: raw.ok ? `/screenshots/${rawFile}` : null,
+                    observedAt: new Date().toISOString(),
+                });
+            }
+
             if (!stabilizeOn) return;
             try {
                 const info = await stabilizePage(page, stabilizeOptions, (m) => record(m));
+                if (info.rejected) {
+                    const last = state.rawObservations[state.rawObservations.length - 1];
+                    if (last) {
+                        last.rejectionCode = info.code;
+                        last.rejectionReason = info.reason;
+                    }
+                    record(`Stabilizer rejected for "${label}": [${info.code}] ${info.reason}`);
+                    state.stab = { ...state.stab, rejected: true, code: info.code, reason: info.reason };
+                    return;
+                }
                 state.stab = { ...state.stab, ...info };
             } catch (e) {
                 record(`Stabilizer skipped: ${String(e.message).split("\n")[0]}`);
@@ -2176,6 +2230,10 @@ app.post("/api/screenshot", async (req, res) => {
             }));
         }
 
+        // [E2-04] record timers / overlays present at load, before any stabilization
+        state.signalsAtLoad = await detectTemporalSignals(page);
+        record(`Temporal signals observed at load: ${state.signalsAtLoad.join(", ") || "none"}`);
+
         // ---------- Aditya Birla quote flow ----------
         if (parsedUrl.hostname.includes("adityabirlahealthinsurance.com")) {
             const quoteResult = await runQuoteFlowUntilPhone(page, (m) => record(m), state.prep);
@@ -2184,7 +2242,7 @@ app.post("/api/screenshot", async (req, res) => {
                 // evidence crop for the requested selector (if any)
                 let selectorCropUrl = null;
                 const cropFile = `evidence-${state.ts}.png`;
-                await state.prep();
+                await state.prep("evidence-crop");
                 if (await captureSelectorCrop(page, selector, path.join(screenshotDir, cropFile), (m) => record(m))) {
                     selectorCropUrl = `/screenshots/${cropFile}`;
                 }
@@ -2223,7 +2281,7 @@ app.post("/api/screenshot", async (req, res) => {
         await page.waitForTimeout(700);
 
         const fullFilename = `full-${state.ts}.png`;
-        await state.prep();
+        await state.prep("full-page");
         await takeFullPage(page, path.join(screenshotDir, fullFilename), (m) => record(m), {
             // a popup that opens while the page is being captured is cancelled first
             beforeTile: async () => {
@@ -2337,7 +2395,7 @@ app.post("/api/screenshot", async (req, res) => {
                 // main element shot: top of page down to the form (like the Aditya Birla one)
                 const container = await findCardContainer(sensitive.locator);
                 const mainFile = `element-${state.ts}-main.png`;
-                await state.prep();
+                await state.prep("sensitive-field");
                 await captureElementShot(page, container, path.join(screenshotDir, mainFile));
                 state.shots.unshift({ label: "main (sensitive field area)", url: `/screenshots/${mainFile}` });
                 record("Element screenshot saved (at the sensitive field)", { filename: mainFile });
@@ -2354,7 +2412,7 @@ app.post("/api/screenshot", async (req, res) => {
             // the page (the full page is already saved separately)
             const fallbackFile = `element-${state.ts}.png`;
             elementSelector = "top of page";
-            await state.prep();
+            await state.prep("top-of-page");
             await captureElementShot(page, null, path.join(screenshotDir, fallbackFile));
             state.shots.push({ label: elementSelector, url: `/screenshots/${fallbackFile}` });
             record("Element screenshot saved (layout of the top of the page)", { filename: fallbackFile });
@@ -2363,7 +2421,7 @@ app.post("/api/screenshot", async (req, res) => {
         // evidence crop for the requested selector (if any)
         let selectorCropUrl = null;
         const cropFile = `evidence-${state.ts}.png`;
-        await state.prep();
+        await state.prep("evidence-crop");
         if (await captureSelectorCrop(page, selector, path.join(screenshotDir, cropFile), (m) => record(m))) {
             selectorCropUrl = `/screenshots/${cropFile}`;
         }
