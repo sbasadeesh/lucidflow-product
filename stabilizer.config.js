@@ -3,44 +3,51 @@
 
 module.exports = {
     // --- comparing two screenshots -------------------------------------
-    // Largest share of pixels allowed to differ between two scans.
-    // 0.005 = 0.5%. Two scans "match" when the difference is at or below this.
     threshold: 0.005,
-
-    // A pixel only counts as different when a colour channel (0-255) differs
-    // by MORE than this. Hides tiny anti-aliasing / font-smoothing noise.
     pixelTolerance: 10,
 
     // --- making a page hold still --------------------------------------
-    disableAnimations: true, // CSS animations + transitions jump to their end state
-    pauseMedia: true,        // pause <video> / <audio> and rewind to the start
-    pauseCarousels: true,    // click visible "Pause" buttons of sliders, stop <marquee> tickers
-    hideCaret: true,         // hide the blinking text cursor
+    disableAnimations: true,
+    pauseMedia: true,
+    pauseCarousels: true,
+    hideCaret: true,
 
     // --- hiding volatile elements --------------------------------------
-    // "mask" = draw a solid colour box over the element (layout stays the same)
-    // "hide" = hide it with a custom stylesheet (visibility: hidden)
-    maskMode: "mask",
+    maskMode: "mask",        // "mask" | "hide" | "off"
     maskColor: "#ff00ff",
-
-    // Selectors masked on every scan. Add your own per site in the request
-    // ("mask": [".chat-widget", "#ad-banner"]).
     defaultMaskSelectors: ["[data-volatile]"],
-
-    // Extra CSS added to the page before the screenshot (optional)
     extraCss: "",
 
     // --- waiting until the page stops changing -------------------------
-    settleIntervalMs: 150,  // gap between the two checks
-    settleTimeoutMs: 3000,  // give up after this long
+    settleIntervalMs: 150,
+    settleTimeoutMs: 3000,
 
     // --- fixed time and random numbers (off by default) ----------------
-    // Turn on for pages that print the date or random values. It can break
-    // pages that depend on the real clock, so it is opt-in.
     freezeTime: false,
     fixedTime: "2026-01-01T00:00:00.000Z",
     randomSeed: 42,
 
     // --- diff image ----------------------------------------------------
     diffColor: { r: 255, g: 0, b: 0 },
+
+    // --- [E2-04] raw observation preservation --------------------------
+    // A raw (pre-stabilization) screenshot is ALWAYS saved before masking
+    // or animation disabling. Stabilized evidence is a SEPARATE artifact.
+    preserveRaw: true,
+
+    // Selectors matching any of these are treated as detection signals.
+    // If masking would hide one, stabilizePage returns a typed rejection
+    // instead of silently producing "clean" coverage.
+    detectionSignals: [
+        /countdown|timer|clock|time-?left|remaining|expir/i,
+        /popup|overlay|modal|banner|toast|snackbar|alert|notif/i,
+        /\[data-evidence\]/,
+    ],
+
+    // Typed rejection codes
+    rejectionCodes: {
+        STABILIZATION_HIDES_DETECTION_SIGNAL: "STABILIZATION_HIDES_DETECTION_SIGNAL",
+        STABILIZATION_SIZE_MISMATCH: "STABILIZATION_SIZE_MISMATCH",
+        STABILIZATION_NOT_SETTLED: "STABILIZATION_NOT_SETTLED",
+    },
 };

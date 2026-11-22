@@ -1,11 +1,11 @@
 // --------------------------------------------------
 // Screenshot stabilizer
 //  - stabilizePage:   make a page hold still before a screenshot
-//                     (disable animations, pause media, mask volatile regions,
-//                     wait until two screenshots in a row are identical)
-//  - compareImages:   compare two screenshots against a threshold and
-//                     optionally write a diff image
-//  - installDeterministicEnvironment: fixed clock + seeded Math.random (opt-in)
+//  - compareImages:   compare two screenshots against a threshold
+//  - installDeterministicEnvironment: fixed clock + seeded Math.random
+//  - [E2-04] captureRawObservation: save the untouched raw shot FIRST
+//  - [E2-04] stabilizePage returns a typed rejection when masking would
+//            hide a detection signal (no invented coverage)
 // All numbers come from stabilizer.config.js
 // --------------------------------------------------
 
@@ -15,7 +15,6 @@ const STYLE_ID = "__stabilizer_style__";
 const MASK_CLASS = "__stabilizer_mask__";
 
 // A selector is only used if it is a plain non-empty string with no braces
-// (it ends up inside a stylesheet and in querySelectorAll).
 function cleanSelectors(list) {
     const out = [];
     for (const s of list || []) {
@@ -31,8 +30,6 @@ function buildCss(cfg, selectors) {
     const parts = [];
 
     if (cfg.disableAnimations) {
-        // Finite animations jump to their last frame, infinite ones stop after one
-        // very short run - the page ends in the same state every time.
         parts.push(`*, *::before, *::after {
             animation-duration: 0s !important;
             animation-delay: 0s !important;
@@ -53,6 +50,26 @@ function buildCss(cfg, selectors) {
     return parts.join("\n");
 }
 
+// [E2-04] Does this selector look like a detection signal?
+function matchesDetectionSignal(sel, cfg) {
+    return (cfg.detectionSignals || []).some((re) => (re instanceof RegExp ? re.test(sel) : false));
+}
+
+// [E2-04] Save the RAW, untouched screenshot BEFORE any stabilization.
+// This is the primary evidence. No stylesheet, no animation finishing,
+// no masking, no frozen clock - exactly what a human sees right now.
+async function captureRawObservation(page, outPath, log = () => { }) {
+    try {
+        await page.screenshot({ path: outPath, animations: "allow", timeout: 30000 });
+        log(`Raw observation preserved: ${outPath}`);
+        return { ok: true, path: outPath };
+    } catch (err) {
+        const msg = String(err.message).split("\n")[0];
+        log(`Raw observation capture failed: ${msg}`);
+        return { ok: false, error: msg };
+    }
+}
+
 // Wait until two screenshots taken one after the other are identical
 async function waitForVisualStability(page, cfg = defaults) {
     const end = Date.now() + cfg.settleTimeoutMs;
@@ -69,13 +86,35 @@ async function waitForVisualStability(page, cfg = defaults) {
     return { stable: false, attempts };
 }
 
-// Make the page hold still. Safe to call again after the page changes
-// (it replaces its own stylesheet and masks instead of adding more).
+// Make the page hold still. Safe to call again after the page changes.
+// [E2-04] Returns { rejected: true, code, reason } instead of masking
+//         selectors that look like detection signals.
 async function stabilizePage(page, options = {}, log = () => { }) {
     const cfg = { ...defaults, ...options };
     const selectors = cleanSelectors([...(cfg.defaultMaskSelectors || []), ...(options.maskSelectors || [])]);
 
-    // 1. custom stylesheet: animations off, caret hidden, "hide" mode selectors
+    // [E2-04] Refuse to stabilize when masking would hide a detection signal.
+    if (cfg.maskMode !== "off" && selectors.length) {
+        const risky = selectors.filter((s) => matchesDetectionSignal(s, cfg));
+        if (risky.length) {
+            const code = (cfg.rejectionCodes || {}).STABILIZATION_HIDES_DETECTION_SIGNAL ||
+                "STABILIZATION_HIDES_DETECTION_SIGNAL";
+            const reason = `Stabilization would hide detection signal(s): ${risky.join(", ")}`;
+            log(`REJECTED (${code}): ${reason}`);
+            return {
+                rejected: true,
+                code,
+                reason,
+                riskySelectors: risky,
+                masked: 0,
+                settled: false,
+                maskSelectors: selectors,
+                maskMode: cfg.maskMode,
+            };
+        }
+    }
+
+    // 1. custom stylesheet
     await page.evaluate(({ id, css }) => {
         let el = document.getElementById(id);
         if (!el) {
@@ -93,8 +132,6 @@ async function stabilizePage(page, options = {}, log = () => { }) {
         });
         if (pauseCarousels) {
             document.querySelectorAll("marquee").forEach((m) => { try { m.stop(); } catch { } });
-            // a slider's "Pause" button; once clicked it says "Play", so a second
-            // call leaves it alone
             document.querySelectorAll('button, [role="button"]').forEach((b) => {
                 const r = b.getBoundingClientRect();
                 const cs = getComputedStyle(b);
@@ -112,7 +149,7 @@ async function stabilizePage(page, options = {}, log = () => { }) {
         if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     }, { pauseMedia: cfg.pauseMedia, pauseCarousels: cfg.pauseCarousels });
 
-    // 3. "mask" mode: solid colour boxes over the volatile elements
+    // 3. mask / hide volatile elements
     let masked = 0;
     await page.evaluate(({ cls }) => {
         document.querySelectorAll("." + cls).forEach((e) => e.remove());
@@ -154,12 +191,24 @@ async function stabilizePage(page, options = {}, log = () => { }) {
     // 4. wait until the page stops changing
     const settle = await waitForVisualStability(page, cfg);
 
+    const result = {
+        masked,
+        settled: settle.stable,
+        maskSelectors: selectors,
+        maskMode: cfg.maskMode,
+    };
+
+    // [E2-04] Typed signal when the page never settled
+    if (!settle.stable) {
+        result.rejectionCode = (cfg.rejectionCodes || {}).STABILIZATION_NOT_SETTLED || "STABILIZATION_NOT_SETTLED";
+        result.reason = `Page did not settle within ${cfg.settleTimeoutMs}ms`;
+    }
+
     log(`Stabilizer: ${masked} element(s) masked, page ${settle.stable ? "settled" : "did not fully settle"}`);
-    return { masked, settled: settle.stable, maskSelectors: selectors, maskMode: cfg.maskMode };
+    return result;
 }
 
 // Fixed clock + seeded Math.random for every page of this context (opt-in).
-// Call it BEFORE the page loads.
 async function installDeterministicEnvironment(context, options = {}) {
     const cfg = { ...defaults, ...options };
     await context.addInitScript(({ fixed, seed }) => {
@@ -185,7 +234,6 @@ async function installDeterministicEnvironment(context, options = {}) {
 
 // --------------------------------------------------
 // Compare two screenshots (file paths or Buffers)
-//   passed = share of different pixels is at or below the threshold
 // --------------------------------------------------
 async function compareImages(a, b, options = {}) {
     const sharp = require("sharp");
@@ -201,6 +249,7 @@ async function compareImages(a, b, options = {}) {
             ...base,
             passed: false,
             sizeMismatch: true,
+            rejectionCode: (cfg.rejectionCodes || {}).STABILIZATION_SIZE_MISMATCH || "STABILIZATION_SIZE_MISMATCH",
             width: A.info.width,
             height: A.info.height,
             sizeB: { width: B.info.width, height: B.info.height },
@@ -232,7 +281,6 @@ async function compareImages(a, b, options = {}) {
                 diff[i + 1] = cfg.diffColor.g;
                 diff[i + 2] = cfg.diffColor.b;
             } else {
-                // faded copy of the original so you can see where the changes are
                 const grey = Math.round((A.data[i] + A.data[i + 1] + A.data[i + 2]) / 3 * 0.3 + 178);
                 diff[i] = diff[i + 1] = diff[i + 2] = grey;
             }
@@ -265,4 +313,5 @@ module.exports = {
     installDeterministicEnvironment,
     compareImages,
     cleanSelectors,
+    captureRawObservation,  // [E2-04]
 };
