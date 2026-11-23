@@ -1,35 +1,44 @@
-const fs = require("fs");
+// E2-14 cleanup of ephemeral capture artifacts - PRODUCTION entry point.
+// Standalone utility: the scan engine does not call it yet.
+//
+// The repository root is always derived from this module's own location and cannot be chosen by
+// the caller. Only these options are accepted: tempRoot, maxAgeDays, eligibleFilePattern (narrows
+// the fixed "tmp-*" rule) and protectedDirs (adds to the fixed scans/screenshots protection).
+// Any other option - including repoRoot and the internal test hooks now/unlink - is rejected
+// before anything is deleted. See ./cleanupCore.js for the rules and the documented
+// check/delete race limitation.
 const path = require("path");
-const config = require("./provenance.config");
+const core = require("./cleanupCore");
 
-async function cleanupEphemeralArtifacts(dirs) {
-    // Ensure dirs is always an array
-    const dirsToClean = Array.isArray(dirs) ? dirs : [dirs];    
-    let totalDeleted = 0;
-    const now = Date.now();
-    const maxAgeMs = config.cleanupAgeDays * 24 * 60 * 60 * 1000;
+const REPO_ROOT = path.resolve(__dirname, "..");
+const ALLOWED_OPTIONS = new Set(["tempRoot", "maxAgeDays", "eligibleFilePattern", "protectedDirs"]);
 
-    for (const dir of dirsToClean) {
-        if (!fs.existsSync(dir)) continue;
-
-        try {
-            const files = fs.readdirSync(dir);
-            for (const file of files) {
-                const filePath = path.join(dir, file);
-                const stats = fs.statSync(filePath);
-                
-                // Delete if older than the lifecycle config
-                if (now - stats.mtimeMs > maxAgeMs) {
-                    fs.unlinkSync(filePath);
-                    totalDeleted++;
-                }
-            }
-        } catch (err) {
-            return { deleted: totalDeleted, error: `CLEANUP_FAILED: ${err.message}` };
-        }
+function checkOptions(options) {
+    if (options === undefined || options === null) return {};
+    if (typeof options !== "object" || Array.isArray(options)) {
+        throw new core.CleanupConfigError("options must be an object");
     }
-    
-    return { deleted: totalDeleted, error: null };
+    const unknown = Object.keys(options).filter((k) => !ALLOWED_OPTIONS.has(k));
+    if (unknown.length) throw new core.CleanupConfigError(`unsupported option(s): ${unknown.join(", ")}`);
+    return { ...options };
 }
 
-module.exports = { cleanupEphemeralArtifacts };
+function validateCleanupConfig(options = {}) {
+    return core.validateForRepo(REPO_ROOT, checkOptions(options));
+}
+
+async function cleanupEphemeralArtifacts(targets, options = {}) {
+    let checked;
+    try {
+        checked = checkOptions(options);
+    } catch (e) {
+        return {
+            deleted: 0, deletedFiles: [], skipped: [], rejected: [], aborted: null,
+            errors: [{ path: null, code: "CLEANUP_INVALID_CONFIG", message: e.message }],
+            error: "CLEANUP_INVALID_CONFIG",
+        };
+    }
+    return core.cleanupForRepo(REPO_ROOT, targets, checked);
+}
+
+module.exports = { cleanupEphemeralArtifacts, validateCleanupConfig };
