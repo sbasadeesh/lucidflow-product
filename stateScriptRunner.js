@@ -132,21 +132,26 @@ async function findElement(page, selector, timeoutMs) {
     }
 }
 
-async function looksSensitive(loc, cfg) {
-    const info = await loc
-        .evaluate((el) => {
-            const parts = [
-                el.type, el.name, el.id, el.placeholder,
-                el.getAttribute("aria-label"), el.getAttribute("autocomplete"), el.getAttribute("inputmode"),
-            ];
-            if (el.labels) [...el.labels].forEach((l) => parts.push(l.innerText));
-            return { type: (el.type || "").toLowerCase(), text: parts.filter(Boolean).join(" | ") };
-        })
-        .catch(() => null);
+// Runs in the browser: what a field says about itself (type, name, id, labels...).
+// Shared with stateFingerprinter so both use the same sensitive-field rule.
+function fieldDescriptor(el) {
+    const parts = [
+        el.type, el.name, el.id, el.placeholder,
+        el.getAttribute("aria-label"), el.getAttribute("autocomplete"), el.getAttribute("inputmode"),
+    ];
+    if (el.labels) [...el.labels].forEach((l) => parts.push(l.innerText));
+    return { type: (el.type || "").toLowerCase(), text: parts.filter(Boolean).join(" | ") };
+}
 
+function isSensitiveField(info, cfg = defaults) {
     if (!info) return false;
     if (info.type === "tel" || info.type === "password") return true;
     return new RegExp(cfg.sensitivePattern, "i").test(info.text);
+}
+
+async function looksSensitive(loc, cfg) {
+    const info = await loc.evaluate(fieldDescriptor).catch(() => null);
+    return isSensitiveField(info, cfg);
 }
 
 // --------------------------------------------------
@@ -397,4 +402,4 @@ async function runStateScript(page, scriptInput, options = {}) {
     };
 }
 
-module.exports = { runStateScript, parseScript, ScriptError, resolveStateCap };
+module.exports = { runStateScript, parseScript, ScriptError, resolveStateCap, fieldDescriptor, isSensitiveField };
