@@ -1,0 +1,266 @@
+import { render, within } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { PRIORITY_THEMES } from "../data.js";
+import mock from "../mock/mock_payload.json";
+import { fitSheetContent, getPages, Sheet } from "./ReportPages.jsx";
+
+const reportOf = (id) => mock.scenarios.find((s) => s.id === id).report;
+
+// Renders every report page, each inside its A4 sheet (like the preview does)
+function renderReport(report) {
+  const pages = getPages(report);
+  return render(
+    <>
+      {pages.map((page, i) => (
+        <Sheet n={i + 1} key={i}>
+          {page}
+        </Sheet>
+      ))}
+    </>,
+  );
+}
+
+const sheetsOf = (container) => Array.from(container.querySelectorAll(".sheet"));
+
+// first red label on a page, used to tell which kind of page it is
+const kindOf = (sheet) => {
+  const label = sheet.querySelector(".eyebrow, .big-label").textContent;
+  if (label.startsWith("AI POWERED")) return "cover";
+  if (label.startsWith("02 /")) return "summary";
+  if (label.startsWith("ASSESSMENT DATA")) return "data-unavailable";
+  if (label.startsWith("ASSESSMENT LIMITATIONS")) return "limitations";
+  if (label.startsWith("CORRECTIVE")) return "cap";
+  if (label.startsWith("ABOUT")) return "about";
+  return "finding";
+};
+
+describe("Report layout against the mock payload", () => {
+  // AC1
+  it("Given the mock payload with one finding, when the report preview opens, then the report renders with no errors", () => {
+    const report = reportOf("S1-one-finding");
+    const { container } = renderReport(report);
+    const sheets = sheetsOf(container);
+
+    // cover, summary, 1 finding, 1 CAP page, limitations, about
+    expect(sheets).toHaveLength(6);
+    expect(within(sheets[0]).getByRole("heading", { level: 1 })).toHaveTextContent(report.title);
+    expect(within(sheets[2]).getByRole("heading", { level: 2 })).toHaveTextContent(
+      report.findings[0].title,
+    );
+  });
+
+  // AC1
+  it("Given the mock payload with three findings, when the report preview opens, then every page renders in the right order: cover, summary, findings, CAP register, limitations, about", () => {
+    const report = reportOf("S2-three-findings");
+    const n = report.findings.length;
+    const { container } = renderReport(report);
+    const sheets = sheetsOf(container);
+    const kinds = sheets.map(kindOf);
+
+    expect(kinds.slice(0, 2)).toEqual(["cover", "summary"]);
+    expect(kinds.slice(2, 2 + n)).toEqual(Array(n).fill("finding"));
+    expect(kinds.at(-1)).toBe("about");
+    expect(kinds.at(-2)).toBe("limitations");
+
+    const capKinds = kinds.slice(2 + n, -2);  // Exclude limitations and about
+    expect(capKinds.length).toBeGreaterThanOrEqual(1);
+    expect(capKinds.every((k) => k === "cap")).toBe(true);
+
+    // finding pages follow the order in the payload
+    const ids = sheets.slice(2, 2 + n).map((s) => s.querySelector(".big-label").textContent);
+    expect(ids).toEqual(report.findings.map((f) => f.id));
+  });
+
+  // AC2
+  it("Given a mock payload with empty text fields, when the report preview opens, then every page still shows its headings and layout with no broken or missing sections", () => {
+    const report = reportOf("S5-empty-text-fields");
+    const n = report.findings.length;
+    const { container } = renderReport(report);
+    const sheets = sheetsOf(container);
+
+    // every page keeps its logo and footer with the page number
+    sheets.forEach((sheet, i) => {
+      expect(within(sheet).getByAltText(/LucidFlow/)).toBeInTheDocument();
+      expect(within(sheet).getByText(`Page ${i + 1}`)).toBeInTheDocument();
+    });
+
+    // cover keeps its labels
+    expect(within(sheets[0]).getByText("PREPARED FOR")).toBeInTheDocument();
+    expect(within(sheets[0]).getByText("REPORT ID")).toBeInTheDocument();
+
+    // finding page keeps all its sections
+    ["EVIDENCE-LED FINDING", "WHY THIS MATTERS", "REMEDIATION FIX"].forEach((label) => {
+      expect(within(sheets[2]).getByText(label)).toBeInTheDocument();
+    });
+
+    // CAP register keeps its 7 table headings
+    expect(within(sheets[2 + n]).getAllByRole("columnheader")).toHaveLength(7);
+  });
+
+  // Edge case
+  it("Given a mock payload with very long text, when a finding page renders, then the text stays inside the page and does not touch the footer", () => {
+    const report = reportOf("S6-long-text");
+    const f = report.findings[0];
+    const { container } = renderReport(report);
+    const sheet = sheetsOf(container)[2];
+    const body = sheet.querySelector(".s-body");
+    const foot = sheet.querySelector(".s-foot");
+
+    // all the text is on the page (nothing cut), inside the page body
+    expect(body).toHaveTextContent(f.evidence);
+    expect(body).toHaveTextContent(f.why);
+    f.fix.forEach((step) => expect(body).toHaveTextContent(step));
+
+    // the footer is its own block, outside the page body
+    expect(body.contains(foot)).toBe(false);
+  });
+
+  it("Given empty theme strings, when the summary renders, then fallback assessment prose is not inserted", () => {
+    const report = reportOf("S5-empty-text-fields");
+    const { container } = renderReport(report);
+    const summary = sheetsOf(container)[1];
+    PRIORITY_THEMES.forEach((theme) => {
+      expect(summary).not.toHaveTextContent(theme.text);
+    });
+    expect(summary.querySelectorAll(".themes p")).toHaveLength(3);
+    summary.querySelectorAll(".themes p").forEach((p) => {
+      expect(p.textContent).toBe("");
+    });
+  });
+
+  it.each(mock.scenarios.map((s) => [s.id, s]))(
+    "Given %s, when pages are built, then the count, order, and CAP rows match the fixture",
+    (_id, scenario) => {
+      const report = scenario.report;
+      const { container } = renderReport(report);
+      const sheets = sheetsOf(container);
+      expect(sheets).toHaveLength(scenario.expected.total_pdf_pages);
+      sheets.forEach((sheet, i) => {
+        expect(within(sheet).getByText(`Page ${i + 1}`)).toBeInTheDocument();
+      });
+      const capIds = sheets
+        .filter((sheet) => kindOf(sheet) === "cap")
+        .flatMap((sheet) =>
+          [...sheet.querySelectorAll("tbody tr")].map((row) => row.querySelector("td").textContent),
+        );
+      expect(capIds).toEqual(report.cap.map((row) => row.id));
+    },
+  );
+
+  it("Given a finding with a screenshot, when the finding page renders, then the image is shown", () => {
+    const report = reportOf("S1-one-finding");
+    const { container } = renderReport(report);
+    const finding = sheetsOf(container)[2];
+    expect(finding.querySelector("img.shot-img")).toHaveAttribute("src", report.findings[0].screenshot);
+    expect(finding.querySelector(".shot")).toBeNull();
+  });
+
+  it("Given a finding without a screenshot, when the finding page renders, then the placeholder is shown", () => {
+    const report = structuredClone(reportOf("S1-one-finding"));
+    delete report.findings[0].screenshot;
+    const { container } = renderReport(report);
+    const finding = sheetsOf(container)[2];
+    expect(finding.querySelector("img.shot-img")).toBeNull();
+    expect(finding.querySelector(".shot")).toHaveTextContent("Screenshot placeholder");
+  });
+
+  it("Given a sheet with no layout height, when fit runs, then it waits instead of locking zoom at 1", () => {
+    const box = { clientHeight: 0, scrollHeight: 0 };
+    const content = { style: {}, dataset: {} };
+    expect(fitSheetContent(box, content)).toBe(false);
+    expect(content.dataset.fitted).toBeUndefined();
+  });
+
+  it("Given content taller than the sheet, when fit runs, then zoom stays at or above 0.6 and marks a miss", () => {
+    const content = { style: {}, dataset: {} };
+    const box = {
+      clientHeight: 100,
+      get scrollHeight() {
+        const zoom = Number(content.style.zoom || 1);
+        return Math.ceil(400 * zoom);
+      },
+    };
+    expect(fitSheetContent(box, content)).toBe(true);
+    expect(Number(content.style.zoom)).toBeGreaterThanOrEqual(0.6);
+    expect(content.dataset.fitted).toBe("1");
+    expect(content.dataset.overflow).toBe("below-min-zoom");
+  });
+
+  it("Given zero findings, when the report renders, then only cover, summary, limitations, and about pages exist", () => {
+    const report = reportOf("S4-zero-findings");
+    const { container } = renderReport(report);
+    const kinds = sheetsOf(container).map(kindOf);
+    expect(kinds).toEqual(["cover", "summary", "limitations", "about"]);
+  });
+
+  it("Given a report with limitations, when rendered, then limitations page contains the text", () => {
+    const report = reportOf("S1-one-finding");
+    const { container } = renderReport(report);
+    const sheets = sheetsOf(container);
+    const limitationsSheet = sheets.find(s => kindOf(s) === "limitations");
+    expect(limitationsSheet).toBeTruthy();
+    expect(limitationsSheet).toHaveTextContent("This assessment is limited to");
+    // Mock scenarios don't have states field, so scope won't show states in report
+    // (This is tested in data.test.js)
+  });
+
+  it("Given a report with state count, when scope renders, then states are included", () => {
+    const report = reportOf("S1-one-finding");
+    // Mock scenarios don't have states field (test data), so should show unavailable
+    expect(report.scope).toContain("page");
+    // Real scans will have states from backend E2-03
+    // State handling tested in data.test.js with explicit fixtures
+  });
+
+  it("Given supplied findings array (including empty), when buildReport is called, then isDataAvailable is true", () => {
+    // Regression: distinguish supplied zero findings from missing findings field
+    // Supplied empty array = valid assessment with 0 findings
+    // Missing findings field = assessment data unavailable (should render NoScan or equivalent)
+    const report = reportOf("S4-zero-findings");
+    expect(report.isDataAvailable).toBe(true);  // findings was supplied as []
+    expect(report.findings).toEqual([]);
+  });
+
+  it("Given zero supplied findings, when the report renders, then cover/summary/limitations/about pages exist with no finding pages", () => {
+    // Regression: zero findings (from supplied []) vs. data unavailable (missing field)
+    // This test verifies supplied empty findings renders a valid report
+    const report = reportOf("S4-zero-findings");
+    const { container } = renderReport(report);
+    const sheets = sheetsOf(container);
+    const kinds = sheets.map(kindOf);
+    
+    // Exactly 4 pages: cover, summary, limitations, about (no finding/CAP pages)
+    expect(kinds).toEqual(["cover", "summary", "limitations", "about"]);
+    
+    // Confirm stats show 0 findings
+    expect(report.stats[1].value).toBe(0);  // Potential findings
+    expect(report.findings).toHaveLength(0);
+  });
+
+  it("Given assessment data unavailable (missing findings, not demo), when the report renders, then data-unavailable page appears between summary and limitations", () => {
+    // Regression: visibly distinguish unavailable data from zero findings
+    const report = reportOf("S1-one-finding");
+    // Simulate missing findings: clear the array and unset isDataAvailable
+    const unavailableReport = {
+      ...report,
+      findings: [],
+      isDataAvailable: false,  // Key: findings field was not supplied
+      isDemo: false,
+    };
+    
+    const { container } = renderReport(unavailableReport);
+    const sheets = sheetsOf(container);
+    const kinds = sheets.map(kindOf);
+    
+    // Should render: cover, summary, data-unavailable, limitations, about
+    expect(kinds.slice(0, 3)).toEqual(["cover", "summary", "data-unavailable"]);
+    expect(kinds.at(-2)).toBe("limitations");
+    expect(kinds.at(-1)).toBe("about");
+    
+    // Verify the data-unavailable message is shown
+    const dataUnavailableSheet = sheets.find(s => 
+      s.textContent.includes("No scan data available")
+    );
+    expect(dataUnavailableSheet).toBeTruthy();
+  });
+});

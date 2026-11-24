@@ -1,0 +1,349 @@
+{
+  "scan": {
+    "scan_id": "SCAN-CHOLA-2026-001",
+    "started_at": "2026-10-15T09:00:00Z",
+    "completed_at": "2026-10-15T12:00:00Z",
+    "input_urls": [
+      "https://www.gaadibazaar.in/electric-vehicles",
+      "https://apps.gaadibazaar.in/user-login",
+      "https://www.cholamandalam.com/chola-one-instant-personal-loan-app"
+    ],
+    "pages_scanned": 9,
+    "states_captured": 2,
+    "rule_versions": [
+      {
+        "rule_id": "DP-010",
+        "version": "1.0.0"
+      },
+      {
+        "rule_id": "DP-004",
+        "version": "1.0.0"
+      }
+    ],
+    "status": "completed"
+  },
+  "detection": {
+    "result": "yes",
+    "reason": "Confirmed dark-pattern findings were recorded for nagging and forced action on the reviewed pages."
+  },
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "rule_id": "DP-010",
+      "rule_version": "1.0.0",
+      "pattern": "Nagging",
+      "category": "Nagging",
+      "severity": "MEDIUM",
+      "confidence": 0.86,
+      "status": "confirmed",
+      "state_id": "ST-001",
+      "evidence_ids": [
+        "E-001"
+      ],
+      "created_at": "2026-10-15T09:15:00Z",
+      "title": "Repeated third-party advertisement overlay",
+      "page_name": "Gaadi Bazaar Vehicle Listing Page",
+      "page_scanned": "https://www.gaadibazaar.in/electric-vehicles",
+      "remediation_effort": "MEDIUM EFFORT",
+      "owner": [
+        "Product",
+        "UX",
+        "Compliance"
+      ],
+      "why_this_matters": "Repeated overlays can interrupt browsing and obstruct intended content after a user has dismissed promotional content.",
+      "remediation_fix": [
+        "Respect dismissal.",
+        "Implement frequency caps.",
+        "Maintain dismissal across navigation."
+      ],
+      "root_cause": "Advertisement frequency and dismissal state are not sufficiently controlled.",
+      "cap_id": "CAP-001"
+    },
+    {
+      "finding_id": "F-002",
+      "rule_id": "DP-004",
+      "rule_version": "1.0.0",
+      "pattern": "Forced Action",
+      "category": "Forced Action",
+      "severity": "MEDIUM",
+      "confidence": 0.84,
+      "status": "confirmed",
+      "state_id": "ST-002",
+      "evidence_ids": [
+        "E-002"
+      ],
+      "created_at": "2026-10-15T09:35:00Z",
+      "title": "Bundled acceptance of terms at login",
+      "page_name": "Gaadi Bazaar Login Page",
+      "page_scanned": "https://apps.gaadibazaar.in/user-login",
+      "remediation_effort": "MEDIUM EFFORT",
+      "owner": [
+        "Product",
+        "UX",
+        "Legal"
+      ],
+      "why_this_matters": "Bundled terms can make it difficult to distinguish conditions necessary for account access from terms relevant only to particular activity.",
+      "remediation_fix": [
+        "Separate account-access terms from auction-specific terms.",
+        "Explain applicability of each agreement.",
+        "Provide separate controls where appropriate."
+      ],
+      "root_cause": "Multiple agreements are presented as one condition of login.",
+      "cap_id": "CAP-002"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "E-001",
+      "finding_id": "F-001",
+      "url": "https://www.gaadibazaar.in/electric-vehicles",
+      "captured_at": "2026-10-15T09:15:00Z",
+      "state_id": "ST-001",
+      "rule_id": "DP-010",
+      "screenshot_path": "artifacts/screens/f-001.png",
+      "dom_snippet": "<div role=\"dialog\">Advertisement overlay with Close control</div>",
+      "summary": "A third-party modal overlay obscures the vehicle listing page and reportedly reappeared after dismissal."
+    },
+    {
+      "evidence_id": "E-002",
+      "finding_id": "F-002",
+      "url": "https://apps.gaadibazaar.in/user-login",
+      "captured_at": "2026-10-15T09:35:00Z",
+      "state_id": "ST-002",
+      "rule_id": "DP-004",
+      "screenshot_path": "artifacts/screens/f-002.png",
+      "dom_snippet": "<p>By logging in, you agree with the User Agreement, Privacy Policy and Auction Terms.</p>",
+      "summary": "Login wording links account access with several terms without separate acceptance controls."
+    }
+  ],
+  "kpis": {
+    "total_findings": 2,
+    "confirmed_findings": 2,
+    "candidate_findings": 0,
+    "rejected_findings": 0,
+    "by_severity": {
+      "MEDIUM": 2
+    },
+    "by_category": {
+      "Nagging": 1,
+      "Forced Action": 1
+    },
+    "by_pattern": {
+      "Nagging": 1,
+      "Forced Action": 1
+    }
+  },
+  "ai_payload": {
+    "included_finding_ids": [
+      "F-001",
+      "F-002"
+    ],
+    "confirmed_findings": [
+      {
+        "finding_id": "F-001",
+        "status": "confirmed",
+        "pattern": "Nagging",
+        "severity": "MEDIUM"
+      },
+      {
+        "finding_id": "F-002",
+        "status": "confirmed",
+        "pattern": "Forced Action",
+        "severity": "MEDIUM"
+      }
+    ],
+    "facts_for_summary": {
+      "total_findings": 2,
+      "confirmed_findings": 2,
+      "candidate_findings": 0,
+      "rejected_findings": 0,
+      "by_severity": {
+        "MEDIUM": 2
+      },
+      "by_category": {
+        "Nagging": 1,
+        "Forced Action": 1
+      },
+      "by_pattern": {
+        "Nagging": 1,
+        "Forced Action": 1
+      }
+    },
+    "redactions_applied": [
+      "Rejected findings excluded",
+      "Personal data excluded",
+      "Client-confidential data excluded"
+    ],
+    "contains_personal_data": false,
+    "contains_client_confidential_data": false,
+    "generated_at": "2026-10-15T12:05:00Z"
+  },
+  "report": {
+    "report_id": "LF-CHOLA-2026-001",
+    "version": "V1.0",
+    "issue_date": "2026-10-15",
+    "prepared_for": "Cholamandalam Investment and Finance Company Limited",
+    "product_name": "Dark Pattern Assessment Report",
+    "prepared_by": "LucidFlow",
+    "include_responsible_business_appendix": false
+  },
+  "assessment": {
+    "scope_name": "Cholamandalam Investment and Finance Web journey",
+    "scope_line": "9 pages/screens assessed",
+    "pages_screens_assessed": 9,
+    "journey_urls": [
+      "https://www.gaadibazaar.in/electric-vehicles",
+      "https://apps.gaadibazaar.in/user-login",
+      "https://www.cholamandalam.com/chola-one-instant-personal-loan-app"
+    ],
+    "scan_started_at": "2026-10-15T09:00:00Z",
+    "scan_completed_at": "2026-10-15T12:00:00Z"
+  },
+  "executive_summary": {
+    "potential_findings": 2,
+    "high_critical": 0,
+    "revalidated_closed": 0,
+    "pattern_distribution": {
+      "Nagging": 1,
+      "Forced Action": 1
+    },
+    "overall_posture": "The assessment identified potential dark-pattern concerns across reviewed digital journeys. The findings indicate areas where transparency, user choice and consent clarity may require further review.",
+    "priority_themes": [
+      {
+        "theme": "Choice architecture",
+        "summary": "Terms and consent options may influence users to proceed without clearly separating essential requirements from optional permissions."
+      },
+      {
+        "theme": "Consent and data",
+        "summary": "Loan-related interactions should provide clear information, meaningful choices and transparent consent mechanisms."
+      }
+    ]
+  },
+  "cap_tracker": {
+    "sheet_name": "CAP Tracker",
+    "items": [
+      {
+        "cap_id": "CAP-001",
+        "finding_id": "F-001",
+        "pattern": "Nagging",
+        "severity": "MEDIUM",
+        "page_scanned": "https://www.gaadibazaar.in/electric-vehicles",
+        "root_cause": "Advertisement frequency and dismissal state are not sufficiently controlled.",
+        "corrective_action": "Respect dismissal. Implement frequency caps. Maintain dismissal across navigation.",
+        "owner": [
+          "Product",
+          "UX",
+          "Compliance"
+        ],
+        "due_date": null,
+        "status": "OPEN",
+        "revalidation_result": "Not started",
+        "revalidated_on": null,
+        "reviewer_comments": ""
+      },
+      {
+        "cap_id": "CAP-002",
+        "finding_id": "F-002",
+        "pattern": "Forced Action",
+        "severity": "MEDIUM",
+        "page_scanned": "https://apps.gaadibazaar.in/user-login",
+        "root_cause": "Multiple agreements are presented as one condition of login.",
+        "corrective_action": "Separate account-access terms from auction-specific terms. Explain applicability of each agreement. Provide separate controls where appropriate.",
+        "owner": [
+          "Product",
+          "UX",
+          "Legal"
+        ],
+        "due_date": null,
+        "status": "OPEN",
+        "revalidation_result": "Not started",
+        "revalidated_on": null,
+        "reviewer_comments": ""
+      }
+    ]
+  },
+  "dark_pattern_taxonomy": {
+    "included": true,
+    "section_title": "What are dark patterns?",
+    "patterns": [
+      {
+        "number": 1,
+        "name": "False Urgency",
+        "definition": "Creating a false or misleading impression of urgency or scarcity to pressure an immediate decision."
+      },
+      {
+        "number": 2,
+        "name": "Basket Sneaking",
+        "definition": "Adding products, services, riders, add-ons or charges without the customer’s explicit consent."
+      },
+      {
+        "number": 3,
+        "name": "Confirm Shaming",
+        "definition": "Using guilt, shame, fear or emotionally loaded language to pressure a customer into accepting an option or avoiding an opt-out."
+      },
+      {
+        "number": 4,
+        "name": "Forced Action",
+        "definition": "Requiring a customer to complete unrelated actions or provide unnecessary information to access a product, service or basic functionality."
+      },
+      {
+        "number": 5,
+        "name": "Subscription Trap",
+        "definition": "Making cancellation, withdrawal, non-renewal or termination of a recurring service intentionally difficult, unclear or burdensome."
+      },
+      {
+        "number": 6,
+        "name": "Interface Interference",
+        "definition": "Manipulating visual design, presentation, hierarchy or defaults to favour an option that benefits the platform."
+      },
+      {
+        "number": 7,
+        "name": "Bait and Switch",
+        "definition": "Advertising a specific product, benefit or price but presenting a different, less favourable or higher-cost outcome later in the journey."
+      },
+      {
+        "number": 8,
+        "name": "Drip Pricing",
+        "definition": "Revealing mandatory charges, fees or unavoidable costs only late in a journey rather than presenting them upfront."
+      },
+      {
+        "number": 9,
+        "name": "Disguised Advertisement",
+        "definition": "Designing advertising or sponsored content to resemble neutral information, system messages or ordinary content."
+      },
+      {
+        "number": 10,
+        "name": "Nagging",
+        "definition": "Repeatedly interrupting or prompting a customer to take a particular action after they have declined, dismissed or deferred it."
+      },
+      {
+        "number": 11,
+        "name": "Trick Wording",
+        "definition": "Using confusing, vague, misleading or double-negative language that makes consequences of a choice difficult to understand."
+      },
+      {
+        "number": 12,
+        "name": "SaaS Billing / Unsolicited Billing",
+        "definition": "Charging a customer without clear, informed and transparent authorisation, including obscured recurring-payment or renewal terms."
+      },
+      {
+        "number": 13,
+        "name": "Rogue Malware / Scareware",
+        "definition": "Using fake security warnings, misleading alerts or deceptive pop-ups to pressure a customer into paying, downloading software or sharing credentials."
+      }
+    ]
+  },
+  "methodology": {
+    "included": true,
+    "summary": "Public-page review using captured screens, page text, observed interface behaviour and evidence-led classification."
+  },
+  "limitations": {
+    "included": true,
+    "statement": "This assessment identifies potential findings from the reviewed public journey and is not a legal conclusion. Authenticated, payment, or other unassessed steps should be reviewed separately.",
+    "not_assessed_items": [
+      "Authenticated journeys",
+      "Payment completion",
+      "Long-term repeat behaviour beyond the tested session"
+    ]
+  }
+}
