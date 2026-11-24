@@ -1,0 +1,21 @@
+{
+  "url": "https://www.tataaig.com",
+  "script": {
+    "name": "Tata AIG Real-World Fingerprint Test",
+    "maxStates": 5,
+    "maxTimeMs": 60000,
+    "steps": [
+      { "action": "wait", "ms": 3000 },
+      
+      { "action": "capture", "name": "state-1-closed" },
+      
+      { "action": "click", "selector": "text='Personal' >> visible=true" },
+      { "action": "wait", "ms": 1500 },
+      { "action": "capture", "name": "state-2-open" },
+      
+      { "action": "click", "selector": "text='Personal' >> visible=true" },
+      { "action": "wait", "ms": 1500 },
+      { "action": "capture", "name": "state-3-closed-again" }
+    ]
+  }
+}

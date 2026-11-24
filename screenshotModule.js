@@ -4,35 +4,58 @@
 //  - layout screenshot around a form / element
 //  - element crop for a selector (evidence)
 //  - per-scan metrics (states + interactions) and saved scan summaries
+//  - [E2-04] raw observation manifest (kept separate from stabilized shots)
 // --------------------------------------------------
 const fs = require("fs");
 const path = require("path");
 
-// --------------------------------------------------
-// Wait until the page is FULLY loaded (lazy content included):
-//  1. wait for load + network idle
-//  2. scroll slowly, half a screen at a time, letting each part load
-//  3. force lazy images, wait for all images + fonts
-//  4. wait until the page height stops changing
-//  5. return to the top
-// --------------------------------------------------
-async function scrollToLoadContent(page) {
-    await page.waitForLoadState("load", { timeout: 30000 }).catch(() => { });
-    await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => { });
+// Add this new function at the top of the file, before scrollToLoadContent
+async function waitForReadiness(page, options = {}) {
+    const timeoutMs = options.timeoutMs || 10000;
+    const landmarkSelector = options.landmark || "main, h1, [data-testid='main']";
+    const spinnerSelector = options.spinner || ".spinner, .loading, [role='progressbar']";
+    
+    const start = Date.now();
+    
+    try {
+        // 1. Wait for the required landmark to be visible (Rule: LF-CAP-001)
+        await page.locator(landmarkSelector).first().waitFor({ state: "visible", timeout: timeoutMs });
+        
+        // 2. Wait for loading spinners to disappear (if they exist)
+        const spinner = page.locator(spinnerSelector).first();
+        if (await spinner.isVisible().catch(() => false)) {
+            await spinner.waitFor({ state: "hidden", timeout: timeoutMs });
+        }
+        
+        return { status: "CONTROL_OK", durationMs: Date.now() - start };
+    } catch (err) {
+        // Controlled rejection without inventing success (Rule LF-CAP-001)
+        return { 
+            status: "SAFE_HOLD", 
+            reason: "READINESS_TIMEOUT", 
+            details: `Landmark "${landmarkSelector}" or spinner did not resolve within ${timeoutMs}ms`,
+            durationMs: Date.now() - start 
+        };
+    }
+}
+
+// Replace your existing scrollToLoadContent with this bounded version
+async function scrollToLoadContent(page, hooks = {}) {
+    // DO NOT use networkidle. Use 'load' or 'domcontentloaded' just to ensure basic HTML is there.
+    await page.waitForLoadState("domcontentloaded", { timeout: 15000 }).catch(() => { });
 
     const viewportH = (page.viewportSize() || { height: 900 }).height;
     const step = Math.floor(viewportH * 0.5);
-
     let lastHeight = 0;
     let stableRounds = 0;
 
-    for (let i = 0; i < 150; i++) {
+    // Bounded scroll loop (max 30 steps instead of 150 to prevent infinite loops on virtualized lists)
+    for (let i = 0; i < 30; i++) {
         const y = await page.evaluate(() => window.scrollY);
         await page.evaluate((s) => window.scrollBy(0, s), step);
 
-        // let lazy sections / observers / API calls react to this scroll position
-        await page.waitForTimeout(700);
-        await page.waitForLoadState("networkidle", { timeout: 2500 }).catch(() => { });
+        // Short bounded wait for lazy-content to append to the DOM
+        await page.waitForTimeout(500);
 
         const { height, atBottom, newY } = await page.evaluate(() => ({
             height: document.documentElement.scrollHeight,
@@ -47,15 +70,11 @@ async function scrollToLoadContent(page) {
         }
         lastHeight = height;
 
-        // finished when we are at the bottom and the page stopped growing
+        // Exit if we hit the bottom and height stopped changing
         if (stableRounds >= 2 || (newY === y && atBottom)) break;
     }
 
-    // Pause at the very bottom (footer / late widgets)
-    await page.waitForTimeout(1200);
-    await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => { });
-
-    // Force any remaining lazy images to load, then wait for all images + fonts
+    // Force lazy images to load (keep your existing logic)
     await page.evaluate(() => {
         document.querySelectorAll("img").forEach((img) => {
             if (img.loading === "lazy") img.loading = "eager";
@@ -66,42 +85,11 @@ async function scrollToLoadContent(page) {
         });
     }).catch(() => { });
 
-    await page.evaluate(async () => {
-        const withTimeout = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(r, ms))]);
-        const imgs = [...document.images].filter((i) => !i.complete);
-        await withTimeout(
-            Promise.all(
-                imgs.map((i) => new Promise((r) => { i.onload = i.onerror = r; }))
-            ),
-            10000
-        );
-        if (document.fonts && document.fonts.ready) {
-            await withTimeout(document.fonts.ready, 5000);
-        }
-    }).catch(() => { });
-
-    // Back to the top, then wait until the page height stays the same for ~1.5s
     await page.evaluate(() => window.scrollTo(0, 0));
-    let prev = -1;
-    let same = 0;
-    for (let i = 0; i < 20 && same < 3; i++) {
-        await page.waitForTimeout(500);
-        const h = await page.evaluate(() => document.documentElement.scrollHeight);
-        same = h === prev ? same + 1 : 0;
-        prev = h;
-    }
-
     await page.waitForTimeout(500);
 }
 
-// --------------------------------------------------
-// Full-page screenshot that works with lazy-loaded pages.
-// Scrolls one screen at a time, captures each screen while its content is
-// really visible, then stitches the pieces together (needs: npm i sharp).
-// Falls back to a normal fullPage screenshot if sharp is not installed.
-// --------------------------------------------------
 async function takeFullPage(page, outPath, log = () => { }, hooks = {}) {
-    // Make sure content-visibility / reveal animations don't hide things
     await page
         .addStyleTag({
             content: `
@@ -130,14 +118,12 @@ async function takeFullPage(page, outPath, log = () => { }, hooks = {}) {
 
     for (let i = 0; i < 80; i++) {
         await page.evaluate((yy) => window.scrollTo(0, yy), y);
-        await page.waitForTimeout(1000); // let this section render
+        await page.waitForTimeout(1000);
         await page.waitForLoadState("networkidle", { timeout: 3000 }).catch(() => { });
 
-        // e.g. close a popup that appeared while scrolling
         if (hooks.beforeTile) await hooks.beforeTile().catch(() => { });
 
         if (i === 0) {
-            // remember where small elements sit on screen at the top of the page
             await page.evaluate(() => {
                 const vw = window.innerWidth;
                 const vh = window.innerHeight;
@@ -157,10 +143,6 @@ async function takeFullPage(page, outPath, log = () => { }, hooks = {}) {
                 window.__shotPinnedDone = false;
             }).catch(() => { });
         } else {
-            // From the second screen on, hide everything that stays on screen while
-            // the page scrolls, so it appears once and not on every tile:
-            //  - position: fixed / sticky elements (also inside shadow DOM)
-            //  - widgets that a script keeps at the same screen position
             await page.evaluate(() => {
                 const hidden = window.__shotHidden || (window.__shotHidden = []);
                 const hide = (el) => {
@@ -207,7 +189,6 @@ async function takeFullPage(page, outPath, log = () => { }, hooks = {}) {
         y = actualY + vp.height;
     }
 
-    // restore the hidden elements + go back to top
     await page.evaluate(() => {
         (window.__shotHidden || []).forEach((el) => {
             el.style.visibility = el.dataset.prevVis || "";
@@ -236,11 +217,10 @@ async function takeFullPage(page, outPath, log = () => { }, hooks = {}) {
     log(`Full page captured in ${tiles.length} screens`);
 }
 
-// LAYOUT screenshot around a form/element (not the box alone):
-//  - form inside a modal/overlay -> the visible screen, with the modal in it
-//  - form near the top of the page -> top of the page down to just below the form
-//  - form far down the page -> the screen scrolled so the form is centred
-async function captureElementShot(page, container, outPath) {
+// [E2-04] hooks.beforeShot lets the caller force a raw capture first.
+async function captureElementShot(page, container, outPath, hooks = {}) {
+    if (hooks.beforeShot) await hooks.beforeShot().catch(() => { });
+
     const vp = page.viewportSize() || { width: 1366, height: 900 };
 
     let isFixed = false;
@@ -284,11 +264,12 @@ async function captureElementShot(page, container, outPath) {
     }
 }
 
-// Evidence crop: a screenshot of ONE element, found with a CSS selector.
-// "body" / "html" are skipped because the full-page screenshot already covers them.
-async function captureSelectorCrop(page, selector, outPath, log = () => { }) {
+// [E2-04] hooks.beforeShot lets the caller force a raw capture first.
+async function captureSelectorCrop(page, selector, outPath, log = () => { }, hooks = {}) {
     const sel = String(selector || "").trim();
     if (!sel || /^(body|html)$/i.test(sel)) return false;
+
+    if (hooks.beforeShot) await hooks.beforeShot().catch(() => { });
 
     try {
         const el = page.locator(sel).first();
@@ -307,14 +288,6 @@ async function captureSelectorCrop(page, selector, outPath, log = () => { }) {
     }
 }
 
-// --------------------------------------------------
-// Scan metrics. Counted ONE way for every site, from the action log:
-//   state       = a distinct page state reached: the page itself, each opened
-//                 nav dropdown, each page reached through a nav link, each
-//                 revealed form/popup, each wizard step (Continue / Get quote)
-//   interaction = one action done in the browser: a click, a hover, a typed or
-//                 filled field, a chosen option, a dismissed dialog
-// --------------------------------------------------
 function computeScanMetrics(actions, navReport = []) {
     const texts = actions.map((a) => a.action || "");
     const count = (re) => texts.filter((t) => re.test(t)).length;
@@ -341,9 +314,6 @@ function computeScanMetrics(actions, navReport = []) {
     };
 }
 
-// --------------------------------------------------
-// Scan history (one JSON file per scan in the scans folder)
-// --------------------------------------------------
 function saveScanSummary(dir, summary) {
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, `${summary.scanId}.json`), JSON.stringify(summary, null, 2));
@@ -377,7 +347,28 @@ function readScan(dir, id) {
     }
 }
 
+// --------------------------------------------------
+// [E2-04] Raw observation manifest
+//   Every scan keeps its raw (pre-stabilization) observations separate
+//   from the optional stabilized evidence rendering.
+// --------------------------------------------------
+function buildRawObservationManifest(entries = []) {
+    return entries.map((e, i) => ({
+        index: i,
+        label: e.label || `observation-${i + 1}`,
+        rawPath: e.rawPath || null,
+        rawUrl: e.rawUrl || null,
+        stabilizedPath: e.stabilizedPath || null,
+        stabilizedUrl: e.stabilizedUrl || null,
+        observedAt: e.observedAt || new Date().toISOString(),
+        signalsSeen: Array.isArray(e.signalsSeen) ? e.signalsSeen : [],
+        rejectionCode: e.rejectionCode || null,
+        rejectionReason: e.rejectionReason || null,
+    }));
+}
+
 module.exports = {
+    waitForReadiness,
     scrollToLoadContent,
     takeFullPage,
     captureElementShot,
@@ -386,4 +377,5 @@ module.exports = {
     saveScanSummary,
     listScans,
     readScan,
+    buildRawObservationManifest,  // [E2-04]
 };
