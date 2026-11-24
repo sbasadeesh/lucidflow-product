@@ -24,6 +24,11 @@ const stabilizerConfig = require("./stabilizer.config");
 const { runStateScript, parseScript, ScriptError } = require("./stateScriptRunner");
 const stateScriptConfig = require("./stateScript.config");
 const { checkSecurityGuards } = require("./security-guard/securityGuard");
+// [E2-09, proposed contract] read-only overlay recurrence observation; off by default,
+// stdout diagnostics only (docs/overlay-recurrence-observation.md)
+const overlayObservationConfig = require("./overlayObservation/overlayObservation.config");
+const { createOverlayObserver, formatDiagnostics } = require("./overlayObservation/overlayObserver");
+const { snapshotOverlays, identifyTarget } = require("./overlayObservation/overlaySnapshot");
 
 const app = express();
 const PORT = Number(process.env.PORT || 5000);
@@ -513,7 +518,7 @@ async function clearPopupsSettled(page) {
 //                          and cancels them: its Close button -> Escape -> hide it
 //   waitAndDismissPopups:  waits for popups to appear and cancels each one
 // --------------------------------------------------
-async function dismissOverlays(page, record = () => { }) {
+async function dismissOverlays(page, record = () => { }, observer = null) {
     // 1. find overlays on screen and tag the outermost ones
     const found = await page
         .evaluate(() => {
@@ -563,6 +568,17 @@ async function dismissOverlays(page, record = () => { }) {
         const target = page.locator(`[data-popup-target="${p.idx}"]`).first();
         const stillOpen = async () => target.isVisible().catch(() => false);
         const label = p.text || "(no text)";
+        // [E2-09] matching signature of this overlay, read before acting on it (only when
+        // observing). Observer failures are ignored so they can never change dismissal.
+        const identity = observer ? await identifyTarget(page, p.idx).catch(() => null) : null;
+        const observe = (fn) => {
+            try { fn(); } catch { /* observation only */ }
+        };
+        // visible again before the existing logic acts on it: counts as a recurrence
+        if (observer && identity) observe(() => observer.noteVisible(identity, { context: page.url() }));
+        const noteDismissed = (method) => {
+            if (observer && identity) observe(() => observer.noteDismissed(identity, { method, context: page.url() }));
+        };
 
         // 2a. click the popup's own Close / X / "No thanks" control
         const hasCloser = await page
@@ -604,6 +620,7 @@ async function dismissOverlays(page, record = () => { }) {
             if (!(await stillOpen())) {
                 dismissed++;
                 record(`Popup cancelled with its Close button: "${label}"`);
+                noteDismissed("close_control");
                 continue;
             }
         }
@@ -614,6 +631,7 @@ async function dismissOverlays(page, record = () => { }) {
         if (!(await stillOpen())) {
             dismissed++;
             record(`Popup cancelled with the Escape key: "${label}"`);
+            noteDismissed("escape");
             continue;
         }
 
@@ -646,27 +664,67 @@ async function waitAndDismissPopups(page, record = () => { }, options = {}) {
     const waitMs = options.waitMs || POPUP_WAIT_MS;
     const minWaitMs = options.minWaitMs || POPUP_MIN_WAIT_MS;
 
+    // [E2-09] observation only reads the page on the loop's existing ticks: no extra
+    // waits, no extra dismissals, no change to the count or the action log
+    const observer = options.observationPhase && overlayObservationConfig.enabled
+        ? createOverlayObserver({
+            windowMs: overlayObservationConfig.windowMs,
+            maxTracked: overlayObservationConfig.maxTracked,
+            phase: options.observationPhase,
+        })
+        : null;
+    let exitReason = null;
+
     const start = Date.now();
     let lastSeen = 0;
     let total = 0;
 
     record(`Waiting up to ${Math.round(waitMs / 1000)}s for automatic popups...`);
 
-    while (Date.now() - start < waitMs) {
-        const simple = await clearPopups(page).catch(() => 0); // cookie banners, plain Close buttons
-        const overlays = await dismissOverlays(page, record).catch(() => 0);
+    try {
+        while (Date.now() - start < waitMs) {
+            if (observer) await pollOverlayObserver(page, observer);
 
-        if (simple || overlays) {
-            total += (simple || 0) + (overlays || 0);
-            lastSeen = Date.now();
+            const simple = await clearPopups(page).catch(() => 0); // cookie banners, plain Close buttons
+            const overlays = await dismissOverlays(page, record, observer).catch(() => 0);
+
+            if (simple || overlays) {
+                total += (simple || 0) + (overlays || 0);
+                lastSeen = Date.now();
+            }
+
+            if (Date.now() - start >= minWaitMs && Date.now() - lastSeen >= POPUP_QUIET_MS) {
+                exitReason = "QUIET_EXIT";
+                break;
+            }
+            await page.waitForTimeout(500);
         }
-
-        if (Date.now() - start >= minWaitMs && Date.now() - lastSeen >= POPUP_QUIET_MS) break;
-        await page.waitForTimeout(500);
+        if (!exitReason) exitReason = "BUDGET_ENDED";
+    } finally {
+        if (observer) {
+            // an exception here comes from the page going away (waitForTimeout on a closed page);
+            // it still propagates: only the observation work below is guarded
+            try { observer.end(exitReason || "PAGE_CLOSED"); } catch { /* observation only */ }
+            try { formatDiagnostics(observer).forEach((line) => console.log(line)); } catch { /* observation only */ }
+        }
     }
 
     record(total ? `${total} popup(s) / banner(s) cancelled` : "No automatic popup appeared");
     return total;
+}
+
+// [E2-09] one read-only poll of the visible overlays for an open observation.
+// Contains only observation work; any failure ends the open records as SNAPSHOT_FAILED
+// and never reaches the popup loop.
+async function pollOverlayObserver(page, observer) {
+    try {
+        if (!observer.hasOpen()) return;
+        if (page.isClosed()) return observer.end("PAGE_CLOSED");
+        const visible = await snapshotOverlays(page);
+        observer.poll(visible, { context: page.url() });
+    } catch {
+        try { observer.end("SNAPSHOT_FAILED"); } catch { /* observation only */ }
+    }
 }
 
 // --------------------------------------------------
@@ -2272,11 +2330,11 @@ app.post("/api/screenshot", async (req, res) => {
         // 1) Clear popups, fully load the page, then FULL-PAGE screenshot
         //    before touching anything.
         // wait for an automatic popup to open, cancel it, then load the whole page
-        stats.popupsHandled += await waitAndDismissPopups(page, record);
+        stats.popupsHandled += await waitAndDismissPopups(page, record, { observationPhase: "screenshot_initial_wait" });
         await scrollToLoadContent(page);
         record("Page fully loaded (lazy content scrolled in)");
         // popups can also open while scrolling
-        stats.popupsHandled += await waitAndDismissPopups(page, record, { waitMs: 4000, minWaitMs: 1500 });
+        stats.popupsHandled += await waitAndDismissPopups(page, record, { waitMs: 4000, minWaitMs: 1500, observationPhase: "screenshot_post_scroll_wait" });
         await page.evaluate(() => window.scrollTo(0, 0));
         await page.waitForTimeout(700);
 
@@ -2576,7 +2634,7 @@ app.post("/api/script", async (req, res) => {
         }
 
         // popups that open by themselves would sit on top of every state
-        await waitAndDismissPopups(page, record, { waitMs: 4000, minWaitMs: 1500 });
+        await waitAndDismissPopups(page, record, { waitMs: 4000, minWaitMs: 1500, observationPhase: "script_pre_wait" });
 
         // ---- keep every state steady (animations off, volatile parts masked) ----
         const stabilizeOn = body.stabilize !== false;
