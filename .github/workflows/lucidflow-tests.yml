@@ -1,0 +1,274 @@
+# LucidFlow tests for every pull request into main.
+# (Renamed from e2-04-validate.yml, "E2-04 Screenshot Stability Validation": it has always run
+#  more than E2-04. Runs made before the rename stay listed under the old name in the Actions tab.)
+#
+#   test-pr-head               the PR branch exactly as pushed: E2-04 screenshot stability tests
+#   test-integration-with-main the PR merged into main (not committed):
+#                                E2-04 screenshot stability tests,
+#                                the full regression suite (every test file listed in the
+#                                package.json "test" script, all stories),
+#                                E2-07 security guard tests
+#
+# Each run's summary page has a table per test step with one row per story
+# (tests, pass, fail, cancelled, skip, todo, time) and the exact revisions tested.
+# The job names are unchanged, so required status checks keep working.
+
+name: LucidFlow tests
+run-name: "Tests for PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}"
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-pr-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Record PR head revision
+        id: pr-head
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Show environment, tested revision and E2-04 test files
+        run: |
+          echo "=== Environment ==="
+          echo "Node version: $(node --version)"
+          echo "npm version: $(npm --version)"
+          npm list playwright
+          npx playwright --version
+          echo ""
+          echo "=== E2-04 Test File Discovery ==="
+          DISCOVERED=$(find E2-04_tests -type f -name '*_test.js' | sort)
+          if [ -z "$DISCOVERED" ]; then
+            echo "FAILURE: No E2-04 test files discovered"
+            exit 1
+          fi
+          printf '%s\n' "$DISCOVERED"
+          TEST_COUNT=$(printf '%s\n' "$DISCOVERED" | wc -l)
+          echo "Total E2-04 test files: $TEST_COUNT"
+          echo ""
+          echo "=== PR Head Revision ==="
+          echo "Tested revision: ${{ steps.pr-head.outputs.sha }}"
+
+      - name: "E2-04 screenshot stability tests (PR head only)"
+        timeout-minutes: 5
+        env:
+          STORY_SUMMARY_TITLE: "PR head: E2-04 screenshot stability tests"
+        run: |
+          node --test \
+            --test-reporter=tap --test-reporter-destination=stdout \
+            --test-reporter=./.github/ci/story-summary-reporter.mjs --test-reporter-destination=summary-e2-04.md \
+            E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js E2-04_tests/maskVolatile_test/maskVolatile_test.js E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js 2>&1 | tee test-output.log
+          exit_code=${PIPESTATUS[0]}
+          echo "Test exit code: $exit_code"
+          exit $exit_code
+
+      - name: Write results by story to the run summary
+        if: always()
+        run: |
+          {
+            echo "## PR head (as pushed)"
+            echo ""
+            echo "- Tested revision: \`${{ steps.pr-head.outputs.sha }}\`"
+            echo ""
+            if [ -f summary-e2-04.md ]; then cat summary-e2-04.md; else echo "E2-04 tests did not run."; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test output and results by story
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-head-test-output
+          path: |
+            test-output.log
+            summary-e2-04.md
+          retention-days: 30
+
+      - name: Upload E2-04 failure screenshots and diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-head-e2-04-failure-artifacts
+          path: |
+            E2-04_tests/**/screenshots/
+            E2-04_tests/**/diff_images/
+            E2-04_tests/**/test-output/
+            E2-04_tests/**/logs/
+          retention-days: 30
+
+  test-integration-with-main:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Record main revision
+        id: main-sha
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Fetch PR head
+        run: git fetch origin ${{ github.event.pull_request.head.sha }}
+
+      - name: Merge PR head into main (uncommitted)
+        id: merge-integration
+        run: |
+          git config user.email "ci@github.com"
+          git config user.name "GitHub Actions"
+          git merge --no-commit --no-ff FETCH_HEAD
+          TREE_SHA=$(git write-tree)
+          echo "tree=$TREE_SHA" >> $GITHUB_OUTPUT
+          echo "Integration tree (uncommitted merge): $TREE_SHA"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Show environment, tested revisions and E2-04 test files
+        run: |
+          echo "=== Environment ==="
+          echo "Node version: $(node --version)"
+          echo "npm version: $(npm --version)"
+          npm list playwright
+          npx playwright --version
+          echo ""
+          echo "=== Test Revisions ==="
+          echo "Main SHA: ${{ steps.main-sha.outputs.sha }}"
+          echo "PR head SHA: ${{ github.event.pull_request.head.sha }}"
+          echo "Integration tree (uncommitted): ${{ steps.merge-integration.outputs.tree }}"
+          echo ""
+          echo "=== E2-04 Test File Discovery ==="
+          DISCOVERED=$(find E2-04_tests -type f -name '*_test.js' | sort)
+          if [ -z "$DISCOVERED" ]; then
+            echo "FAILURE: No E2-04 test files discovered"
+            exit 1
+          fi
+          printf '%s\n' "$DISCOVERED"
+          TEST_COUNT=$(printf '%s\n' "$DISCOVERED" | wc -l)
+          echo "Total E2-04 test files: $TEST_COUNT"
+
+      - name: "E2-04 screenshot stability tests (merged with main)"
+        timeout-minutes: 5
+        env:
+          STORY_SUMMARY_TITLE: "Merged with main: E2-04 screenshot stability tests"
+        run: |
+          node --test \
+            --test-reporter=tap --test-reporter-destination=stdout \
+            --test-reporter=./.github/ci/story-summary-reporter.mjs --test-reporter-destination=summary-e2-04.md \
+            E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js E2-04_tests/maskVolatile_test/maskVolatile_test.js E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js 2>&1 | tee e2-04-test-output.log
+          exit_code=${PIPESTATUS[0]}
+          echo "E2-04 test exit code: $exit_code"
+          exit $exit_code
+
+      # Runs exactly the files and concurrency of the package.json "test" script (npm test),
+      # adding only the reporters that write the TAP log and the results by story.
+      - name: "Full regression suite: all stories in npm test (merged with main)"
+        timeout-minutes: 5
+        env:
+          STORY_SUMMARY_TITLE: "Merged with main: full regression suite (npm test)"
+        run: |
+          SCRIPT=$(node -p "require('./package.json').scripts.test")
+          echo "package.json test script: $SCRIPT"
+          EXTRA=$(node -p "require('./package.json').scripts.test.trim().split(/\s+/).filter(a => a !== 'node' && a !== '--test' && !/^--test-concurrency=\d+$/.test(a) && !a.endsWith('.js')).join(' ')")
+          if [ -n "$EXTRA" ]; then
+            echo "FAILURE: the npm test script has arguments this step does not pass on: $EXTRA"
+            exit 1
+          fi
+          CONCURRENCY=$(node -p "(require('./package.json').scripts.test.match(/--test-concurrency=(\d+)/) || [])[1] || ''")
+          FILES=$(node -p "require('./package.json').scripts.test.trim().split(/\s+/).filter(a => a.endsWith('.js')).join(' ')")
+          echo "Test files: $(echo $FILES | wc -w), concurrency: ${CONCURRENCY:-node default}"
+          node --test ${CONCURRENCY:+--test-concurrency=$CONCURRENCY} \
+            --test-reporter=tap --test-reporter-destination=stdout \
+            --test-reporter=./.github/ci/story-summary-reporter.mjs --test-reporter-destination=summary-regression.md \
+            $FILES 2>&1 | tee regression-output.log
+          exit_code=${PIPESTATUS[0]}
+          echo "Regression test exit code: $exit_code"
+          exit $exit_code
+
+      - name: "E2-07 security guard tests (auth and payment, merged with main)"
+        timeout-minutes: 3
+        env:
+          STORY_SUMMARY_TITLE: "Merged with main: E2-07 security guard tests"
+        run: |
+          node --test \
+            --test-reporter=tap --test-reporter-destination=stdout \
+            --test-reporter=./.github/ci/story-summary-reporter.mjs --test-reporter-destination=summary-e2-07.md \
+            E2-07_tests/authGuard_test/authGuard_test.js E2-07_tests/paymentGuard_test/paymentGuard_test.js 2>&1 | tee e2-07-test-output.log
+          exit_code=${PIPESTATUS[0]}
+          echo "E2-07 test exit code: $exit_code"
+          exit $exit_code
+
+      - name: Write results by story to the run summary
+        if: always()
+        run: |
+          {
+            echo "## PR merged with main (uncommitted)"
+            echo ""
+            echo "- main: \`${{ steps.main-sha.outputs.sha }}\`"
+            echo "- PR head: \`${{ github.event.pull_request.head.sha }}\`"
+            echo "- Tested tree: \`${{ steps.merge-integration.outputs.tree }}\`"
+            echo ""
+            for f in summary-e2-04.md summary-regression.md summary-e2-07.md; do
+              if [ -f "$f" ]; then cat "$f"; else echo "Not run: $f (an earlier step failed)"; echo ""; fi
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test output and results by story
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-output
+          path: |
+            e2-04-test-output.log
+            regression-output.log
+            e2-07-test-output.log
+            summary-e2-04.md
+            summary-regression.md
+            summary-e2-07.md
+          retention-days: 30
+
+      - name: Upload E2-04 failure screenshots and diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-e2-04-failure-artifacts
+          path: |
+            E2-04_tests/**/screenshots/
+            E2-04_tests/**/diff_images/
+            E2-04_tests/**/test-output/
+            E2-04_tests/**/logs/
+          retention-days: 30
