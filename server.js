@@ -4,6 +4,7 @@ const { chromium } = require("playwright");
 const path = require("path");
 const fs = require("fs");
 const {
+    waitForReadiness,
     scrollToLoadContent,
     takeFullPage,
     captureElementShot,
@@ -29,6 +30,7 @@ const { checkSecurityGuards } = require("./security-guard/securityGuard");
 const overlayObservationConfig = require("./overlayObservation/overlayObservation.config");
 const { createOverlayObserver, formatDiagnostics } = require("./overlayObservation/overlayObserver");
 const { snapshotOverlays, identifyTarget } = require("./overlayObservation/overlaySnapshot");
+const { analyzeContexts } = require("./context_analyzer/context_analyzer");
 // [E2-02] DOM/style evidence prototype: allowlisted structural/style JSON (off by default)
 const domEvidence = (() => {
     try { return require("./domEvidence/domEvidence"); } catch { return null; }
@@ -2153,6 +2155,8 @@ app.post("/api/screenshot", async (req, res) => {
 
     const scanId = `scan-${state.ts}`;
     const startedAt = new Date().toISOString();
+    // [E2-11] ADDED public JSON field on /api/screenshot summaries. SAFE_HOLD does not stop the scan.
+    let contextSupportMatrix = null;
     const domSession = domEvidence?.createSession({ scanId, dir: scansDir, env: process.env }) || null;
     if (domEvidence?.startupLine) {
         const line = domEvidence.startupLine(domEvidence.resolveGate(process.env));
@@ -2191,6 +2195,7 @@ app.post("/api/screenshot", async (req, res) => {
             stabilizer: state.stab,
             rawObservations: buildRawObservationManifest(state.rawObservations),   // [E2-04]
             signalsAtLoad: state.signalsAtLoad,                                     // [E2-04]
+            contextSupportMatrix,                                                   // [E2-11] ADDED public JSON field
             ...extra,
             actionLog: actions,
         };
@@ -2311,6 +2316,10 @@ app.post("/api/screenshot", async (req, res) => {
         state.signalsAtLoad = await detectTemporalSignals(page);
         record(`Temporal signals observed at load: ${state.signalsAtLoad.join(", ") || "none"}`);
 
+        // [E2-11] Once per scan. Unsupported contexts are reported; they do not stop the scan.
+        contextSupportMatrix = await analyzeContexts(page);
+        record(`Context matrix: ${contextSupportMatrix.status} (${contextSupportMatrix.reason || "none"})`);
+
         // ---------- Aditya Birla quote flow ----------
         if (parsedUrl.hostname.includes("adityabirlahealthinsurance.com")) {
             const quoteResult = await runQuoteFlowUntilPhone(page, (m) => record(m), state.prep);
@@ -2350,6 +2359,25 @@ app.post("/api/screenshot", async (req, res) => {
         //    before touching anything.
         // wait for an automatic popup to open, cancel it, then load the whole page
         stats.popupsHandled += await waitAndDismissPopups(page, record, { observationPhase: "screenshot_initial_wait" });
+
+        // [E2-10] Readiness before scroll. SAFE_HOLD closes the browser and is not an assessed status.
+        const readiness = await waitForReadiness(page, { timeoutMs: 10000 });
+        record(`Readiness check: ${readiness.status} (${readiness.durationMs}ms)`);
+        if (readiness.status === "SAFE_HOLD") {
+            record(`Controlled rejection: ${readiness.reason}`);
+            await browser.close();
+            browser = null;
+            return res.json(finish("not_assessed", {
+                message: `Scan stopped: ${readiness.reason}`,
+                reason: readiness.reason,
+                details: readiness.details,
+                readinessMetrics: readiness,
+                screenshotUrl: null,
+                elementScreenshotUrl: null,
+                elementScreenshots: [],
+            }));
+        }
+
         await scrollToLoadContent(page);
         record("Page fully loaded (lazy content scrolled in)");
         // popups can also open while scrolling
@@ -2591,6 +2619,8 @@ app.post("/api/script", async (req, res) => {
     };
 
     const loadInfo = { requestedUrl: parsedUrl.href, finalUrl: parsedUrl.href, redirected: false, redirectChain: [], statusCode: null };
+    // [E2-11] ADDED public JSON field on /api/script summaries. SAFE_HOLD does not stop the run.
+    let contextSupportMatrix = null;
 
     const summarize = (status, extra = {}) => {
         const summary = {
@@ -2608,6 +2638,7 @@ app.post("/api/script", async (req, res) => {
             startedAt,
             finishedAt: new Date().toISOString(),
             durationMs: Date.now() - ts,
+            contextSupportMatrix, // [E2-11] ADDED public JSON field
             ...extra,
             actionLog: actions,
         };
@@ -2657,6 +2688,10 @@ app.post("/api/script", async (req, res) => {
 
         // popups that open by themselves would sit on top of every state
         await waitAndDismissPopups(page, record, { waitMs: 4000, minWaitMs: 1500, observationPhase: "script_pre_wait" });
+
+        // [E2-11] Once per script run. Unsupported contexts are reported; they do not stop the run.
+        contextSupportMatrix = await analyzeContexts(page);
+        record(`Context matrix: ${contextSupportMatrix.status} (${contextSupportMatrix.reason || "none"})`);
 
         // ---- keep every state steady (animations off, volatile parts masked) ----
         const stabilizeOn = body.stabilize !== false;
