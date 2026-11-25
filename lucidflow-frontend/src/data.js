@@ -185,9 +185,6 @@ export function buildReport(scan) {
   // E7-06: count findings by severity
   const countSeverity = (...names) => findings.filter((f) => names.includes(f.severity)).length;
 
-  const names =
-    hosts.length > 1 ? `${hosts.slice(0, -1).join(", ")} and ${hosts[hosts.length - 1]}` : hosts[0];
-
   return {
     title: "Dark Pattern Assessment Report",
     tagline: "Automated Scanning. Continuous governance. Evidence-led findings.",
