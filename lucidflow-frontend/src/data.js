@@ -317,3 +317,34 @@ export const CATEGORIES = [
     "Using fake security warnings, misleading alerts or deceptive pop-ups to pressure a customer into paying, downloading software or sharing credentials.",
   ],
 ];
+// Sample discovery result for the Whole domain preview (real discovery arrives in P1)
+export const DISCOVERY_TREE = {
+  name: "/",
+  count: 214,
+  children: [
+    { name: "/health-insurance", count: 38, children: [
+      { name: "/medicare-select", count: 1 },
+      { name: "/women-health-insurance", count: 1 },
+      { name: "/family-health", count: 1 },
+    ] },
+    { name: "/motor-insurance", count: 52, children: [
+      { name: "/car-insurance", count: 1 },
+      { name: "/two-wheeler-insurance", count: 1 },
+    ] },
+    { name: "/claims", count: 14, children: [{ name: "/claims-process", count: 1 }] },
+    { name: "/renewal", count: 9 },
+    { name: "/contact-us", count: 3 },
+    { name: "/other", count: 97 },
+  ],
+};
+
+export const DISCOVERY_URLS = [
+  { path: "/", template: "Home", depth: 0 },
+  { path: "/claims", template: "Claims", depth: 1 },
+  { path: "/renewal", template: "Renewal", depth: 1 },
+  { path: "/health-insurance", template: "Product", depth: 1 },
+  { path: "/health-insurance/medicare-select", template: "Product", depth: 2 },
+  { path: "/motor-insurance/car-insurance", template: "Product", depth: 2 },
+  { path: "/claims/claims-process", template: "Claims", depth: 2 },
+  { path: "/contact-us", template: "Contact", depth: 1 },
+];
