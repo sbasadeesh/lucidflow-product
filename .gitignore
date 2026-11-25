@@ -3,4 +3,5 @@ dist/
 .env
 scans/
 screenshots/
+snapshots/
 scripts/

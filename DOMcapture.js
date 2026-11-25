@@ -177,78 +177,29 @@ function inPageCollect({ queries, maxElements, maxPerSelector, maxText, props })
 }
 
 // ---------------------------------------------------------------------------
-// 1. the DOM snapshot (acceptance criterion 1)
+// 1. DOM snapshot writer — disabled
 // ---------------------------------------------------------------------------
-// The DOM is the live page after JavaScript has run. It is saved as an .html file with the time it was
-// taken in a comment on the first line, and the same time is returned.
-// <script> elements are left out by default (stripScripts in the config), and very long data: addresses
-// are shortened. The live page is never changed.
+// Returns the same saved:false shape callers already handle. It does not read the page or write a file.
 async function captureDom(page, options = {}) {
-    const cfg = { ...defaults, ...options };
+    // Legacy writer is disabled. Return before any page read or filesystem write.
+    // There is no environment flag that turns this back on.
     const when = options.now instanceof Date ? options.now : new Date();
-    const timestamp = when.toISOString();
-    const pageUrl = page.url();
-
-    const dom = await page.evaluate(({ stripScripts, maxDataUri }) => {
-        const doctype = document.doctype ? new XMLSerializer().serializeToString(document.doctype) : "";
-
-        // work on a copy, so the live page is never changed
-        const root = document.documentElement.cloneNode(true);
-
-        // scripts (tracking, tag managers, framework code) are not what a visitor sees, and they bury the elements
-        let scriptsRemoved = 0;
-        if (stripScripts) {
-            root.querySelectorAll("script").forEach((el) => {
-                el.remove();
-                scriptsRemoved++;
-            });
-        }
-
-        // very long data: addresses (inline images and fonts) are shortened
-        let dataUrisShortened = 0;
-        root.querySelectorAll("*").forEach((el) => {
-            Array.prototype.slice.call(el.attributes).forEach((attr) => {
-                if (/^data:/i.test(attr.value) && attr.value.length > maxDataUri) {
-                    el.setAttribute(attr.name, "data:[removed " + attr.value.length + " characters]");
-                    dataUrisShortened++;
-                }
-            });
-        });
-
-        return {
-            html: doctype + "\n" + root.outerHTML,
-            title: document.title || "",
-            elementCount: document.getElementsByTagName("*").length, // counted on the live page
-            scriptsRemoved,
-            dataUrisShortened,
-        };
-    }, { stripScripts: cfg.stripScripts, maxDataUri: cfg.maxDataUriLength });
-
-    const notes = `scripts removed: ${dom.scriptsRemoved}, long data: addresses shortened: ${dom.dataUrisShortened}`;
-    const body = `<!-- DOM snapshot | captured at ${timestamp} | ${pageUrl} | ${notes} -->\n${dom.html}\n`;
-    const bytes = Buffer.byteLength(body, "utf8");
-
-    const result = { saved: false, timestamp, capturedAtMs: when.getTime(), pageUrl, title: dom.title, elementCount: dom.elementCount, scriptsRemoved: dom.scriptsRemoved, dataUrisShortened: dom.dataUrisShortened, bytes, file: null, path: null, reason: null };
-
-    if (bytes > cfg.maxDomBytes) {
-        // never cut a snapshot: a cut DOM would look complete and is not
-        result.reason = `the DOM is ${bytes} bytes, more than the limit of ${cfg.maxDomBytes}, so it was not saved`;
-        return result;
-    }
-    if (!options.dir) {
-        result.reason = 'no "dir" given to save the DOM in';
-        return result;
-    }
-
-    fs.mkdirSync(options.dir, { recursive: true });
-    const file = `${options.baseName || `dom-${when.getTime()}`}.dom.html`;
-    fs.writeFileSync(path.join(options.dir, file), body, "utf8");
-
-    result.saved = true;
-    result.file = file;
-    result.path = path.join(options.dir, file);
-    return result;
+    return {
+        saved: false,
+        timestamp: when.toISOString(),
+        capturedAtMs: when.getTime(),
+        pageUrl: null,
+        title: "",
+        elementCount: 0,
+        scriptsRemoved: 0,
+        dataUrisShortened: 0,
+        bytes: 0,
+        file: null,
+        path: null,
+        reason: "disabled",
+    };
 }
+
 
 // ---------------------------------------------------------------------------
 // 2. computed size, colour and visibility, with a selector for each element (criterion 2)
@@ -289,66 +240,37 @@ async function captureElementStyle(page, selector, options = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// both, for one state, saved as files
-//   <baseName>.dom.html       the DOM snapshot, with its timestamp
-//   <baseName>.styles.json    the styles of the elements, with the same timestamp and a selector per element
+// Combined state writer — disabled
 // ---------------------------------------------------------------------------
+// Returns saved:false for both the DOM and the styles. It does not read the page or write a file.
 async function captureState(page, options = {}) {
-    const cfg = { ...defaults, ...options };
-    const log = options.log || (() => { });
+    // Legacy writer is disabled. Return before any page read or filesystem write.
+    // There is no environment flag that turns this back on.
     const now = new Date();
     const index = options.index || 1;
     const name = String(options.name || `state ${index}`);
-    const baseName = `${options.filePrefix || `state-${now.getTime()}`}-${String(index).padStart(2, "0")}-${slug(name)}`;
-    const fileUrl = options.fileUrl || ((file) => `/${cfg.folder}/${file}`);
+    const timestamp = now.toISOString();
+    const disabledDom = {
+        saved: false,
+        file: null,
+        url: null,
+        timestamp,
+        bytes: 0,
+        elementCount: 0,
+        reason: "disabled",
+    };
+    const disabledStyles = {
+        saved: false,
+        file: null,
+        url: null,
+        timestamp,
+        elements: 0,
+        truncated: false,
+        queries: [],
+        reason: "disabled",
+    };
+    return { name, index, timestamp, url: null, dom: disabledDom, styles: disabledStyles };
 
-    const state = { name, index, timestamp: now.toISOString(), url: page.url(), dom: null, styles: null };
-
-    // ---- the DOM ----
-    try {
-        const dom = await captureDom(page, { ...cfg, dir: options.dir, baseName, now });
-        state.dom = {
-            saved: dom.saved,
-            file: dom.file,
-            url: dom.saved ? fileUrl(dom.file) : null,
-            timestamp: dom.timestamp,
-            bytes: dom.bytes,
-            elementCount: dom.elementCount,
-            scriptsRemoved: dom.scriptsRemoved,
-            reason: dom.reason,
-        };
-        if (!dom.saved) log(`State "${name}": DOM not saved: ${dom.reason}`);
-    } catch (e) {
-        state.dom = { saved: false, file: null, url: null, timestamp: now.toISOString(), bytes: 0, elementCount: 0, reason: firstLine(e.message) };
-        log(`State "${name}": DOM not saved: ${state.dom.reason}`);
-    }
-
-    // ---- the styles ----
-    try {
-        const styles = await captureStyles(page, { ...cfg, selectors: options.selectors, includeDefaults: options.includeDefaults ?? true, now });
-        let file = null;
-        if (options.dir) {
-            fs.mkdirSync(options.dir, { recursive: true });
-            file = `${baseName}.styles.json`;
-            fs.writeFileSync(path.join(options.dir, file), JSON.stringify({ name, ...styles }, null, 2), "utf8");
-        }
-        state.styles = {
-            saved: Boolean(file),
-            file,
-            url: file ? fileUrl(file) : null,
-            timestamp: styles.timestamp,
-            elements: styles.elements.length,
-            truncated: styles.truncated,
-            queries: styles.queries,
-            reason: file ? null : 'no "dir" given to save the styles in',
-        };
-        if (styles.truncated) log(`State "${name}": more than ${cfg.maxElements} elements, the rest were left out of the styles file`);
-    } catch (e) {
-        state.styles = { saved: false, file: null, url: null, timestamp: now.toISOString(), elements: 0, truncated: false, queries: [], reason: firstLine(e.message) };
-        log(`State "${name}": styles not saved: ${state.styles.reason}`);
-    }
-
-    return state;
 }
 
 module.exports = { captureDom, captureStyles, captureElementStyle, captureState };
