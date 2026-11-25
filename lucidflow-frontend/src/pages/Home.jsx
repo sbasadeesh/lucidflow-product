@@ -1,18 +1,16 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Topbar from "../components/Topbar.jsx";
-import { HOME } from "../config.js";
+import Icon from "../components/Icon.jsx";
+import { HOME, JOURNEY, PLANNED_LABEL } from "../config.js";
 import { recentScans } from "../data.js";
 import { saveScan } from "../scanStore.js";
 import { findRepeats, parseEntries } from "../urlUtils.js";
-
-
 
 // A cell can hold plain text or a hyperlink object
 const asText = (v) => (v && typeof v === "object" ? v.hyperlink || v.text || "" : (v ?? ""));
 
 // Reads page URLs from column A of the first sheet.
-// Cells that do not look like a URL (for example the header) are skipped.
 async function readUrlsFromExcel(buffer) {
   const { default: ExcelJS } = await import("exceljs");
   const wb = new ExcelJS.Workbook();
@@ -37,23 +35,27 @@ export default function Home() {
 
   const current = HOME.modes[mode];
   const text = texts[mode];
-    const items = parseEntries(text, mode);
+  const items = parseEntries(text, mode);
   const errors = items.filter((i) => !i.ok);
   const valid = items.filter((i) => i.ok);
   const repeats = [...new Set(findRepeats(text, mode))];
   const tooMany = mode === "pages" && items.length > HOME.maxUrls;
   const canRun = valid.length > 0 && !tooMany;
 
-  const setText = (value) => setTexts({ ...texts, [mode]: value });
-  const removeItem = (raw) =>
-    setText(
-      items
-        .filter((i) => i.raw !== raw)
-        .map((i) => i.raw)
-        .join(", "),
-    );
+  const setText = (value) => setTexts((t) => ({ ...t, [mode]: value }));
+  const writeItems = (list) => setText(list.map((i) => i.raw).join(", "));
+  const removeItem = (raw) => writeItems(items.filter((i) => i.raw !== raw));
 
-      // Add URLs to the Page URLs box, keeping what is already there (no repeats)
+  // Move one entry a step up (-1) or down (+1); the scan runs in this order
+  const moveItem = (index, step) => {
+    const to = index + step;
+    if (to < 0 || to >= items.length) return;
+    const next = [...items];
+    [next[index], next[to]] = [next[to], next[index]];
+    writeItems(next);
+  };
+
+  // Add URLs to the Page URLs box, keeping what is already there (no repeats)
   const addUrls = (list) =>
     setTexts((t) => {
       const have = t.pages
@@ -86,7 +88,7 @@ export default function Home() {
     }
   };
 
-   const run = () => {
+  const run = () => {
     saveScan({
       mode,
       host: valid[0].host,
@@ -125,7 +127,7 @@ export default function Home() {
           )}
           <p className="muted">{current.help}</p>
 
-                    {mode === "pages" && (
+          {mode === "pages" && (
             <div className="links">
               <input ref={fileRef} type="file" accept=".xlsx" hidden onChange={onFile} />
               <button className="link" onClick={() => fileRef.current.click()}>
@@ -140,16 +142,37 @@ export default function Home() {
 
           {items.length > 0 && (
             <div className="chips">
-              {items.map((i) => (
+              {items.map((i, k) => (
                 <span className={"chip" + (i.ok ? "" : " bad")} key={i.raw}>
+                  {mode === "pages" && <span className="cnum">{k + 1}</span>}
                   {i.ok ? i.url : i.raw}
+                  {mode === "pages" && (
+                    <>
+                      <button
+                        type="button"
+                        aria-label="Move up"
+                        disabled={k === 0}
+                        onClick={() => moveItem(k, -1)}
+                      >
+                        <Icon name="arrowUp" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Move down"
+                        disabled={k === items.length - 1}
+                        onClick={() => moveItem(k, 1)}
+                      >
+                        <Icon name="arrowDown" />
+                      </button>
+                    </>
+                  )}
                   <button onClick={() => removeItem(i.raw)}>×</button>
                 </span>
               ))}
             </div>
           )}
 
-                    {errors.map((e) => (
+          {errors.map((e) => (
             <p className="error" key={e.raw}>
               {e.raw}: {e.error}
             </p>
@@ -161,17 +184,35 @@ export default function Home() {
           ))}
           {tooMany && (
             <p className="error">
-              Too many URLs: {items.length} entered, the limit is {HOME.maxUrls}. Remove some and try
-              again.
+              Too many URLs: {items.length} entered, the limit is {HOME.maxUrls}. Remove some and
+              try again.
             </p>
           )}
-          {mode === "pages" && canRun && (
-            <p className="muted">
-              {valid.length} page{valid.length > 1 ? "s" : ""} added
-            </p>
+          {mode === "pages" && valid.length > 0 && (
+            <>
+              <p className="muted">
+                {valid.length} page{valid.length > 1 ? "s" : ""} added
+              </p>
+              <p className="muted">Pages are scanned in the order shown. Use the arrows to change it.</p>
+            </>
           )}
 
-          <button className="btn primary" disabled={!canRun} onClick={run}>   
+          {mode === "pages" && (
+            <>
+              <label className="label" htmlFor="home-url">
+                {JOURNEY.homeLabel}
+              </label>
+              <input
+                id="home-url"
+                disabled
+                placeholder={JOURNEY.homePlaceholder}
+                aria-label={JOURNEY.homeLabel}
+              />
+              <p className="planned">{PLANNED_LABEL}</p>
+            </>
+          )}
+
+          <button className="btn primary" disabled={!canRun} onClick={run}>
             {HOME.runLabel}
           </button>
         </div>
