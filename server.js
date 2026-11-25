@@ -191,16 +191,6 @@ fs.mkdirSync(screenshotDir, { recursive: true });
 app.use(cors());
 app.use(express.json());
 app.use("/screenshots", express.static(screenshotDir));
-const snapshotDir = path.join(__dirname, domCaptureConfig.folder);
-fs.mkdirSync(snapshotDir, { recursive: true });
-// A saved page is served as plain text, never as a page: its scripts must not run on this server's address.
-app.use(`/${domCaptureConfig.folder}`, express.static(snapshotDir, {
-    setHeaders: (res) => {
-        res.setHeader("Content-Type", "text/plain; charset=utf-8");
-        res.setHeader("X-Content-Type-Options", "nosniff");
-        res.setHeader("Content-Security-Policy", "sandbox");
-    },
-}));
 
 app.get("/", (req, res) => {
     res.send("Screenshot Testing API is running");
@@ -1123,7 +1113,7 @@ async function fieldKeys(page, before = null, mark = false) {
             if (r.width < 5 || r.height < 5 || cs.visibility === "hidden" || cs.display === "none") return;
 
             const key = [el.tagName, type, el.name, el.id, el.placeholder,
-            Math.round(r.x / 20), Math.round((r.y + window.scrollY) / 20)].join("|");
+                Math.round(r.x / 20), Math.round((r.y + window.scrollY) / 20)].join("|");
             out.push(key);
             if (mark && !known.has(key)) el.setAttribute("data-newf", "1");
         });
@@ -1520,16 +1510,37 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
         const topLoc = page.locator(`[data-nav="${next.idx}"]`).first();
 
         try {
-            const beforeLinks = await visibleAnchorKeys(page);
-            const beforeFields = await fieldKeys(page);
-            const tabsBefore = guard.tabs;
+        const beforeLinks = await visibleAnchorKeys(page);
+        const beforeFields = await fieldKeys(page);
+        const tabsBefore = guard.tabs;
 
-            // ---- 1) hover the nav item ----
-            record(`Nav ${n}: "${next.text}" - hovering`);
-            let topPos = await hoverOpen(page, topLoc);
-            let subs = await newMenuLinks(page, beforeLinks, guard.home, MAX_SUB);
+        // ---- 1) hover the nav item ----
+        record(`Nav ${n}: "${next.text}" - hovering`);
+        let topPos = await hoverOpen(page, topLoc);
+        let subs = await newMenuLinks(page, beforeLinks, guard.home, MAX_SUB);
 
-            // ---- 2) nothing opened on hover -> click it ----
+        // ---- 2) nothing opened on hover -> click it ----
+        if (!subs.length) {
+            record(`Nav ${n}: "${next.text}" - nothing on hover, clicking`);
+            await smartClick(topLoc);
+            stats.interactions++;
+            await page.waitForTimeout(1200);
+
+            if (normalizeUrl(page.url()) !== guard.home) {
+                const newUrl = page.url();
+                record(`Nav ${n}: URL changed to ${newUrl}`);
+                navReport.push({ menu: next.text, item: next.text, result: "URL changed", url: newUrl });
+                await returnHome(page, guard, record);
+                continue;
+            }
+            if (guard.tabs > tabsBefore) {
+                record(`Nav ${n}: opened a new tab (${guard.lastTab}) -> closed`);
+                navReport.push({ menu: next.text, item: next.text, result: "new tab", url: guard.lastTab });
+                continue;
+            }
+
+            subs = await newMenuLinks(page, beforeLinks, guard.home, MAX_SUB);
+
             if (!subs.length) {
                 const handled = await revealCheck({
                     page, guard, state, stats, record, before: beforeFields, label: `Nav: ${next.text}`,
@@ -1546,7 +1557,7 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
             }
         }
 
-                subs = await newMenuLinks(page, beforeLinks, guard.home, MAX_SUB);
+        record(`Nav ${n}: dropdown opened with ${subs.length} link(s), URL unchanged so far`);
 
         // ---- 3) click every link in the dropdown, one by one ----
         for (let j = 0; j < subs.length; j++) {
@@ -1558,51 +1569,45 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
                 record(`Nav link limit (${MAX_NAV_LINKS}) reached -> stopping nav pass`);
                 return;
             }
+            totalLinks++;
+            const sub = subs[j];
+            const tag = `Nav ${n}.${j + 1}`;
 
-            record(`Nav ${n}: dropdown opened with ${subs.length} link(s), URL unchanged so far`);
+            try {
 
-            // ---- 3) click every link in the dropdown, one by one ----
-            for (let j = 0; j < subs.length; j++) {
-                if (totalLinks >= MAX_NAV_LINKS) {
-                    record(`Nav link limit (${MAX_NAV_LINKS}) reached -> stopping nav pass`);
-                    return;
-                }
-                totalLinks++;
-                const sub = subs[j];
-                const tag = `Nav ${n}.${j + 1}`;
+            const pos = await ensureLink(next.text, sub.href, topPos);
+            if (!pos && !(await markMenuLink(page, sub.href))) {
+                record(`${tag}: "${sub.text}" not visible any more -> skipped`);
+                continue;
+            }
+            topPos = pos || topPos;
 
-                try {
+            record(`${tag}: "${sub.text}" - clicking`);
+            const tabs = guard.tabs;
+            const fieldsBefore = await fieldKeys(page);
 
-                    const pos = await ensureLink(next.text, sub.href, topPos);
-                    if (!pos && !(await markMenuLink(page, sub.href))) {
-                        record(`${tag}: "${sub.text}" not visible any more -> skipped`);
-                        continue;
-                    }
-                    topPos = pos || topPos;
+            await moveAndClick(page, topPos, page.locator('[data-sub="1"]').first());
+            stats.interactions++;
+            await page.waitForTimeout(1500);
 
-                    record(`${tag}: "${sub.text}" - clicking`);
-                    const tabs = guard.tabs;
-                    const fieldsBefore = await fieldKeys(page);
+            if (normalizeUrl(page.url()) !== guard.home) {
+                const newUrl = page.url();
+                record(`${tag}: URL changed to ${newUrl}`);
+                navReport.push({ menu: next.text, item: sub.text, result: "URL changed", url: newUrl });
+                await returnHome(page, guard, record);
+                record(`Nav ${n}: hovering "${next.text}" again`);
+                topPos = (await reopenTop(next.text, "hover")) || topPos;
+                continue;
+            }
 
-                    await moveAndClick(page, topPos, page.locator('[data-sub="1"]').first());
-                    stats.interactions++;
-                    await page.waitForTimeout(1500);
+            if (guard.tabs > tabs) {
+                record(`${tag}: opened a new tab (${guard.lastTab}) -> closed`);
+                navReport.push({ menu: next.text, item: sub.text, result: "new tab", url: guard.lastTab });
+                continue;
+            }
 
-                    if (normalizeUrl(page.url()) !== guard.home) {
-                        const newUrl = page.url();
-                        record(`${tag}: URL changed to ${newUrl}`);
-                        navReport.push({ menu: next.text, item: sub.text, result: "URL changed", url: newUrl });
-                        await returnHome(page, guard, record);
-                        record(`Nav ${n}: hovering "${next.text}" again`);
-                        topPos = (await reopenTop(next.text, "hover")) || topPos;
-                        continue;
-                    }
-
-                    if (guard.tabs > tabs) {
-                        record(`${tag}: opened a new tab (${guard.lastTab}) -> closed`);
-                        navReport.push({ menu: next.text, item: sub.text, result: "new tab", url: guard.lastTab });
-                        continue;
-                    }
+            record(`${tag}: URL unchanged`);
+            navReport.push({ menu: next.text, item: sub.text, result: "URL unchanged", url: page.url() });
 
             const handled = await revealCheck({
                 page, guard, state, stats, record, before: fieldsBefore, label: `Nav: ${sub.text}`,
@@ -1624,9 +1629,12 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
                     record(`${tag}: URL changed to ${page.url()}`);
                     navReport.push({ menu: next.text, item: sub.text, result: "URL changed", url: page.url() });
                 }
+                await returnHome(page, guard, record);
+                topPos = (await reopenTop(next.text, "hover").catch(() => null)) || topPos;
             }
+        }
 
-            await closePanel(page);
+        await closePanel(page);
         } catch (err) {
             record(`Nav ${n}: page changed during the click -> checking the URL`);
             await page.waitForLoadState("domcontentloaded", { timeout: 15000 }).catch(() => { });
@@ -2106,13 +2114,15 @@ app.post("/api/screenshot", async (req, res) => {
         return res.status(400).json({ error: "URL is required" });
     }
 
-    // criterion 3: an invalid URL gets a clear error (the message says what to enter)
     let parsedUrl;
     try {
-        parsedUrl = capture.validateUrl(url);
-    } catch (e) {
-        if (e instanceof capture.RenderError) return res.status(e.httpStatus).json({ error: e.message, code: e.code });
-        throw e;
+        parsedUrl = new URL(url);
+    } catch {
+        return res.status(400).json({ error: "Invalid URL" });
+    }
+
+    if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+        return res.status(400).json({ error: "Only HTTP and HTTPS URLs are supported" });
     }
 
     let browser;
@@ -2177,7 +2187,6 @@ app.post("/api/screenshot", async (req, res) => {
             fieldsFilled: stats.fieldsFilled,
             stepsVisited: scanned ? stats.stepsVisited : 0,
             popupsHandled: stats.popupsHandled,
-            domStates,
             navLinksChecked: navReport.length,
             stabilizer: state.stab,
             rawObservations: buildRawObservationManifest(state.rawObservations),   // [E2-04]
@@ -2189,12 +2198,9 @@ app.post("/api/screenshot", async (req, res) => {
         return summary;
     };
 
-    // E2-02: save the DOM and the computed styles of the page for one state.
-    // The element asked for in the request (selector) is always stored first.
-    let snapshotStartUrl = null; // the one URL this scan was given
-    const snapshot = async (page, name) => {
-        try {
-            if (snapshotStartUrl === null) snapshotStartUrl = normalizeUrl(page.url());
+    try {
+        // Set headless: false and slowMo: 300 to watch it run while debugging
+        browser = await chromium.launch({ headless: true });
 
         const context = await browser.newContext({
             viewport: { width: 1366, height: 900 },
@@ -2318,8 +2324,6 @@ app.post("/api/screenshot", async (req, res) => {
                     selectorCropUrl = `/screenshots/${cropFile}`;
                 }
 
-                await snapshot(page, "phone step");
-
                 await browser.close();
                 browser = null;
 
@@ -2363,7 +2367,6 @@ app.post("/api/screenshot", async (req, res) => {
             },
         });
         record("Full-page screenshot saved (before any interaction)", { filename: fullFilename });
-        await snapshot(page, "initial page");
 
         // 2) From now on the browser must stay on this URL
         guard.home = normalizeUrl(page.url());
@@ -2500,8 +2503,6 @@ app.post("/api/screenshot", async (req, res) => {
             selectorCropUrl = `/screenshots/${cropFile}`;
         }
 
-        await snapshot(page, "final state");
-
         guard.on = false;
         await browser.close();
         browser = null;
@@ -2518,16 +2519,6 @@ app.post("/api/screenshot", async (req, res) => {
             navigationCheck: navReport,
         }));
     } catch (error) {
-        if (error instanceof capture.RenderError) {
-            record(`Scan stopped: ${error.message}`);
-            return res.status(error.httpStatus).json(finish(error.code === "timeout" ? "timeout" : "load_failed", {
-                error: error.message,
-                message: error.message,
-                errorCode: error.code,
-                elementScreenshots: state.shots,
-                navigationCheck: navReport,
-            }));
-        }
         console.error("Audit failed:", error.message);
 
         return res.status(500).json(finish("failed", {
