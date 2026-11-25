@@ -15,7 +15,8 @@ function resolveGate(env = process.env) {
 }
 
 function startupLine(gate) {
-    return gate.reasonCode === "ACK_REQUIRED" ? `[dom-evidence] ${JSON.stringify({ schemaVersion: 1, enabled: false, reasonCode: "ACK_REQUIRED" })}` : null;
+    // Silent when disabled (both gates required): print nothing for OFF or ACK_REQUIRED
+    return null;
 }
 
 // In-page collector: returns { ok, reasonCode, elements?, candidates?, ... } or { ok: false, reasonCode }
@@ -211,12 +212,23 @@ function collectorScript(deadline = Date.now() + 2000) {
 }
 
 // Node-side collection: runs the in-page collector with a timeout, validates results, and builds the record.
-async function collect(page, testHooks = {}) {
+async function collect(page, { testHooks = {} } = {}) {
     const start = Date.now();
     const deadline = start + config.captureTimeoutMs;
     
+    // Register a listener for main-frame navigation BEFORE any page changes
+    let navigationObserved = false;
+    const navHandler = () => {
+        navigationObserved = true;
+    };
+    page.on("framenavigated", navHandler);
+    
+    // Capture baseline URL before any changes
+    const urlBefore = await page.url();
+    
     try {
-        if (testHooks.betweenReads) await testHooks.betweenReads(page).catch(() => {});
+        // Invoke test hook if provided - may cause page changes
+        if (testHooks.betweenReads) await testHooks.betweenReads(page);
         
         // in-page collection with timeout
         const result = await Promise.race([
@@ -224,10 +236,32 @@ async function collect(page, testHooks = {}) {
             new Promise((_, r) => setTimeout(() => r(null), config.captureTimeoutMs + 500)),
         ]);
         
-        if (!result) return { ok: false, reasonCode: "TIMEOUT" };
-        // The collector already checks for PAGE_CHANGED internally
+        if (!result) {
+            page.off("framenavigated", navHandler);
+            return { ok: false, reasonCode: "TIMEOUT" };
+        }
+        
+        // Check if URL changed during collection
+        const urlAfter = await page.url();
+        const urlChanged = urlBefore !== urlAfter;
+        
+        // If we observed navigation or URL changed, it's PAGE_CHANGED
+        if (navigationObserved || urlChanged) {
+            page.off("framenavigated", navHandler);
+            return { ok: false, reasonCode: "PAGE_CHANGED" };
+        }
+        
+        // The collector's internal checks for page-change-during-collection are still performed
+        page.off("framenavigated", navHandler);
         return result;
     } catch (e) {
+        page.off("framenavigated", navHandler);
+        // If navigation was observed and an error occurred, classify as PAGE_CHANGED
+        if (navigationObserved) {
+            return { ok: false, reasonCode: "PAGE_CHANGED" };
+        }
+        // Re-throw test hook exceptions; don't swallow them
+        if (e.message && e.message.includes && e.message.includes("betweenReads")) throw e;
         return { ok: false, reasonCode: "CAPTURE_FAILED" };
     }
 }
@@ -304,8 +338,46 @@ function writeEvidence({ dir, scanId, seq, content, fs: fsImpl = fs }) {
     const temppath = path.join(dir, tempname);
     
     try {
-        // 3. write to temp file (exclusive create)
-        fsImpl.writeFileSync(temppath, content, { flag: "wx", encoding: "utf8" });
+        // 3. write to temp file using injected fs: exclusive create with open/write/close
+        let fd;
+        try {
+            fd = fsImpl.openSync(temppath, "wx");
+        } catch (openErr) {
+            if (openErr.code === "EEXIST") {
+                return { ok: false, reasonCode: "COLLISION" };
+            }
+            return { ok: false, reasonCode: "WRITE_FAILED" };
+        }
+        
+        // Encode content to UTF-8 buffer
+        const buffer = Buffer.from(content, "utf8");
+        let written = 0;
+        
+        try {
+            // Write buffer in chunks, respecting partial writes
+            while (written < buffer.length) {
+                const bytesWritten = fsImpl.writeSync(fd, buffer, written);
+                if (bytesWritten === 0) {
+                    // Zero progress = write failure
+                    throw Object.assign(new Error("No progress on write"), { code: "ENOSPC" });
+                }
+                written += bytesWritten;
+            }
+        } catch (writeErr) {
+            // Write failed - close and clean up
+            try { fsImpl.closeSync(fd); } catch { }
+            try { fsImpl.unlinkSync(temppath); } catch { }
+            return { ok: false, reasonCode: "WRITE_FAILED" };
+        }
+        
+        // Close the temp file before publishing the final name
+        try {
+            fsImpl.closeSync(fd);
+        } catch (closeErr) {
+            // Close failed - clean up and report write failure
+            try { fsImpl.unlinkSync(temppath); } catch { }
+            return { ok: false, reasonCode: "WRITE_FAILED" };
+        }
         
         // 4. check if target exists before creating link
         try {
@@ -318,7 +390,16 @@ function writeEvidence({ dir, scanId, seq, content, fs: fsImpl = fs }) {
         }
         
         // 5. link to final name (atomic)
-        fsImpl.linkSync(temppath, filepath);
+        try {
+            fsImpl.linkSync(temppath, filepath);
+        } catch (linkErr) {
+            // linkSync failed - clean up and report write failure
+            try { fsImpl.unlinkSync(temppath); } catch { }
+            if (linkErr && linkErr.code === "EEXIST") {
+                return { ok: false, reasonCode: "COLLISION" };
+            }
+            return { ok: false, reasonCode: "WRITE_FAILED" };
+        }
         
         // 6. remove temp (cleanup)
         try { fsImpl.unlinkSync(temppath); } catch { }

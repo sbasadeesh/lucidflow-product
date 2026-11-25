@@ -1,0 +1,189 @@
+name: E2-02 DOM Evidence + E2-04 E2-07 Regressions
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-pr-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Record PR head revision
+        id: pr-head
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify test file discovery
+        run: |
+          echo "=== PR Head Revision ==="
+          echo "Tested revision: ${{ steps.pr-head.outputs.sha }}"
+          echo ""
+          echo "=== E2-02 Test Files ==="
+          find E2-02_tests -type f -name '*_test.js' | sort
+          echo ""
+          echo "=== E2-04 Test Files ==="
+          find E2-04_tests -type d -name '*_test' | sort
+          echo ""
+          echo "=== E2-07 Test Files ==="
+          find E2-07_tests -type f -name '*_test.js' | sort
+
+      - name: Run E2-02 tests (new feature)
+        timeout-minutes: 2
+        run: npm run test:e2-02 2>&1 | tee e2-02-output.log
+        continue-on-error: false
+
+      - name: Run E2-04 tests (regression)
+        timeout-minutes: 2
+        run: node --test E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js E2-04_tests/maskVolatile_test/maskVolatile_test.js E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js 2>&1 | tee e2-04-output.log
+        continue-on-error: false
+
+      - name: Run E2-07 guard tests (regression)
+        timeout-minutes: 2
+        run: node --test E2-07_tests/mutation_test.js E2-07_tests/real_endpoint_test.js 2>&1 | tee e2-07-output.log
+        continue-on-error: false
+
+      - name: Upload test output artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2-02-pr-head-test-output
+          path: |
+            e2-02-output.log
+            e2-04-output.log
+            e2-07-output.log
+          retention-days: 30
+
+      - name: Report test results
+        if: success()
+        run: |
+          echo "======================================"
+          echo "✅ All PR head tests PASSED"
+          echo "======================================"
+          echo "E2-02 (feature): npm run test:e2-02"
+          echo "E2-04 (regression): 4 test files"
+          echo "E2-07 (regression): 2 test files"
+
+  test-integration-with-main:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Record main revision
+        id: main-sha
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Fetch PR head
+        run: git fetch origin ${{ github.event.pull_request.head.sha }}
+
+      - name: Merge PR head into main (uncommitted)
+        id: merge-integration
+        run: |
+          git config user.email "ci@github.com"
+          git config user.name "GitHub Actions"
+          git merge --no-commit --no-ff FETCH_HEAD
+          TREE_SHA=$(git write-tree)
+          echo "tree=$TREE_SHA" >> $GITHUB_OUTPUT
+          echo "Integration tree (uncommitted merge): $TREE_SHA"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify test file discovery on integration candidate
+        run: |
+          echo "=== Integration Revisions ==="
+          echo "Main SHA: ${{ steps.main-sha.outputs.sha }}"
+          echo "PR head SHA: ${{ github.event.pull_request.head.sha }}"
+          echo "Integration tree (uncommitted): ${{ steps.merge-integration.outputs.tree }}"
+          echo ""
+          echo "=== E2-02 Test Files ==="
+          find E2-02_tests -type f -name '*_test.js' | sort || echo "E2-02 tests not found (expected on main without PR)"
+          echo ""
+          echo "=== E2-04 Test Files ==="
+          find E2-04_tests -type d -name '*_test' | sort
+          echo ""
+          echo "=== E2-07 Test Files ==="
+          find E2-07_tests -type f -name '*_test.js' | sort
+
+      - name: Run E2-02 on integration
+        timeout-minutes: 2
+        run: npm run test:e2-02 2>&1 | tee e2-02-integration.log
+        continue-on-error: false
+
+      - name: Run E2-04 on integration
+        timeout-minutes: 2
+        run: node --test E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js E2-04_tests/maskVolatile_test/maskVolatile_test.js E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js 2>&1 | tee e2-04-integration.log
+        continue-on-error: false
+
+      - name: Run E2-07 on integration
+        timeout-minutes: 2
+        run: node --test E2-07_tests/mutation_test.js E2-07_tests/real_endpoint_test.js 2>&1 | tee e2-07-integration.log
+        continue-on-error: false
+
+      - name: Run npm test (full regression suite)
+        timeout-minutes: 10
+        run: npm test 2>&1 | tee regression-full.log
+        continue-on-error: false
+
+      - name: Upload test output artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2-02-integration-test-output
+          path: |
+            e2-02-integration.log
+            e2-04-integration.log
+            e2-07-integration.log
+            regression-full.log
+          retention-days: 30
+
+      - name: Report integration test results
+        if: success()
+        run: |
+          echo "======================================"
+          echo "✅ All integration tests PASSED"
+          echo "======================================"
+          echo "Integration tree: ${{ steps.merge-integration.outputs.tree }}"
+          echo "Main SHA: ${{ steps.main-sha.outputs.sha }}"
+          echo "PR head SHA: ${{ github.event.pull_request.head.sha }}"
+          echo ""
+          echo "E2-02 (feature): npm run test:e2-02"
+          echo "E2-04 (regression): 4 test files"
+          echo "E2-07 (regression): 2 test files"
+          echo "npm test (full suite): All suites with --test-concurrency=3"

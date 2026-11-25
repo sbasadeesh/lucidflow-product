@@ -29,6 +29,10 @@ const { checkSecurityGuards } = require("./security-guard/securityGuard");
 const overlayObservationConfig = require("./overlayObservation/overlayObservation.config");
 const { createOverlayObserver, formatDiagnostics } = require("./overlayObservation/overlayObserver");
 const { snapshotOverlays, identifyTarget } = require("./overlayObservation/overlaySnapshot");
+// [E2-02] DOM/style evidence prototype: allowlisted structural/style JSON (off by default)
+const domEvidence = (() => {
+    try { return require("./domEvidence/domEvidence"); } catch { return null; }
+})();
 
 const app = express();
 const PORT = Number(process.env.PORT || 5000);
@@ -2149,6 +2153,11 @@ app.post("/api/screenshot", async (req, res) => {
 
     const scanId = `scan-${state.ts}`;
     const startedAt = new Date().toISOString();
+    const domSession = domEvidence?.createSession({ scanId, dir: scansDir, env: process.env }) || null;
+    if (domEvidence?.startupLine) {
+        const line = domEvidence.startupLine(domEvidence.resolveGate(process.env));
+        if (line) console.log(line);
+    }
 
     // What happened when the page was opened (status code, redirects, final URL)
     const loadInfo = { requestedUrl: parsedUrl.href, finalUrl: parsedUrl.href, redirected: false, redirectChain: [], statusCode: null };
@@ -2212,6 +2221,7 @@ app.post("/api/screenshot", async (req, res) => {
         // volatile elements masked, wait until the page stops changing)
         // [E2-04] The raw, untouched screenshot is saved FIRST, so stabilized
         // evidence never replaces what was really on screen.
+        // [E2-02] DOM/style evidence collected after raw snapshot but before stabilisation
         state.prep = async (label = "shot") => {
             if (stabilizerConfig.preserveRaw !== false) {
                 const slug = String(label).replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").slice(0, 30) || "shot";
@@ -2222,6 +2232,15 @@ app.post("/api/screenshot", async (req, res) => {
                     rawPath: raw.ok ? path.join(screenshotDir, rawFile) : null,
                     rawUrl: raw.ok ? `/screenshots/${rawFile}` : null,
                     observedAt: new Date().toISOString(),
+                });
+            }
+
+            // [E2-02] Collect evidence after raw observation, before stabilisation
+            if (domSession) {
+                const rec = await domSession.screenshotPoint(page, {
+                    label,
+                    rawOk: state.rawObservations[state.rawObservations.length - 1]?.rawPath ? true : false,
+                    rawObservationIndex: state.rawObservations.length - 1,
                 });
             }
 
@@ -2512,6 +2531,9 @@ app.post("/api/screenshot", async (req, res) => {
         if (browser) {
             await browser.close().catch(() => { });
         }
+        if (domSession) {
+            domSession.afterSummary();
+        }
     }
 });
 
@@ -2638,16 +2660,21 @@ app.post("/api/script", async (req, res) => {
 
         // ---- keep every state steady (animations off, volatile parts masked) ----
         const stabilizeOn = body.stabilize !== false;
-        const prep = stabilizeOn
-            ? async () => {
-                try {
-                    await stabilizePage(
-                        page,
-                        { maskSelectors: Array.isArray(body.mask) ? body.mask : [] },
-                        (m) => record(m)
-                    );
-                } catch (e) {
-                    record(`Stabilizer skipped: ${String(e.message).split("\n")[0]}`);
+        const domSession = domEvidence?.createSession({ scanId, dir: scansDir, env: process.env }) || null;
+        const prep = stabilizeOn || domSession
+            ? async (info) => {
+                // [E2-02] collect evidence before stabilisation, with metadata from runner
+                if (domSession) await domSession.scriptPrepare(page, info);
+                if (stabilizeOn) {
+                    try {
+                        await stabilizePage(
+                            page,
+                            { maskSelectors: Array.isArray(body.mask) ? body.mask : [] },
+                            (m) => record(m)
+                        );
+                    } catch (e) {
+                        record(`Stabilizer skipped: ${String(e.message).split("\n")[0]}`);
+                    }
                 }
             }
             : null;
@@ -2659,6 +2686,9 @@ app.post("/api/script", async (req, res) => {
             filePrefix: `state-${scanId}`,
             fileUrl: (file) => `/screenshots/${file}`,
             prep,
+            afterCapture: domSession ? async (info) => {
+                await domSession.scriptComplete(info);
+            } : null,
             log: (m) => record(m),
         });
 
@@ -2688,6 +2718,9 @@ app.post("/api/script", async (req, res) => {
         }));
     } finally {
         if (browser) await browser.close().catch(() => { });
+        if (domSession) {
+            domSession.afterSummary();
+        }
     }
 });
 

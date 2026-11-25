@@ -279,19 +279,26 @@ async function runStateScript(page, scriptInput, options = {}) {
 
             let target = null;
             if (step.selector !== undefined) target = await findElement(page, step.selector, timeoutFor(step));
-            if (options.prep) await options.prep();
-
+            
             const index = states.length + 1;
+            const stepNum = n;
+            if (options.prep) await options.prep({ index, step: stepNum });
+
             const file = `${filePrefix}-${String(index).padStart(2, "0")}-${slug(name, cfg.nameMaxLength)}.png`;
             const fullPath = path.join(outDir, file);
             const fullPage = step.fullPage === undefined ? cfg.captureMode === "fullPage" : step.fullPage === true;
 
+            let screenshotOk = false;
             try {
                 if (target) await target.screenshot({ path: fullPath, animations: "disabled", timeout: 30000 });
                 else await page.screenshot({ path: fullPath, fullPage, animations: "disabled", timeout: 30000 });
+                screenshotOk = true;
             } catch (e) {
+                if (options.afterCapture) await options.afterCapture({ index, step: stepNum, ok: false });
                 throw new StepFailure(`Screenshot failed: ${firstLine(e.message)}`);
             }
+
+            if (options.afterCapture) await options.afterCapture({ index, step: stepNum, ok: screenshotOk });
 
             states.push({
                 index,
