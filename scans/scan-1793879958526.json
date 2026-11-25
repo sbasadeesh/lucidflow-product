@@ -1,0 +1,37 @@
+{
+  "scanId": "scan-1793879958526",
+  "url": "https://www.tataaig.com/",
+  "status": "timeout",
+  "startedAt": "2026-11-05T11:59:18.526Z",
+  "finishedAt": "2026-11-05T12:00:05.171Z",
+  "durationMs": 46645,
+  "states": 1,
+  "interactions": 0,
+  "interactionBreakdown": {
+    "clicks": 0,
+    "hovers": 0,
+    "fieldsFilled": 0,
+    "selections": 0,
+    "dialogsHandled": 0
+  },
+  "fieldsFilled": 0,
+  "stepsVisited": 1,
+  "popupsHandled": 0,
+  "domStates": [],
+  "navLinksChecked": 0,
+  "error": "The page did not finish loading within 30 seconds, so the scan was stopped.",
+  "message": "The page did not finish loading within 30 seconds, so the scan was stopped.",
+  "errorCode": "timeout",
+  "elementScreenshots": [],
+  "navigationCheck": [],
+  "actionLog": [
+    {
+      "action": "Opening https://www.tataaig.com/",
+      "time": "2026-11-05T11:59:33.237Z"
+    },
+    {
+      "action": "Scan stopped: The page did not finish loading within 30 seconds, so the scan was stopped.",
+      "time": "2026-11-05T12:00:05.169Z"
+    }
+  ]
+}
