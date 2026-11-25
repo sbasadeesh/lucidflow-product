@@ -9,53 +9,69 @@
 const fs = require("fs");
 const path = require("path");
 
-// Add this new function at the top of the file, before scrollToLoadContent
+// [E2-10] Visible landmark, then hidden spinner. Timeout is a typed SAFE_HOLD.
+// A page with no matching landmark and no spinner has nothing to wait for.
 async function waitForReadiness(page, options = {}) {
     const timeoutMs = options.timeoutMs || 10000;
     const landmarkSelector = options.landmark || "main, h1, [data-testid='main']";
     const spinnerSelector = options.spinner || ".spinner, .loading, [role='progressbar']";
-    
+
     const start = Date.now();
-    
+    const deadline = start + timeoutMs;
+    const landmark = page.locator(landmarkSelector).first();
+    const spinner = page.locator(spinnerSelector).first();
+
     try {
-        // 1. Wait for the required landmark to be visible (Rule: LF-CAP-001)
-        await page.locator(landmarkSelector).first().waitFor({ state: "visible", timeout: timeoutMs });
-        
-        // 2. Wait for loading spinners to disappear (if they exist)
-        const spinner = page.locator(spinnerSelector).first();
-        if (await spinner.isVisible().catch(() => false)) {
-            await spinner.waitFor({ state: "hidden", timeout: timeoutMs });
+        while (Date.now() <= deadline) {
+            const landmarkCount = await landmark.count();
+            const landmarkVisible = landmarkCount > 0 && await landmark.isVisible().catch(() => false);
+            const spinnerVisible = await spinner.isVisible().catch(() => false);
+
+            if (landmarkVisible && !spinnerVisible) {
+                return { status: "CONTROL_OK", durationMs: Date.now() - start };
+            }
+            // No landmark in the document and no spinner: the page is already idle.
+            if (landmarkCount === 0 && !spinnerVisible) {
+                return { status: "CONTROL_OK", durationMs: Date.now() - start };
+            }
+
+            const remaining = deadline - Date.now();
+            if (remaining <= 0) break;
+            await page.waitForTimeout(Math.min(100, remaining));
         }
-        
-        return { status: "CONTROL_OK", durationMs: Date.now() - start };
-    } catch (err) {
-        // Controlled rejection without inventing success (Rule LF-CAP-001)
-        return { 
-            status: "SAFE_HOLD", 
-            reason: "READINESS_TIMEOUT", 
+
+        return {
+            status: "SAFE_HOLD",
+            reason: "READINESS_TIMEOUT",
             details: `Landmark "${landmarkSelector}" or spinner did not resolve within ${timeoutMs}ms`,
-            durationMs: Date.now() - start 
+            durationMs: Date.now() - start
+        };
+    } catch (err) {
+        return {
+            status: "SAFE_HOLD",
+            reason: "READINESS_TIMEOUT",
+            details: `Landmark "${landmarkSelector}" or spinner did not resolve within ${timeoutMs}ms`,
+            durationMs: Date.now() - start
         };
     }
 }
 
-// Replace your existing scrollToLoadContent with this bounded version
-async function scrollToLoadContent(page, hooks = {}) {
-    // DO NOT use networkidle. Use 'load' or 'domcontentloaded' just to ensure basic HTML is there.
-    await page.waitForLoadState("domcontentloaded", { timeout: 15000 }).catch(() => { });
+async function scrollToLoadContent(page) {
+    await page.waitForLoadState("load", { timeout: 30000 }).catch(() => { });
+    await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => { });
 
     const viewportH = (page.viewportSize() || { height: 900 }).height;
     const step = Math.floor(viewportH * 0.5);
+
     let lastHeight = 0;
     let stableRounds = 0;
 
-    // Bounded scroll loop (max 30 steps instead of 150 to prevent infinite loops on virtualized lists)
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 150; i++) {
         const y = await page.evaluate(() => window.scrollY);
         await page.evaluate((s) => window.scrollBy(0, s), step);
 
-        // Short bounded wait for lazy-content to append to the DOM
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(700);
+        await page.waitForLoadState("networkidle", { timeout: 2500 }).catch(() => { });
 
         const { height, atBottom, newY } = await page.evaluate(() => ({
             height: document.documentElement.scrollHeight,
@@ -70,11 +86,12 @@ async function scrollToLoadContent(page, hooks = {}) {
         }
         lastHeight = height;
 
-        // Exit if we hit the bottom and height stopped changing
         if (stableRounds >= 2 || (newY === y && atBottom)) break;
     }
 
-    // Force lazy images to load (keep your existing logic)
+    await page.waitForTimeout(1200);
+    await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => { });
+
     await page.evaluate(() => {
         document.querySelectorAll("img").forEach((img) => {
             if (img.loading === "lazy") img.loading = "eager";
@@ -85,7 +102,30 @@ async function scrollToLoadContent(page, hooks = {}) {
         });
     }).catch(() => { });
 
+    await page.evaluate(async () => {
+        const withTimeout = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(r, ms))]);
+        const imgs = [...document.images].filter((i) => !i.complete);
+        await withTimeout(
+            Promise.all(
+                imgs.map((i) => new Promise((r) => { i.onload = i.onerror = r; }))
+            ),
+            10000
+        );
+        if (document.fonts && document.fonts.ready) {
+            await withTimeout(document.fonts.ready, 5000);
+        }
+    }).catch(() => { });
+
     await page.evaluate(() => window.scrollTo(0, 0));
+    let prev = -1;
+    let same = 0;
+    for (let i = 0; i < 20 && same < 3; i++) {
+        await page.waitForTimeout(500);
+        const h = await page.evaluate(() => document.documentElement.scrollHeight);
+        same = h === prev ? same + 1 : 0;
+        prev = h;
+    }
+
     await page.waitForTimeout(500);
 }
 

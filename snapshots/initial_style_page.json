@@ -1,0 +1,858 @@
+{
+  "name": "initial page",
+  "timestamp": "2026-11-05T12:01:47.325Z",
+  "pageUrl": "https://www.tataaig.com/",
+  "title": "TATA AIG | Buy Car, Bike, Health & Travel Insurance Online",
+  "viewport": {
+    "width": 1366,
+    "height": 900
+  },
+  "queries": [
+    {
+      "query": "body",
+      "matched": 1,
+      "error": null
+    },
+    {
+      "query": "a, button, input, select, textarea, label, h1, h2, h3, img, [role='button'], [role='dialog'], [aria-modal='true'], dialog",
+      "matched": 626,
+      "error": null
+    }
+  ],
+  "elements": [
+    {
+      "selector": "html > body",
+      "selectorUnique": true,
+      "tag": "body",
+      "id": null,
+      "classes": [],
+      "text": "Welcome to TATA AIG! Explore our insurance solutions, renew your policy, or acce",
+      "size": {
+        "width": 1366,
+        "height": 900
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(33, 37, 41)",
+        "backgroundColor": "rgb(245, 245, 245)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": true,
+        "reason": null,
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": true
+      },
+      "computed": {
+        "width": "1366px",
+        "height": "900px",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#__next > div:nth-of-type(2) > div > div:nth-of-type(2) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [],
+      "text": "Try the App",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(38, 74, 159)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(226, 237, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "inline-flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "auto",
+        "fontSize": "12px",
+        "fontWeight": "600",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#__next > div:nth-of-type(2) > div > div:nth-of-type(2) > a > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "arrowRight",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(38, 74, 159)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(226, 237, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "auto",
+        "fontSize": "12px",
+        "fontWeight": "600",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#__next > div:nth-of-type(3) > div > div:nth-of-type(1) > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [
+        "Layout_downloadAppImage___T2cx"
+      ],
+      "text": "",
+      "size": {
+        "width": 70.27,
+        "height": 100
+      },
+      "position": {
+        "x": 1048.36,
+        "y": 737
+      },
+      "colour": {
+        "color": "rgb(33, 37, 41)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(226, 237, 255)"
+      },
+      "visibility": {
+        "visible": true,
+        "reason": null,
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": true
+      },
+      "computed": {
+        "width": "70.2656px",
+        "height": "100px",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "position": "absolute",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#__next > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(1) > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "Right arrow icon",
+      "size": {
+        "width": 16,
+        "height": 16
+      },
+      "position": {
+        "x": 1238.73,
+        "y": 777.66
+      },
+      "colour": {
+        "color": "rgb(38, 74, 159)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(226, 237, 255)"
+      },
+      "visibility": {
+        "visible": true,
+        "reason": null,
+        "display": "inline",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": true
+      },
+      "computed": {
+        "width": "16px",
+        "height": "16px",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [
+        "btn",
+        "p-0",
+        "navbar-brand",
+        "Header_logoBox__cZAUX"
+      ],
+      "text": "",
+      "size": {
+        "width": 112,
+        "height": 60
+      },
+      "position": {
+        "x": 128,
+        "y": 60
+      },
+      "colour": {
+        "color": "rgb(33, 37, 41)",
+        "backgroundColor": "rgb(239, 240, 243)",
+        "effectiveBackgroundColor": "rgb(239, 240, 243)"
+      },
+      "visibility": {
+        "visible": true,
+        "reason": null,
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": true
+      },
+      "computed": {
+        "width": "112px",
+        "height": "60px",
+        "fontSize": "20px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > a > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [
+        "Header_logo__V9h3K"
+      ],
+      "text": "TATA AIG LOGO",
+      "size": {
+        "width": 96,
+        "height": 52
+      },
+      "position": {
+        "x": 136,
+        "y": 64
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(239, 240, 243)"
+      },
+      "visibility": {
+        "visible": true,
+        "reason": null,
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": true
+      },
+      "computed": {
+        "width": "96px",
+        "height": "52px",
+        "fontSize": "20px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(1) > button:nth-of-type(1)",
+      "selectorUnique": true,
+      "tag": "button",
+      "id": null,
+      "classes": [
+        "btn",
+        "d-md-none",
+        "Header_navToggleIcon__ZgwYc"
+      ],
+      "text": "Accessibility options",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(33, 37, 41)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "display:none",
+        "display": "none",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "50px",
+        "height": "50px",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(1) > button:nth-of-type(1) > span > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "X",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(33, 37, 41)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "inline",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "30px",
+        "height": "30px",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(1) > button:nth-of-type(2)",
+      "selectorUnique": true,
+      "tag": "button",
+      "id": null,
+      "classes": [
+        "btn",
+        "d-md-none",
+        "Header_navToggleIcon__ZgwYc"
+      ],
+      "text": "",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(33, 37, 41)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "display:none",
+        "display": "none",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "50px",
+        "height": "50px",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(1) > button:nth-of-type(2) > span > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "X",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(33, 37, 41)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "inline",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "16px",
+        "height": "16px",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(2) > div > nav:nth-of-type(1) > div:nth-of-type(1) > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [
+        "Header_navIcon__6ps7B",
+        "mb-1"
+      ],
+      "text": "X",
+      "size": {
+        "width": 17.5,
+        "height": 18
+      },
+      "position": {
+        "x": 473.11,
+        "y": 67.05
+      },
+      "colour": {
+        "color": "rgb(38, 74, 159)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": true,
+        "reason": null,
+        "display": "inline",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": true
+      },
+      "computed": {
+        "width": "17.5px",
+        "height": "18px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(2) > div > nav:nth-of-type(1) > div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [
+        "d-flex",
+        "align-items-center",
+        "justify-content-between",
+        "w-100"
+      ],
+      "text": "Motor Insurance",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(0, 123, 255)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(225, 228, 237)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(2) > div > nav:nth-of-type(1) > div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a > div:nth-of-type(1) > div:nth-of-type(1) > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "ImgIcon",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(0, 123, 255)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(225, 228, 237)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "18px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(2) > div > nav:nth-of-type(1) > div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a > div:nth-of-type(2) > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "arrow",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(0, 123, 255)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(225, 228, 237)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "inline",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "5.622px",
+        "height": "10.067px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(2) > div > nav:nth-of-type(1) > div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [
+        "d-flex",
+        "align-items-center",
+        "justify-content-between",
+        "w-100"
+      ],
+      "text": "Travel Insurance",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(0, 123, 255)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(2) > div > nav:nth-of-type(1) > div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a > div:nth-of-type(1) > div:nth-of-type(1) > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "ImgIcon",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(0, 123, 255)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "18px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(2) > div > nav:nth-of-type(1) > div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a > div:nth-of-type(2) > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "arrow",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(0, 123, 255)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "inline",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "5.622px",
+        "height": "10.067px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(2) > div > nav:nth-of-type(1) > div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(3) > div > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [
+        "d-flex",
+        "align-items-center",
+        "justify-content-between",
+        "w-100"
+      ],
+      "text": "Health Insurance",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(0, 123, 255)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(2) > div > nav:nth-of-type(1) > div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(3) > div > a > div:nth-of-type(1) > div:nth-of-type(1) > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "ImgIcon",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(0, 123, 255)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "18px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#fixHeader > div > div > section > div:nth-of-type(2) > div > nav:nth-of-type(1) > div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(3) > div > a > div:nth-of-type(2) > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "arrow",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgb(0, 123, 255)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(245, 245, 245)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "inline",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "5.622px",
+        "height": "10.067px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    }
+  ],
+  "truncated": false
+}

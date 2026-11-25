@@ -1,0 +1,427 @@
+{
+  "scanId": "scan-1793941037687",
+  "url": "https://www.adityabirlahealthinsurance.com/login",
+  "status": "completed",
+  "startedAt": "2026-11-06T04:57:17.687Z",
+  "finishedAt": "2026-11-06T05:00:34.503Z",
+  "durationMs": 196816,
+  "states": 2,
+  "interactions": 14,
+  "interactionBreakdown": {
+    "clicks": 12,
+    "hovers": 2,
+    "fieldsFilled": 0,
+    "selections": 0,
+    "dialogsHandled": 0
+  },
+  "fieldsFilled": 0,
+  "stepsVisited": 1,
+  "popupsHandled": 0,
+  "domStates": [
+    {
+      "name": "initial page",
+      "index": 1,
+      "timestamp": "2026-11-06T04:59:42.676Z",
+      "url": "https://www.adityabirlahealthinsurance.com/login",
+      "dom": {
+        "saved": true,
+        "file": "scan-1793941037687-01-initial-page.dom.html",
+        "url": "/snapshots/scan-1793941037687-01-initial-page.dom.html",
+        "timestamp": "2026-11-06T04:59:42.676Z",
+        "bytes": 733765,
+        "elementCount": 1892,
+        "scriptsRemoved": 73,
+        "reason": null
+      },
+      "styles": {
+        "saved": true,
+        "file": "scan-1793941037687-01-initial-page.styles.json",
+        "url": "/snapshots/scan-1793941037687-01-initial-page.styles.json",
+        "timestamp": "2026-11-06T04:59:42.676Z",
+        "elements": 21,
+        "truncated": false,
+        "queries": [
+          {
+            "query": "body",
+            "matched": 1,
+            "error": null
+          },
+          {
+            "query": "a, button, input, select, textarea, label, h1, h2, h3, img, [role='button'], [role='dialog'], [aria-modal='true'], dialog",
+            "matched": 684,
+            "error": null
+          }
+        ],
+        "reason": null
+      }
+    },
+    {
+      "name": "final state",
+      "index": 2,
+      "timestamp": "2026-11-06T05:00:32.250Z",
+      "url": "https://www.adityabirlahealthinsurance.com/login",
+      "dom": {
+        "saved": true,
+        "file": "scan-1793941037687-02-final-state.dom.html",
+        "url": "/snapshots/scan-1793941037687-02-final-state.dom.html",
+        "timestamp": "2026-11-06T05:00:32.250Z",
+        "bytes": 733933,
+        "elementCount": 1893,
+        "scriptsRemoved": 74,
+        "reason": null
+      },
+      "styles": {
+        "saved": true,
+        "file": "scan-1793941037687-02-final-state.styles.json",
+        "url": "/snapshots/scan-1793941037687-02-final-state.styles.json",
+        "timestamp": "2026-11-06T05:00:32.250Z",
+        "elements": 21,
+        "truncated": false,
+        "queries": [
+          {
+            "query": "body",
+            "matched": 1,
+            "error": null
+          },
+          {
+            "query": "a, button, input, select, textarea, label, h1, h2, h3, img, [role='button'], [role='dialog'], [aria-modal='true'], dialog",
+            "matched": 684,
+            "error": null
+          }
+        ],
+        "reason": null
+      }
+    }
+  ],
+  "navLinksChecked": 10,
+  "message": "Done",
+  "screenshotUrl": "/screenshots/full-1793941037687.png",
+  "elementScreenshotUrl": "/screenshots/element-1793941037687-main.png",
+  "elementScreenshots": [
+    {
+      "label": "main (sensitive field area)",
+      "url": "/screenshots/element-1793941037687-main.png"
+    }
+  ],
+  "selectorCropUrl": null,
+  "stoppedBeforeSensitiveField": true,
+  "sensitiveField": "Enter Mobile Number*",
+  "dropdowns": {
+    "handled": 0,
+    "skipped": 0
+  },
+  "navigationCheck": [
+    {
+      "menu": "ABC Home",
+      "item": "ABC Home",
+      "result": "new tab",
+      "url": ""
+    },
+    {
+      "menu": "ABC Solutions",
+      "item": "Home Finance",
+      "result": "new tab",
+      "url": ""
+    },
+    {
+      "menu": "ABC Solutions",
+      "item": "Personal Finance",
+      "result": "new tab",
+      "url": "chrome-error://chromewebdata/"
+    },
+    {
+      "menu": "ABC Solutions",
+      "item": "SME Finance",
+      "result": "new tab",
+      "url": "chrome-error://chromewebdata/"
+    },
+    {
+      "menu": "ABC Solutions",
+      "item": "Loan Against Securities",
+      "result": "new tab",
+      "url": "chrome-error://chromewebdata/"
+    },
+    {
+      "menu": "ABC Solutions",
+      "item": "Business",
+      "result": "new tab",
+      "url": "chrome-error://chromewebdata/"
+    },
+    {
+      "menu": "ABC Solutions",
+      "item": "Loan Against Property",
+      "result": "new tab",
+      "url": "chrome-error://chromewebdata/"
+    },
+    {
+      "menu": "ABC Solutions",
+      "item": "Mutual Funds",
+      "result": "new tab",
+      "url": "chrome-error://chromewebdata/"
+    },
+    {
+      "menu": "ABC Solutions",
+      "item": "Stock and Securities",
+      "result": "new tab",
+      "url": "chrome-error://chromewebdata/"
+    },
+    {
+      "menu": "ABC Solutions",
+      "item": "Pension Funds",
+      "result": "new tab",
+      "url": "chrome-error://chromewebdata/"
+    }
+  ],
+  "actionLog": [
+    {
+      "action": "Opening https://www.adityabirlahealthinsurance.com/login",
+      "time": "2026-11-06T04:57:27.807Z"
+    },
+    {
+      "action": "Rendered in 23601 ms (HTTP 200, network idle)",
+      "time": "2026-11-06T04:57:51.409Z"
+    },
+    {
+      "action": "Full page captured in 3 screens",
+      "time": "2026-11-06T04:58:42.617Z"
+    },
+    {
+      "action": "Captured full-page screenshot (before filling anything)",
+      "time": "2026-11-06T04:58:42.617Z"
+    },
+    {
+      "action": "Members dropdown did not open (see debug screenshot)",
+      "time": "2026-11-06T04:59:13.483Z"
+    },
+    {
+      "action": "DEBUG HTML: no element with text 'Members' found",
+      "time": "2026-11-06T04:59:13.483Z"
+    },
+    {
+      "action": "Quote flow did not reach phone field; using generic flow",
+      "time": "2026-11-06T04:59:13.484Z"
+    },
+    {
+      "action": "Loaded URL: https://www.adityabirlahealthinsurance.com/login",
+      "time": "2026-11-06T04:59:21.036Z"
+    },
+    {
+      "action": "Page title: Health Insurance Login - Aditya Birla Capital Health Insurance",
+      "time": "2026-11-06T04:59:21.042Z"
+    },
+    {
+      "action": "Popups / cookie banners cleared",
+      "time": "2026-11-06T04:59:23.850Z"
+    },
+    {
+      "action": "Page fully loaded (lazy content scrolled in)",
+      "time": "2026-11-06T04:59:34.277Z"
+    },
+    {
+      "action": "Full page captured in 3 screens",
+      "time": "2026-11-06T04:59:42.675Z"
+    },
+    {
+      "action": "Full-page screenshot saved (before any interaction)",
+      "time": "2026-11-06T04:59:42.675Z",
+      "filename": "full-1793941037687.png"
+    },
+    {
+      "action": "DOM and styles saved for state \"initial page\"",
+      "time": "2026-11-06T04:59:42.982Z",
+      "dom": "scan-1793941037687-01-initial-page.dom.html",
+      "styles": "scan-1793941037687-01-initial-page.styles.json"
+    },
+    {
+      "action": "Navigation guard ON - staying on this URL",
+      "time": "2026-11-06T04:59:43.232Z"
+    },
+    {
+      "action": "Nav 1: \"ABC Home\" - hovering",
+      "time": "2026-11-06T04:59:43.270Z"
+    },
+    {
+      "action": "Nav 1: \"ABC Home\" - nothing on hover, clicking",
+      "time": "2026-11-06T04:59:45.299Z"
+    },
+    {
+      "action": "Nav 1: opened a new tab () -> closed",
+      "time": "2026-11-06T04:59:48.267Z"
+    },
+    {
+      "action": "Nav 2: \"ABC Solutions\" - hovering",
+      "time": "2026-11-06T04:59:48.313Z"
+    },
+    {
+      "action": "Nav 2: \"ABC Solutions\" - nothing on hover, clicking",
+      "time": "2026-11-06T04:59:49.405Z"
+    },
+    {
+      "action": "Nav 2: dropdown opened with 12 link(s), URL unchanged so far",
+      "time": "2026-11-06T04:59:51.442Z"
+    },
+    {
+      "action": "Nav 2.1: \"Home Finance\" - clicking",
+      "time": "2026-11-06T04:59:51.446Z"
+    },
+    {
+      "action": "Nav 2.1: opened a new tab () -> closed",
+      "time": "2026-11-06T04:59:54.025Z"
+    },
+    {
+      "action": "New tab opened by the site (https://www.adityabirlacapital.com/?lob=true&_gl=1*131w6o*_gcl_au*MTUwODU5NDAuMTc5Mzk0MTA3OQ..*_ga*OTY3NzY4NjY2LjE3OTM5NDEwODc.*_ga_1TFJF463GP*czE3OTM5NDEwODckbzEkZzEkdDE3OTM5NDExNjckajQ2JGwwJGgw) -> closing it",
+      "time": "2026-11-06T04:59:54.602Z"
+    },
+    {
+      "action": "New tab opened by the site (https://homefinance.adityabirlacapital.com/) -> closing it",
+      "time": "2026-11-06T04:59:56.507Z"
+    },
+    {
+      "action": "Nav 2.2: \"Personal Finance\" - clicking",
+      "time": "2026-11-06T04:59:56.551Z"
+    },
+    {
+      "action": "New tab opened by the site (chrome-error://chromewebdata/) -> closing it",
+      "time": "2026-11-06T04:59:57.927Z"
+    },
+    {
+      "action": "Nav 2.2: opened a new tab (chrome-error://chromewebdata/) -> closed",
+      "time": "2026-11-06T04:59:58.927Z"
+    },
+    {
+      "action": "Nav 2.3: \"SME Finance\" - clicking",
+      "time": "2026-11-06T05:00:01.456Z"
+    },
+    {
+      "action": "New tab opened by the site (chrome-error://chromewebdata/) -> closing it",
+      "time": "2026-11-06T05:00:02.393Z"
+    },
+    {
+      "action": "Nav 2.3: opened a new tab (chrome-error://chromewebdata/) -> closed",
+      "time": "2026-11-06T05:00:03.740Z"
+    },
+    {
+      "action": "Nav 2.4: \"Loan Against Securities\" - clicking",
+      "time": "2026-11-06T05:00:06.318Z"
+    },
+    {
+      "action": "New tab opened by the site (chrome-error://chromewebdata/) -> closing it",
+      "time": "2026-11-06T05:00:07.227Z"
+    },
+    {
+      "action": "Nav 2.4: opened a new tab (chrome-error://chromewebdata/) -> closed",
+      "time": "2026-11-06T05:00:08.585Z"
+    },
+    {
+      "action": "Nav 2.5: \"Business\" - clicking",
+      "time": "2026-11-06T05:00:11.080Z"
+    },
+    {
+      "action": "Nav 2.5: opened a new tab (chrome-error://chromewebdata/) -> closed",
+      "time": "2026-11-06T05:00:13.395Z"
+    },
+    {
+      "action": "New tab opened by the site (https://udyogplus.adityabirlacapital.com/) -> closing it",
+      "time": "2026-11-06T05:00:13.853Z"
+    },
+    {
+      "action": "Nav 2.6: \"Loan Against Property\" - clicking",
+      "time": "2026-11-06T05:00:15.941Z"
+    },
+    {
+      "action": "New tab opened by the site (chrome-error://chromewebdata/) -> closing it",
+      "time": "2026-11-06T05:00:16.966Z"
+    },
+    {
+      "action": "Nav 2.6: opened a new tab (chrome-error://chromewebdata/) -> closed",
+      "time": "2026-11-06T05:00:18.323Z"
+    },
+    {
+      "action": "Nav 2.7: \"Mutual Funds\" - clicking",
+      "time": "2026-11-06T05:00:18.340Z"
+    },
+    {
+      "action": "Nav 2.7: opened a new tab (chrome-error://chromewebdata/) -> closed",
+      "time": "2026-11-06T05:00:20.478Z"
+    },
+    {
+      "action": "Nav 2.8: \"Stock and Securities\" - clicking",
+      "time": "2026-11-06T05:00:20.488Z"
+    },
+    {
+      "action": "Nav 2.8: opened a new tab (chrome-error://chromewebdata/) -> closed",
+      "time": "2026-11-06T05:00:22.972Z"
+    },
+    {
+      "action": "Nav 2.9: \"Wealth\" not visible any more -> skipped",
+      "time": "2026-11-06T05:00:23.022Z"
+    },
+    {
+      "action": "Nav 2.10: \"Portfolio Management Services\" not visible any more -> skipped",
+      "time": "2026-11-06T05:00:23.053Z"
+    },
+    {
+      "action": "Nav 2.11: \"Pension Funds\" - clicking",
+      "time": "2026-11-06T05:00:23.058Z"
+    },
+    {
+      "action": "Nav 2.11: opened a new tab (chrome-error://chromewebdata/) -> closed",
+      "time": "2026-11-06T05:00:25.419Z"
+    },
+    {
+      "action": "Nav 2.12: \"Real Estate Investments\" not visible any more -> skipped",
+      "time": "2026-11-06T05:00:25.465Z"
+    },
+    {
+      "action": "New tab opened by the site (https://pensionfund.adityabirlacapital.com/) -> closing it",
+      "time": "2026-11-06T05:00:26.316Z"
+    },
+    {
+      "action": "Nav bar pass finished: 10 link(s) checked",
+      "time": "2026-11-06T05:00:26.959Z"
+    },
+    {
+      "action": "Dropdown pass finished: 0 filled, 0 skipped",
+      "time": "2026-11-06T05:00:26.997Z"
+    },
+    {
+      "action": "Quote button 1: \"Looking to renew your policy? Click Here\" - clicking",
+      "time": "2026-11-06T05:00:27.011Z"
+    },
+    {
+      "action": "New tab opened by the site (https://mutualfund.adityabirlacapital.com/) -> closing it",
+      "time": "2026-11-06T05:00:27.194Z"
+    },
+    {
+      "action": "Page tried to navigate away -> cancelled, staying on this URL",
+      "time": "2026-11-06T05:00:29.612Z"
+    },
+    {
+      "action": "New tab opened by the site (https://stocksandsecurities.adityabirlacapital.com/) -> closing it",
+      "time": "2026-11-06T05:00:30.065Z"
+    },
+    {
+      "action": "Quote button 1: \"Looking to renew your policy? Click Here\" would open another page -> cancelled, moving to next",
+      "time": "2026-11-06T05:00:30.865Z"
+    },
+    {
+      "action": "Quote button pass finished",
+      "time": "2026-11-06T05:00:30.878Z"
+    },
+    {
+      "action": "Sensitive field reached: \"Enter Mobile Number*\" -> stopped before entering anything",
+      "time": "2026-11-06T05:00:31.381Z"
+    },
+    {
+      "action": "Element screenshot saved (at the sensitive field)",
+      "time": "2026-11-06T05:00:32.249Z",
+      "filename": "element-1793941037687-main.png"
+    },
+    {
+      "action": "DOM and styles saved for state \"final state\"",
+      "time": "2026-11-06T05:00:32.427Z",
+      "dom": "scan-1793941037687-02-final-state.dom.html",
+      "styles": "scan-1793941037687-02-final-state.styles.json"
+    }
+  ]
+}
