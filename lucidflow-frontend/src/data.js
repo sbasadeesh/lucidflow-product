@@ -7,18 +7,28 @@ export const recentScans = [
     date: "16 Oct 2026",
     status: "Completed",
     result: "4 potential dark patterns",
+    pages: [
+      "https://www.abcinsurance.example/claims",
+      "https://www.abcinsurance.example/renewal",
+      "https://www.abcinsurance.example/contact",
+    ],
   },
   {
     domain: "www.novafinance.example",
     date: "14 Oct 2026",
     status: "Needs review",
     result: "7 potential dark patterns",
+    pages: [
+      "https://www.novafinance.example/loans",
+      "https://www.novafinance.example/apply",
+    ],
   },
   {
     domain: "www.orbitcover.example",
     date: "10 Oct 2026",
     status: "Completed",
     result: "2 potential dark patterns",
+    pages: ["https://www.orbitcover.example/plans"],
   },
 ];
 
@@ -174,9 +184,6 @@ export function buildReport(scan) {
 
   // E7-06: count findings by severity
   const countSeverity = (...names) => findings.filter((f) => names.includes(f.severity)).length;
-
-  const names =
-    hosts.length > 1 ? `${hosts.slice(0, -1).join(", ")} and ${hosts[hosts.length - 1]}` : hosts[0];
 
   return {
     title: "Dark Pattern Assessment Report",

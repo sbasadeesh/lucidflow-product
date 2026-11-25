@@ -47,3 +47,17 @@ export function parseEntries(text, mode) {
   }
   return items;
 }
+
+
+// Entries typed more than once. They are left out of the scan, and the user is told.
+export function findRepeats(text, mode) {
+  const seen = new Set();
+  const repeats = [];
+  for (const raw of text.split(/[\s,]+/).filter(Boolean)) {
+    const item = check(raw, mode);
+    const key = item.url || raw.toLowerCase();
+    if (seen.has(key)) repeats.push(raw);
+    else seen.add(key);
+  }
+  return repeats;
+}
