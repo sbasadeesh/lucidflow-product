@@ -46,10 +46,16 @@ jobs:
           echo ""
           echo "=== E2-07 Test Files ==="
           find E2-07_tests -type f -name '*_test.js' | sort
+          echo ""
+          echo "=== E2-10 / E2-11 Test Files ==="
+          find E2-10_tests E2-11_tests -type f -name '*_test.js' 2>/dev/null | sort || true
 
       - name: Run E2-02 tests (new feature)
-        timeout-minutes: 2
-        run: npm run test:e2-02 2>&1 | tee e2-02-output.log
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:e2-02 2>&1 | tee e2-02-output.log
         continue-on-error: false
 
       - name: Run E2-04 tests (regression)
@@ -62,6 +68,22 @@ jobs:
         run: node --test E2-07_tests/mutation_test.js E2-07_tests/real_endpoint_test.js 2>&1 | tee e2-07-output.log
         continue-on-error: false
 
+      - name: Run E2-10 readiness tests
+        if: hashFiles('E2-10_tests/readiness_test/readiness_test.js') != ''
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:e2-10 2>&1 | tee e2-10-output.log
+
+      - name: Run E2-11 context matrix tests
+        if: hashFiles('E2-11_tests/context_matrix_test.js') != ''
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:e2-11 2>&1 | tee e2-11-output.log
+
       - name: Upload test output artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -71,6 +93,9 @@ jobs:
             e2-02-output.log
             e2-04-output.log
             e2-07-output.log
+            e2-10-output.log
+            e2-11-output.log
+          if-no-files-found: ignore
           retention-days: 30
 
       - name: Report test results
@@ -82,6 +107,7 @@ jobs:
           echo "E2-02 (feature): npm run test:e2-02"
           echo "E2-04 (regression): 4 test files"
           echo "E2-07 (regression): 2 test files"
+          echo "E2-10/11: when present on PR head"
 
   test-integration-with-main:
     runs-on: ubuntu-latest
@@ -140,10 +166,16 @@ jobs:
           echo ""
           echo "=== E2-07 Test Files ==="
           find E2-07_tests -type f -name '*_test.js' | sort
+          echo ""
+          echo "=== E2-10 / E2-11 Test Files ==="
+          find E2-10_tests E2-11_tests -type f -name '*_test.js' 2>/dev/null | sort || true
 
       - name: Run E2-02 on integration
-        timeout-minutes: 2
-        run: npm run test:e2-02 2>&1 | tee e2-02-integration.log
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:e2-02 2>&1 | tee e2-02-integration.log
         continue-on-error: false
 
       - name: Run E2-04 on integration
@@ -156,9 +188,28 @@ jobs:
         run: node --test E2-07_tests/mutation_test.js E2-07_tests/real_endpoint_test.js 2>&1 | tee e2-07-integration.log
         continue-on-error: false
 
+      - name: Run E2-10 readiness tests on integration
+        if: hashFiles('E2-10_tests/readiness_test/readiness_test.js') != ''
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:e2-10 2>&1 | tee e2-10-integration.log
+
+      - name: Run E2-11 context matrix tests on integration
+        if: hashFiles('E2-11_tests/context_matrix_test.js') != ''
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:e2-11 2>&1 | tee e2-11-integration.log
+
       - name: Run npm test (full regression suite)
         timeout-minutes: 10
-        run: npm test 2>&1 | tee regression-full.log
+        shell: bash
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee regression-full.log
         continue-on-error: false
 
       - name: Upload test output artifacts
@@ -170,7 +221,10 @@ jobs:
             e2-02-integration.log
             e2-04-integration.log
             e2-07-integration.log
+            e2-10-integration.log
+            e2-11-integration.log
             regression-full.log
+          if-no-files-found: ignore
           retention-days: 30
 
       - name: Report integration test results
@@ -186,4 +240,5 @@ jobs:
           echo "E2-02 (feature): npm run test:e2-02"
           echo "E2-04 (regression): 4 test files"
           echo "E2-07 (regression): 2 test files"
+          echo "E2-10/11: when present on integration candidate"
           echo "npm test (full suite): All suites with --test-concurrency=3"
