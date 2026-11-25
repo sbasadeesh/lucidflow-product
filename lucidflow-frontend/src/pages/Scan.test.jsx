@@ -1,0 +1,68 @@
+import { act, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import Scan from "./Scan.jsx";
+import { SCAN } from "../config.js";
+
+const URLS = ["https://a.com/p1", "https://a.com/p2", "https://a.com/p3"];
+const TICK = SCAN.scanning.pagesTickMs;
+
+const save = (scan) => sessionStorage.setItem("lucidflow-scan", JSON.stringify(scan));
+const show = () =>
+  render(
+    <MemoryRouter>
+      <Scan />
+    </MemoryRouter>,
+  );
+const states = (container) =>
+  [...container.querySelectorAll(".sstate")].map((s) => s.textContent);
+
+describe("Scan: state map for a list of pages", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    sessionStorage.clear();
+    save({ mode: "pages", host: "a.com", urls: URLS });
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it("Given a scan of 3 pages, then the state map shows 3 boxes in the saved order", () => {
+    const { container } = show();
+    const urls = [...container.querySelectorAll(".surl")].map((u) => u.textContent);
+    expect(urls).toEqual(URLS);
+    const nums = [...container.querySelectorAll(".snum")].map((n) => n.textContent);
+    expect(nums).toEqual(["1", "2", "3"]);
+  });
+
+  it("Given the scan has just started, then box 1 is Scanning and the others Waiting", () => {
+    const { container } = show();
+    expect(states(container)).toEqual(["Scanning", "Waiting", "Waiting"]);
+  });
+
+  it("Given the scan moves on, then box 1 shows Scanned with its potential count", () => {
+    const { container } = show();
+    act(() => vi.advanceTimersByTime(TICK));
+    const now = states(container);
+    expect(now[0]).toMatch(/^Scanned: \d+ potential$/);
+    expect(now[1]).toBe("Scanning");
+    expect(now[2]).toBe("Waiting");
+  });
+
+  it("Given 3 boxes, then there are 2 arrows between them", () => {
+    const { container } = show();
+    expect(container.querySelectorAll(".sarrow")).toHaveLength(2);
+  });
+
+  it("Given a Whole domain scan, then no state map shows", () => {
+    save({ mode: "domain", host: "a.com", urls: [] });
+    show();
+    expect(screen.queryByLabelText("State map")).toBeNull();
+  });
+
+  it("Given all pages are scanned, then every box shows Scanned", () => {
+    const { container } = show();
+    act(() => vi.advanceTimersByTime(TICK * 3));
+    const now = states(container);
+    expect(now).toHaveLength(3);
+    expect(now.every((s) => s.startsWith("Scanned"))).toBe(true);
+  });
+});
