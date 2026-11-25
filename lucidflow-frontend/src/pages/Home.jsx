@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Topbar from "../components/Topbar.jsx";
 import Icon from "../components/Icon.jsx";
-import { HOME, JOURNEY, PLANNED_LABEL } from "../config.js";
+import { DISCOVERY, HOME, JOURNEY, PLANNED_LABEL } from "../config.js";
 import { recentScans } from "../data.js";
 import { saveScan } from "../scanStore.js";
 import { findRepeats, parseEntries } from "../urlUtils.js";
@@ -213,7 +213,7 @@ export default function Home() {
           )}
 
           <button className="btn primary" disabled={!canRun} onClick={run}>
-            {HOME.runLabel}
+            {mode === "domain" ? DISCOVERY.discoverLabel : HOME.runLabel}
           </button>
         </div>
 

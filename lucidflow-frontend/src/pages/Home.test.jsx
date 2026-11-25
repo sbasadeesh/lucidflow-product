@@ -70,12 +70,12 @@ describe("Home screen", () => {
     expect(screen.getByText(/This is a domain, not a page/)).toBeInTheDocument();
   });
 
-  it("Given a page URL in Whole domain mode, then Run scan stays disabled", async () => {
+  it("Given a page URL in Whole domain mode, then Discover pages stays disabled", async () => {
     renderHome();
     await userEvent.click(screen.getByRole("button", { name: "Whole domain" }));
     await userEvent.type(domainInput(), "https://www.royalsundaram.in/copyright");
 
-    expect(runButton()).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Discover pages" })).toBeDisabled();
   });
 
   it("Given a valid URL, when I click Run scan, then the scan page opens", async () => {
@@ -440,5 +440,26 @@ describe("Home: journey order on Page URLs", () => {
     setupJourney();
     typeUrls([P(1), P(2)]);
     expect(screen.getByText(/scanned in the order shown/i)).toBeTruthy();
+  });
+});
+describe("Home: Discover pages button", () => {
+  const renderIt = () =>
+    render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>,
+    );
+
+  it("Given Whole domain, then the button says Discover pages", () => {
+    renderIt();
+    fireEvent.click(screen.getByRole("button", { name: "Whole domain" }));
+    expect(screen.getByRole("button", { name: "Discover pages" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Run scan" })).toBeNull();
+  });
+
+  it("Given Page URLs, then the button still says Run scan", () => {
+    renderIt();
+    expect(screen.getByRole("button", { name: "Run scan" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Discover pages" })).toBeNull();
   });
 });
