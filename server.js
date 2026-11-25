@@ -12,18 +12,162 @@ const {
     saveScanSummary,
     listScans,
     readScan,
+    buildRawObservationManifest,   // [E2-04]
 } = require("./screenshotModule");
-const domCaptureConfig = require("./DOMcapture.config");
-const capture = require("./capture");
-const { captureState } = require("./DOMcapture");
+const {
+    stabilizePage,
+    installDeterministicEnvironment,
+    compareImages,
+    captureRawObservation,         // [E2-04]
+} = require("./screenshotStabilizer");
+const stabilizerConfig = require("./stabilizer.config");
+const { runStateScript, parseScript, ScriptError } = require("./stateScriptRunner");
+const stateScriptConfig = require("./stateScript.config");
+const { checkSecurityGuards } = require("./security-guard/securityGuard");
+// [E2-09, proposed contract] read-only overlay recurrence observation; off by default,
+// stdout diagnostics only (docs/overlay-recurrence-observation.md)
+const overlayObservationConfig = require("./overlayObservation/overlayObservation.config");
+const { createOverlayObserver, formatDiagnostics } = require("./overlayObservation/overlayObserver");
+const { snapshotOverlays, identifyTarget } = require("./overlayObservation/overlaySnapshot");
+// [E2-02] DOM/style evidence prototype: allowlisted structural/style JSON (off by default)
+const domEvidence = (() => {
+    try { return require("./domEvidence/domEvidence"); } catch { return null; }
+})();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT || 5000);
 
 // Set to false to leave the optional email empty in the screenshots
 const FILL_EMAIL = true;
 
 // Max dropdowns to open per page, and max Continue/Next steps to follow
+// Errors that mean "the site closed the connection on us" (bot protection)
+const CONNECTION_BLOCK_ERRORS =
+    /ERR_HTTP2_PROTOCOL_ERROR|ERR_CONNECTION_RESET|ERR_CONNECTION_CLOSED|ERR_EMPTY_RESPONSE|ERR_ACCESS_DENIED/;
+
+function errorCode(err) {
+    const m = String((err && err.message) || "").match(/net::(ERR_[A-Z0-9_]+)/);
+    return m ? m[1] : "unknown";
+}
+
+// Statuses where the page really was assessed. Every other status means "could not assess".
+const ASSESSED_STATUSES = ["completed", "completed_with_failures", "stopped"];
+
+// HTTP status of every redirect the first request went through
+async function redirectChainOf(response) {
+    const hops = [];
+    let request = response ? response.request() : null;
+    while (request && request.redirectedFrom()) {
+        const from = request.redirectedFrom();
+        const r = await from.response().catch(() => null);
+        hops.unshift({ url: from.url(), status: r ? r.status() : null });
+        request = from;
+    }
+    return hops;
+}
+
+// A short page that says "not found" / "error" even though the status was 200
+async function softErrorText(page) {
+    return page
+        .evaluate(() => {
+            const body = ((document.body && document.body.innerText) || "").trim();
+            const head = ((document.title || "") + " " + body.slice(0, 300)).toLowerCase();
+            const m = head.match(
+                /page not found|not found|internal server error|service unavailable|something went wrong|this site can.t be reached|\b(404|500|502|503)\b.{0,40}(error|not found|unavailable)/
+            );
+            return body.length < 1500 && m ? m[0] : null;
+        })
+        .catch(() => null);
+}
+
+// Opens the page and says whether it can be assessed.
+// Returns { assessable, status, reason, errorCode?, loadInfo }
+async function openAndCheckPage(page, url, record) {
+    const loadInfo = { requestedUrl: url, finalUrl: url, redirected: false, redirectChain: [], statusCode: null };
+    const fail = (status, reason, extra = {}) => {
+        record(`Could not assess: ${reason}`);
+        return { assessable: false, status, reason, loadInfo, ...extra };
+    };
+
+    // 1. open the page (one more try when the site cuts the connection)
+    let response = null;
+    let loadError = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+            response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
+            loadError = null;
+            break;
+        } catch (e) {
+            loadError = e;
+            if (!CONNECTION_BLOCK_ERRORS.test(e.message) || attempt === 2) break;
+            record(`First page load failed (${errorCode(e)}) -> trying once more`);
+            await page.waitForTimeout(3000);
+        }
+    }
+    if (loadError) {
+        const code = errorCode(loadError);
+        if (CONNECTION_BLOCK_ERRORS.test(loadError.message)) {
+            return fail("blocked", "The site closed the connection (it blocks automated browsers)", { errorCode: code });
+        }
+        if (code === "ERR_NAME_NOT_RESOLVED") {
+            return fail("load_failed", "The address does not exist (DNS lookup failed)", { errorCode: code });
+        }
+        if (/timeout/i.test(loadError.message)) {
+            return fail("load_failed", "The page did not load in time", { errorCode: "TIMEOUT" });
+        }
+        return fail("load_failed", `The page could not be loaded (${code})`, { errorCode: code });
+    }
+
+    // 2. HTTP status and redirects
+    loadInfo.statusCode = response ? response.status() : null;
+    loadInfo.redirectChain = await redirectChainOf(response);
+    loadInfo.finalUrl = page.url();
+    loadInfo.redirected =
+        loadInfo.redirectChain.length > 0 || normalizeUrl(loadInfo.finalUrl) !== normalizeUrl(url);
+
+    if (loadInfo.redirected) {
+        const hops = [...loadInfo.redirectChain.map((h) => `${h.url} (${h.status})`), loadInfo.finalUrl].join(" -> ");
+        record(`Redirected: ${hops}`);
+        try {
+            if (new URL(loadInfo.finalUrl).hostname !== new URL(url).hostname) {
+                record("Warning: the redirect leads to another domain");
+            }
+        } catch { }
+    }
+    record(`Final URL: ${loadInfo.finalUrl} (HTTP ${loadInfo.statusCode})`);
+
+    if (loadInfo.statusCode !== null && loadInfo.statusCode >= 400) {
+        // a 403 / 429 with a block page ("Access Denied", captcha...) is bot protection, not a missing page
+        const blockText = await isBlockedPage(page);
+        if (blockText) {
+            return fail("blocked", `The site refused the scan with HTTP ${loadInfo.statusCode} ("${blockText}")`, {
+                errorCode: `HTTP_${loadInfo.statusCode}`,
+            });
+        }
+        return fail("http_error", `The page answered with HTTP ${loadInfo.statusCode}`, {
+            errorCode: `HTTP_${loadInfo.statusCode}`,
+        });
+    }
+
+    // 3. let the page settle, then check again (JavaScript redirects, block pages, "not found" pages)
+    await page.waitForTimeout(2500);
+    loadInfo.finalUrl = page.url();
+    loadInfo.redirected = loadInfo.redirected || normalizeUrl(loadInfo.finalUrl) !== normalizeUrl(url);
+
+    const blockedText = await isBlockedPage(page);
+    if (blockedText) return fail("blocked", `The site answered with a block page ("${blockedText}")`);
+
+    const softText = await softErrorText(page);
+    if (softText) return fail("http_error", `The page looks like an error page ("${softText}")`);
+
+    return { assessable: true, loadInfo };
+}
+
+// Automatic popups (a banner that opens a few seconds after the page loads)
+const POPUP_WAIT_MS = 8000;      // wait up to this long for a popup to show up
+const POPUP_MIN_WAIT_MS = 3000;  // always wait at least this long
+const POPUP_QUIET_MS = 1500;     // stop once no popup was seen for this long
+
 const MAX_DROPDOWNS = 15;
 const MAX_STEPS = 5;
 const MAX_NAV = 20;        // top nav-bar items to click
@@ -179,6 +323,30 @@ async function clearPopups(page) {
         }
     }
 
+    // Visible "Close" / "Dismiss" buttons that sit inside an overlay (modal or banner popup)
+    const generic = page.getByRole("button", { name: /^(close|dismiss|no thanks|maybe later|not now|skip)$/i });
+    const genericCount = Math.min(await generic.count().catch(() => 0), 6);
+    for (let i = genericCount - 1; i >= 0; i--) {
+        const button = generic.nth(i);
+        if (!(await button.isVisible().catch(() => false))) continue;
+        const inOverlay = await button
+            .evaluate((el) => {
+                for (let e = el; e && e !== document.body; e = e.parentElement) {
+                    const cs = getComputedStyle(e);
+                    if (e.getAttribute("role") === "dialog" || e.getAttribute("aria-modal") === "true") return true;
+                    if ((cs.position === "fixed" || cs.position === "absolute") && parseInt(cs.zIndex || "0", 10) >= 100) return true;
+                }
+                return false;
+            })
+            .catch(() => false);
+        if (!inOverlay) continue;
+        try {
+            await button.click({ timeout: 1000 });
+            handled++;
+            await page.waitForTimeout(300);
+        } catch { }
+    }
+
     const dialog = page.getByRole("dialog").last();
     if (await dialog.isVisible().catch(() => false)) {
         for (const label of ["Close", "Dismiss", "No thanks", "Maybe later"]) {
@@ -232,7 +400,10 @@ async function getFieldInfo(field) {
                 inputmode: (el.getAttribute("inputmode") || "").toLowerCase(),
                 text: parts.filter(Boolean).join(" | "),
                 placeholder: el.placeholder || "",
-                inChrome: !!el.closest("header, nav, footer"),
+                inChrome:
+                    !!el.closest("footer") ||
+                    (el.type || "").toLowerCase() === "search" ||
+                    /search/i.test([el.name, el.id, el.placeholder, el.getAttribute("aria-label"), el.getAttribute("role")].join(" ")),
             };
         })
         .catch(() => null);
@@ -353,6 +524,221 @@ async function clearPopupsSettled(page) {
         await page.waitForTimeout(700);
     }
     return total;
+}
+
+// --------------------------------------------------
+// Automatic popups
+//   dismissOverlays:       finds popups that cover the page (modals, promo banners)
+//                          and cancels them: its Close button -> Escape -> hide it
+//   waitAndDismissPopups:  waits for popups to appear and cancels each one
+// --------------------------------------------------
+async function dismissOverlays(page, record = () => { }, observer = null) {
+    // 1. find overlays on screen and tag the outermost ones
+    const found = await page
+        .evaluate(() => {
+            document.querySelectorAll("[data-popup-target]").forEach((e) => e.removeAttribute("data-popup-target"));
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const hits = [];
+
+            document.querySelectorAll("body *").forEach((el) => {
+                const cs = getComputedStyle(el);
+                if (cs.display === "none" || cs.visibility === "hidden" || parseFloat(cs.opacity) === 0) return;
+                if (cs.position !== "fixed" && cs.position !== "absolute") return;
+
+                const r = el.getBoundingClientRect();
+                if (r.width < 150 || r.height < 100) return;
+
+                const hint = (el.id + " " + (typeof el.className === "string" ? el.className : "")).toLowerCase();
+                const isDialog =
+                    el.getAttribute("role") === "dialog" ||
+                    el.getAttribute("aria-modal") === "true" ||
+                    /modal|popup|pop-up|dialog|lightbox|overlay|interstitial/.test(hint);
+                const z = parseInt(cs.zIndex, 10) || 0;
+                const big = r.width * r.height >= vw * vh * 0.12;
+
+                if (!(isDialog || (cs.position === "fixed" && z >= 100 && big))) return;
+                // sticky header / footer bars are wide and short: not a popup
+                if (cs.position === "fixed" && r.height < 120 && r.width > vw * 0.6 && !isDialog) return;
+                // the page itself (or an app shell) is not a popup
+                if (el.querySelector("header, nav, main, footer")) return;
+
+                hits.push(el);
+            });
+
+            const outer = hits.filter((el) => !hits.some((o) => o !== el && o.contains(el)));
+            outer.forEach((el, i) => el.setAttribute("data-popup-target", String(i)));
+            return outer.map((el, i) => ({
+                idx: i,
+                text: (el.innerText || "").trim().replace(/\s+/g, " ").slice(0, 60),
+                textLength: (el.innerText || "").length,
+            }));
+        })
+        .catch(() => []);
+
+    let dismissed = 0;
+
+    for (const p of found) {
+        const target = page.locator(`[data-popup-target="${p.idx}"]`).first();
+        const stillOpen = async () => target.isVisible().catch(() => false);
+        const label = p.text || "(no text)";
+        // [E2-09] matching signature of this overlay, read before acting on it (only when
+        // observing). Observer failures are ignored so they can never change dismissal.
+        const identity = observer ? await identifyTarget(page, p.idx).catch(() => null) : null;
+        const observe = (fn) => {
+            try { fn(); } catch { /* observation only */ }
+        };
+        // visible again before the existing logic acts on it: counts as a recurrence
+        if (observer && identity) observe(() => observer.noteVisible(identity, { context: page.url() }));
+        const noteDismissed = (method) => {
+            if (observer && identity) observe(() => observer.noteDismissed(identity, { method, context: page.url() }));
+        };
+
+        // 2a. click the popup's own Close / X / "No thanks" control
+        const hasCloser = await page
+            .evaluate(({ idx }) => {
+                const root = document.querySelector(`[data-popup-target="${idx}"]`);
+                if (!root) return false;
+                document.querySelectorAll("[data-popup-close]").forEach((e) => e.removeAttribute("data-popup-close"));
+
+                const wordRe = /^(close|dismiss|no,? ?thanks|skip|not now|maybe later|cancel|got it|✕|✖|×|x)$/i;
+                const labelRe = /(close|dismiss)/i;
+                const classRe = /(^|[-_\s])(close|dismiss)([-_\s]|$)|btn-close|modal-close|popup-close|icon-close/i;
+
+                let best = null;
+                root.querySelectorAll("button, a, [role='button'], span, div, i, img, svg").forEach((el) => {
+                    const r = el.getBoundingClientRect();
+                    const cs = getComputedStyle(el);
+                    if (r.width < 8 || r.height < 8 || r.width > 260 || r.height > 120) return;
+                    if (cs.visibility === "hidden" || cs.display === "none") return;
+
+                    const text = (el.innerText || "").trim();
+                    const aria = (el.getAttribute("aria-label") || "") + " " + (el.getAttribute("title") || "") + " " + (el.getAttribute("alt") || "");
+                    const cls = (typeof el.className === "string" ? el.className : el.getAttribute("class") || "") + " " + (el.id || "");
+                    if (!(wordRe.test(text) || labelRe.test(aria) || classRe.test(cls))) return;
+
+                    const clickable = /^(button|a)$/i.test(el.tagName) || el.getAttribute("role") === "button";
+                    const score = (clickable ? 2 : 0) + (wordRe.test(text) ? 1 : 0);
+                    if (!best || score > best.score) best = { el, score };
+                });
+
+                if (!best) return false;
+                best.el.setAttribute("data-popup-close", "1");
+                return true;
+            }, { idx: p.idx })
+            .catch(() => false);
+
+        if (hasCloser) {
+            await smartClick(page.locator('[data-popup-close="1"]').first());
+            await page.waitForTimeout(600);
+            if (!(await stillOpen())) {
+                dismissed++;
+                record(`Popup cancelled with its Close button: "${label}"`);
+                noteDismissed("close_control");
+                continue;
+            }
+        }
+
+        // 2b. Escape key
+        await page.keyboard.press("Escape").catch(() => { });
+        await page.waitForTimeout(500);
+        if (!(await stillOpen())) {
+            dismissed++;
+            record(`Popup cancelled with the Escape key: "${label}"`);
+            noteDismissed("escape");
+            continue;
+        }
+
+        // 2c. last resort: hide it (only if it is a small block, never the whole page)
+        if (p.textLength < 2500) {
+            await page
+                .evaluate(({ idx }) => {
+                    const el = document.querySelector(`[data-popup-target="${idx}"]`);
+                    if (el) el.style.setProperty("display", "none", "important");
+                    document.querySelectorAll('.modal-backdrop, [class*="backdrop"]').forEach((b) => {
+                        if (getComputedStyle(b).position === "fixed") b.style.setProperty("display", "none", "important");
+                    });
+                    document.body.classList.remove("modal-open");
+                    document.body.style.removeProperty("overflow");
+                    document.documentElement.style.removeProperty("overflow");
+                }, { idx: p.idx })
+                .catch(() => { });
+            await page.waitForTimeout(300);
+            dismissed++;
+            record(`Popup could not be closed with a click, so it was hidden: "${label}"`);
+        }
+    }
+
+    return dismissed;
+}
+
+// Waits for automatic popups to show up and cancels each one.
+// Always waits `minWaitMs`; stops early once no popup was seen for POPUP_QUIET_MS.
+async function waitAndDismissPopups(page, record = () => { }, options = {}) {
+    const waitMs = options.waitMs || POPUP_WAIT_MS;
+    const minWaitMs = options.minWaitMs || POPUP_MIN_WAIT_MS;
+
+    // [E2-09] observation only reads the page on the loop's existing ticks: no extra
+    // waits, no extra dismissals, no change to the count or the action log
+    const observer = options.observationPhase && overlayObservationConfig.enabled
+        ? createOverlayObserver({
+            windowMs: overlayObservationConfig.windowMs,
+            maxTracked: overlayObservationConfig.maxTracked,
+            phase: options.observationPhase,
+        })
+        : null;
+    let exitReason = null;
+
+    const start = Date.now();
+    let lastSeen = 0;
+    let total = 0;
+
+    record(`Waiting up to ${Math.round(waitMs / 1000)}s for automatic popups...`);
+
+    try {
+        while (Date.now() - start < waitMs) {
+            if (observer) await pollOverlayObserver(page, observer);
+
+            const simple = await clearPopups(page).catch(() => 0); // cookie banners, plain Close buttons
+            const overlays = await dismissOverlays(page, record, observer).catch(() => 0);
+
+            if (simple || overlays) {
+                total += (simple || 0) + (overlays || 0);
+                lastSeen = Date.now();
+            }
+
+            if (Date.now() - start >= minWaitMs && Date.now() - lastSeen >= POPUP_QUIET_MS) {
+                exitReason = "QUIET_EXIT";
+                break;
+            }
+            await page.waitForTimeout(500);
+        }
+        if (!exitReason) exitReason = "BUDGET_ENDED";
+    } finally {
+        if (observer) {
+            // an exception here comes from the page going away (waitForTimeout on a closed page);
+            // it still propagates: only the observation work below is guarded
+            try { observer.end(exitReason || "PAGE_CLOSED"); } catch { /* observation only */ }
+            try { formatDiagnostics(observer).forEach((line) => console.log(line)); } catch { /* observation only */ }
+        }
+    }
+
+    record(total ? `${total} popup(s) / banner(s) cancelled` : "No automatic popup appeared");
+    return total;
+}
+
+// [E2-09] one read-only poll of the visible overlays for an open observation.
+// Contains only observation work; any failure ends the open records as SNAPSHOT_FAILED
+// and never reaches the popup loop.
+async function pollOverlayObserver(page, observer) {
+    try {
+        if (!observer.hasOpen()) return;
+        if (page.isClosed()) return observer.end("PAGE_CLOSED");
+        const visible = await snapshotOverlays(page);
+        observer.poll(visible, { context: page.url() });
+    } catch {
+        try { observer.end("SNAPSHOT_FAILED"); } catch { /* observation only */ }
+    }
 }
 
 // --------------------------------------------------
@@ -669,6 +1055,7 @@ async function scanNav(page) {
                     ).slice(0, 40);
                     if (text.length < 2) return;
                     if (/log ?out|sign ?out/i.test(text)) return;
+                    if (/^(submit|pay\b|payment|confirm|delete|cancel|subscribe|download|place order)/i.test(text)) return;
                     if (/^[\d\s\-+()]{6,}$/.test(text)) return;                 // phone numbers
                     const href = (el.getAttribute("href") || "").trim().toLowerCase();
                     if (/^(tel:|mailto:|javascript:|whatsapp:|sms:)/.test(href)) return;
@@ -729,7 +1116,8 @@ async function fieldKeys(page, before = null, mark = false) {
         document.querySelectorAll("input, select, textarea").forEach((el) => {
             const type = (el.type || "").toLowerCase();
             if (["hidden", "submit", "button", "image", "checkbox", "radio"].includes(type)) return;
-            if (el.closest("header, nav, footer")) return;
+            if (el.closest("footer")) return;
+            if (type === "search" || /search/i.test([el.name, el.id, el.placeholder, el.getAttribute("aria-label"), el.getAttribute("role")].join(" "))) return;
             const r = el.getBoundingClientRect();
             const cs = getComputedStyle(el);
             if (r.width < 5 || r.height < 5 || cs.visibility === "hidden" || cs.display === "none") return;
@@ -774,6 +1162,7 @@ async function saveRevealedShot(page, anchor, label, state, record) {
     const filename = `element-${state.ts}-${state.shots.length + 1}-${slug}.png`;
 
     try {
+        if (state.prep) await state.prep(`element-${slug}`);
         await captureElementShot(page, container, path.join(screenshotDir, filename));
         state.shots.push({ label, url: `/screenshots/${filename}` });
         record(`Element (layout) screenshot saved: ${label}`, { filename });
@@ -787,6 +1176,13 @@ async function fillAndAdvance(page, guard, stats, record) {
     let sensitive = null;
 
     for (let step = 0; step < MAX_STEPS; step++) {
+        // --- E2-07: Check Security Guards on EACH step ---
+        const security = await checkSecurityGuards(page);
+        if (security.blocked) {
+            record(`Security Guard Triggered: ${security.reason} (${security.details}) -> stopping.`);
+            return { sensitive: null, securityBlocked: security };
+        }
+        // ------------------------------------
         const closed = await clearPopups(page).catch(() => 0);
         stats.interactions += closed;
         stats.popupsHandled += closed;
@@ -811,17 +1207,38 @@ async function fillAndAdvance(page, guard, stats, record) {
         if (!canClick) break;
 
         try {
-            await nextButton.click({ timeout: 2500 });
-            stats.interactions++;
-            stats.stepsVisited++;
-            record("Continue/Next clicked", { step: stats.stepsVisited });
-            await page.waitForTimeout(1200);
+            // Temporarily allow navigation to reach the next page
+            // Save prior state and restore in finally block for exception safety
+            const priorAllowNav = guard.allowNav;
+            guard.allowNav = true;
+            
+            try {
+                await nextButton.click({ timeout: 2500 });
+                
+                stats.interactions++;
+                stats.stepsVisited++;
+                record("Continue/Next clicked", { step: stats.stepsVisited });
+                
+                // Wait for navigation to commit before checking guard
+                await page.waitForLoadState("domcontentloaded", { timeout: 5000 }).catch(() => {});
+                await page.waitForTimeout(1200);
 
-            if (normalizeUrl(page.url()) !== guard.home) {
-                record(`URL changed to ${page.url()} -> going back and stopping`);
-                await page.goBack({ timeout: 15000 }).catch(() => { });
-                break;
+                if (normalizeUrl(page.url()) !== guard.home) {
+                    // Check if navigated-to page is protected BEFORE going back
+                    const navigatedSecurity = await checkSecurityGuards(page);
+                    if (navigatedSecurity.blocked) {
+                        record(`Security Guard Triggered on navigated URL ${page.url()}: ${navigatedSecurity.reason}`);
+                        return { sensitive: null, securityBlocked: navigatedSecurity };
+                    }
+                    
+                    record(`URL changed to ${page.url()} -> going back and stopping`);
+                    await page.goBack({ timeout: 15000 }).catch(() => { });
+                    break;
+                }
+            } finally {
+                guard.allowNav = priorAllowNav;
             }
+            break;
         } catch {
             record("Continue/Next could not be completed", { step: stats.stepsVisited });
             break;
@@ -850,7 +1267,13 @@ async function revealCheck({ page, guard, state, stats, record, before, label })
     record(`${label}: ${newCount} new field(s) appeared, URL unchanged -> filling`);
     const anchorHandle = await newFields.first().elementHandle().catch(() => null);
 
-    const { sensitive } = await fillAndAdvance(page, guard, stats, record);
+    const { sensitive, securityBlocked } = await fillAndAdvance(page, guard, stats, record);
+
+    // --- E2-07: If guard blocked, propagate the blocked result to the caller ---
+    if (securityBlocked) {
+        record(`${label}: Security guard triggered: ${securityBlocked.reason} (${securityBlocked.details})`);
+        return { blocked: true, securityBlocked };
+    }
 
     if (sensitive) {
         record(`${label}: sensitive field "${sensitive.label}" reached -> stopped for this form`);
@@ -868,10 +1291,41 @@ async function revealCheck({ page, guard, state, stats, record, before, label })
     return true;
 }
 
+// Text of a "you are blocked" page (Access Denied, captcha...), or null
+async function isBlockedPage(page) {
+    return page
+        .evaluate(() => {
+            const text = ((document.title || "") + " " + ((document.body && document.body.innerText) || "").slice(0, 600));
+            const m = text.match(
+                /access denied|request blocked|403 forbidden|you don't have permission|are you a robot|captcha|unusual traffic|temporarily blocked|pardon our interruption/i
+            );
+            return m ? m[0] : null;
+        })
+        .catch(() => null);
+}
+
+// Back to the original URL. Uses "Back" first (no new request when the browser
+// has the page cached), waits a little between visits so the site is not
+// hammered, and stops the run if the site starts blocking.
 async function returnHome(page, guard, record) {
-    await page.goto(guard.homeFull, { waitUntil: "domcontentloaded", timeout: 60000 }).catch(() => { });
+    await page.waitForTimeout(1200 + Math.floor(Math.random() * 1000));
+
+    if (normalizeUrl(page.url()) !== guard.home) {
+        await page.goBack({ waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => { });
+    }
+    if (normalizeUrl(page.url()) !== guard.home) {
+        await page.goto(guard.homeFull, { waitUntil: "domcontentloaded", timeout: 60000 }).catch(() => { });
+    }
+
     await page.waitForTimeout(1500);
     await clearPopups(page).catch(() => { });
+
+    const blocked = await isBlockedPage(page);
+    if (blocked) {
+        guard.blocked = true;
+        record(`The site is blocking the scan ("${blocked}") -> stopping page visits`);
+        return;
+    }
     record("Back on the original URL");
 }
 
@@ -880,6 +1334,7 @@ async function explorePass({ page, kind, title, maxItems, scan, guard, state, st
     const done = new Set();
 
     for (let i = 0; i < maxItems; i++) {
+        if (guard.blocked) return;
         const items = await scan().catch(() => []);
         const next = items.find((x) => !done.has(x.text.toLowerCase()));
         if (!next) break;
@@ -909,6 +1364,10 @@ async function explorePass({ page, kind, title, maxItems, scan, guard, state, st
         const handled = await revealCheck({
             page, guard, state, stats, record, before, label: `${title}: ${next.text}`,
         });
+        if (handled && handled.blocked) {
+            // Guard was triggered, propagate up
+            return { blocked: true, securityBlocked: handled.securityBlocked };
+        }
         if (!handled) record(`${title} ${n}: opened, URL unchanged, no fields found`);
 
         await closePanel(page);
@@ -1048,6 +1507,10 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
     };
 
     for (let i = 0; i < MAX_NAV; i++) {
+        if (guard.blocked) {
+            record("Stopping nav pass: the site is blocking requests");
+            return;
+        }
         const items = await scanNav(page).catch(() => []);
         const next = items.find((x) => !doneTop.has(x.text.toLowerCase()));
         if (!next) break;
@@ -1068,35 +1531,32 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
 
             // ---- 2) nothing opened on hover -> click it ----
             if (!subs.length) {
-                record(`Nav ${n}: "${next.text}" - nothing on hover, clicking`);
-                await smartClick(topLoc);
-                stats.interactions++;
-                await page.waitForTimeout(1200);
-
-                if (normalizeUrl(page.url()) !== guard.home) {
-                    const newUrl = page.url();
-                    record(`Nav ${n}: URL changed to ${newUrl}`);
-                    navReport.push({ menu: next.text, item: next.text, result: "URL changed", url: newUrl });
-                    await returnHome(page, guard, record);
-                    continue;
+                const handled = await revealCheck({
+                    page, guard, state, stats, record, before: beforeFields, label: `Nav: ${next.text}`,
+                });
+                if (handled && handled.blocked) {
+                    // Guard was triggered, stop navigation pass
+                    record(`Security guard triggered during nav pass: ${handled.securityBlocked.reason}`);
+                    return { blocked: true, securityBlocked: handled.securityBlocked };
                 }
-                if (guard.tabs > tabsBefore) {
-                    record(`Nav ${n}: opened a new tab (${guard.lastTab}) -> closed`);
-                    navReport.push({ menu: next.text, item: next.text, result: "new tab", url: guard.lastTab });
-                    continue;
-                }
+                if (!handled) record(`Nav ${n}: URL unchanged, no dropdown links or fields found`);
+                navReport.push({ menu: next.text, item: next.text, result: "URL unchanged", url: page.url() });
+                await closePanel(page);
+                continue;
+            }
+        }
 
                 subs = await newMenuLinks(page, beforeLinks, guard.home, MAX_SUB);
 
-                if (!subs.length) {
-                    const handled = await revealCheck({
-                        page, guard, state, stats, record, before: beforeFields, label: `Nav: ${next.text}`,
-                    });
-                    if (!handled) record(`Nav ${n}: URL unchanged, no dropdown links or fields found`);
-                    navReport.push({ menu: next.text, item: next.text, result: "URL unchanged", url: page.url() });
-                    await closePanel(page);
-                    continue;
-                }
+        // ---- 3) click every link in the dropdown, one by one ----
+        for (let j = 0; j < subs.length; j++) {
+            if (guard.blocked) {
+                record("Stopping nav pass: the site is blocking requests");
+                return;
+            }
+            if (totalLinks >= MAX_NAV_LINKS) {
+                record(`Nav link limit (${MAX_NAV_LINKS}) reached -> stopping nav pass`);
+                return;
             }
 
             record(`Nav ${n}: dropdown opened with ${subs.length} link(s), URL unchanged so far`);
@@ -1144,26 +1604,25 @@ async function navDeepPass({ page, guard, state, stats, record, navReport }) {
                         continue;
                     }
 
-                    record(`${tag}: URL unchanged`);
-                    navReport.push({ menu: next.text, item: sub.text, result: "URL unchanged", url: page.url() });
-
-                    const handled = await revealCheck({
-                        page, guard, state, stats, record, before: fieldsBefore, label: `Nav: ${sub.text}`,
-                    });
-                    if (handled) {
-                        await closePanel(page);
-                        topPos = (await reopenTop(next.text, "hover")) || topPos;
-                    }
-                } catch (err) {
-                    // the click started a real navigation while we were still reading the page
-                    record(`${tag}: page changed during the click -> checking the URL`);
-                    await page.waitForLoadState("domcontentloaded", { timeout: 15000 }).catch(() => { });
-                    if (normalizeUrl(page.url()) !== guard.home) {
-                        record(`${tag}: URL changed to ${page.url()}`);
-                        navReport.push({ menu: next.text, item: sub.text, result: "URL changed", url: page.url() });
-                    }
-                    await returnHome(page, guard, record);
-                    topPos = (await reopenTop(next.text, "hover").catch(() => null)) || topPos;
+            const handled = await revealCheck({
+                page, guard, state, stats, record, before: fieldsBefore, label: `Nav: ${sub.text}`,
+            });
+            if (handled && handled.blocked) {
+                // Guard was triggered, stop nav pass immediately without further interactions
+                record(`Security guard triggered during nested nav: ${handled.securityBlocked.reason}`);
+                return { blocked: true, securityBlocked: handled.securityBlocked };
+            }
+            if (handled) {
+                await closePanel(page);
+                topPos = (await reopenTop(next.text, "hover")) || topPos;
+            }
+            } catch (err) {
+                // the click started a real navigation while we were still reading the page
+                record(`${tag}: page changed during the click -> checking the URL`);
+                await page.waitForLoadState("domcontentloaded", { timeout: 15000 }).catch(() => { });
+                if (normalizeUrl(page.url()) !== guard.home) {
+                    record(`${tag}: URL changed to ${page.url()}`);
+                    navReport.push({ menu: next.text, item: sub.text, result: "URL changed", url: page.url() });
                 }
             }
 
@@ -1195,13 +1654,36 @@ async function safePhase(name, fn, page, guard, record, fallback = null) {
     }
 }
 
+// [E2-04] Detect the temporal state (timer / overlay / banner) that a later
+// stabilized screenshot must NOT erase. Called BEFORE any stabilization.
+async function detectTemporalSignals(page) {
+    return page
+        .evaluate(() => {
+            const seen = [];
+            const text = (document.body && document.body.innerText) || "";
+            if (/\b\d{1,2}:\d{2}(:\d{2})?\b/.test(text)) seen.push("timer");
+            if (/\b(ends? in|expires? in|remaining|time left)\b/i.test(text)) seen.push("countdown");
+
+            const overlay = document.querySelector(
+                '[role="dialog"], [aria-modal="true"], .popup, .overlay, .modal, .banner, .toast, .snackbar'
+            );
+            if (overlay) {
+                const r = overlay.getBoundingClientRect();
+                if (r.width > 100 && r.height > 60) seen.push("overlay");
+            }
+            if (document.querySelector("[data-evidence]")) seen.push("evidence");
+            return seen;
+        })
+        .catch(() => []);
+}
+
 // --------------------------------------------------
 // Aditya Birla quote flow (stops when the phone field is reached)
 //   Members dropdown -> tick Self -> OK -> Get free quote
 //   -> age -> Continue -> Contact details (email optional, mobile)
 // Never types into the mobile field.
 // --------------------------------------------------
-async function runQuoteFlowUntilPhone(page, log) {
+async function runQuoteFlowUntilPhone(page, log, prep = null) {
     let fieldsFilled = 0;
     let stepsVisited = 1;
 
@@ -1216,7 +1698,8 @@ async function runQuoteFlowUntilPhone(page, log) {
 
     const ts = Date.now();
     const fullFilename = `full-${ts}.png`;
-    await takeFullPage(page, path.join(screenshotDir, fullFilename), log);
+    if (prep) await prep("full-page");
+    await takeFullPage(page, path.join(screenshotDir, fullFilename), log, { beforeTile: () => clearPopups(page) });
     log("Captured full-page screenshot (before filling anything)");
 
     // Make sure we're at the top so the hero widget is in place
@@ -1584,6 +2067,7 @@ async function runQuoteFlowUntilPhone(page, log) {
         if (box) heroHeight = Math.ceil(Math.min(box.y + box.height + 40, 1400));
     }
 
+    if (prep) await prep("quote-before-phone");
     await page.screenshot({
         path: path.join(screenshotDir, elementFilename),
         clip: { x: 0, y: 0, width: vp.width, height: heroHeight },
@@ -1605,7 +2089,22 @@ async function runQuoteFlowUntilPhone(page, log) {
 // Main screenshot API
 // --------------------------------------------------
 app.post("/api/screenshot", async (req, res) => {
-    const { url, selector } = req.body || {};
+    const { url, selector } = req.body;
+    // Stabilizer options (all optional):
+    //   stabilize: false      -> do not stabilize (default: on)
+    //   mask: [".chat", ...]  -> extra volatile elements to cover before screenshots
+    //   maskMode: "mask" | "hide"
+    //   freezeTime: true      -> fixed date + seeded random numbers
+    const stabilizeOn = req.body.stabilize !== false;
+    const stabilizeOptions = {
+        maskSelectors: Array.isArray(req.body.mask) ? req.body.mask : [],
+        ...(req.body.maskMode ? { maskMode: req.body.maskMode } : {}),
+    };
+    const freezeTime = req.body.freezeTime === true || stabilizerConfig.freezeTime;
+
+    if (!url) {
+        return res.status(400).json({ error: "URL is required" });
+    }
 
     // criterion 3: an invalid URL gets a clear error (the message says what to enter)
     let parsedUrl;
@@ -1630,37 +2129,59 @@ app.post("/api/screenshot", async (req, res) => {
     const guard = {
         on: false,
         allowNav: false,
+        blocked: false,
         attempts: 0,
         tabs: 0,
         lastTab: "",
         home: normalizeUrl(parsedUrl.href),
         homeFull: parsedUrl.href,
     };
-    const state = { ts: Date.now(), shots: [], keys: new Set() };
-    const domStates = []; // E2-02: the DOM and styles saved for each state
+    const state = {
+        ts: Date.now(), shots: [], keys: new Set(), prep: null, stab: { enabled: stabilizeOn },
+        rawObservations: [], signalsAtLoad: [],   // [E2-04]
+    };
 
     const scanId = `scan-${state.ts}`;
     const startedAt = new Date().toISOString();
+    const domSession = domEvidence?.createSession({ scanId, dir: scansDir, env: process.env }) || null;
+    if (domEvidence?.startupLine) {
+        const line = domEvidence.startupLine(domEvidence.resolveGate(process.env));
+        if (line) console.log(line);
+    }
+
+    // What happened when the page was opened (status code, redirects, final URL)
+    const loadInfo = { requestedUrl: parsedUrl.href, finalUrl: parsedUrl.href, redirected: false, redirectChain: [], statusCode: null };
 
     // Builds the scan summary (states + interactions counted one way for every
     // flow), saves it to /scans/<scanId>.json and returns it for the response.
     const finish = (status, extra = {}) => {
         const m = computeScanMetrics(actions, navReport);
+        // a page that was never scanned has no states and no steps
+        const scanned = ASSESSED_STATUSES.includes(status) || Boolean(extra.screenshotUrl);
         const summary = {
             scanId,
             url: parsedUrl.href,
             status,
+            result: ASSESSED_STATUSES.includes(status) ? "assessed" : "could not assess",
+            statusCode: loadInfo.statusCode,
+            requestedUrl: loadInfo.requestedUrl,
+            finalUrl: loadInfo.finalUrl,
+            redirected: loadInfo.redirected,
+            redirectChain: loadInfo.redirectChain,
             startedAt,
             finishedAt: new Date().toISOString(),
             durationMs: Date.now() - state.ts,
-            states: m.states,
-            interactions: m.interactions,
+            states: scanned ? m.states : 0,
+            interactions: scanned ? m.interactions : 0,
             interactionBreakdown: m.breakdown,
             fieldsFilled: stats.fieldsFilled,
-            stepsVisited: stats.stepsVisited,
+            stepsVisited: scanned ? stats.stepsVisited : 0,
             popupsHandled: stats.popupsHandled,
             domStates,
             navLinksChecked: navReport.length,
+            stabilizer: state.stab,
+            rawObservations: buildRawObservationManifest(state.rawObservations),   // [E2-04]
+            signalsAtLoad: state.signalsAtLoad,                                     // [E2-04]
             ...extra,
             actionLog: actions,
         };
@@ -1675,71 +2196,124 @@ app.post("/api/screenshot", async (req, res) => {
         try {
             if (snapshotStartUrl === null) snapshotStartUrl = normalizeUrl(page.url());
 
-            // the scan was given ONE url: if the engine ended up on another page (a menu link,
-            // a client-side route), go back to it first, so the saved state belongs to the given url
-            if (normalizeUrl(page.url()) !== snapshotStartUrl) {
-                record(`State "${name}": the page is ${page.url()}, going back to ${guard.homeFull}`);
-                await returnHome(page, guard, record);
-            }
-
-            const saved = await captureState(page, {
-                name,
-                index: domStates.length + 1,
-                dir: snapshotDir,
-                filePrefix: scanId,
-                selectors: selector ? [selector] : null,
-                includeDefaults: true,
-                log: (m) => record(m),
-            });
-            saved.onStartPage = normalizeUrl(page.url()) === snapshotStartUrl;
-            domStates.push(saved);
-
-            record(`DOM and styles saved for state "${name}"`, { dom: saved.dom.file, styles: saved.styles.file });
-            if (!saved.onStartPage) {
-                record(`State "${name}" could not be brought back to the given URL: ${page.url()}`);
-            }
-        } catch (e) {
-            record(`DOM capture skipped for "${name}": ${String(e.message).split("\n")[0]}`);
-        }
-    };
-
-    try {
-        // criteria 1 and 2: a real browser (JavaScript runs), a fixed viewport, waits for the
-        // network to go idle, and stops with a timeout after 30 seconds (see capture.config.js)
-        const rendered = await capture.render(parsedUrl.href, {
-            log: (m) => record(m),
-            // runs BEFORE the page is opened, so the guard and the dialog handler see the first load
-            onPage: async (page, context) => {
-                await setupNavigationGuard(page, context, guard, (m) => record(m));
-
-                // Dismiss JS alert/confirm/prompt dialogs
-                page.on("dialog", async (dialog) => {
-                    try {
-                        const msg = dialog.message();
-                        const type = dialog.type();
-                        await dialog.dismiss();
-                        if (type === "beforeunload") {
-                            guard.attempts++;
-                            record("Page tried to navigate away -> cancelled, staying on this URL");
-                        } else {
-                            stats.interactions++;
-                            stats.popupsHandled++;
-                            record(`JavaScript dialog dismissed: "${msg}"`, { type });
-                        }
-                    } catch { }
-                });
-            },
+        const context = await browser.newContext({
+            viewport: { width: 1366, height: 900 },
+            deviceScaleFactor: 1,
+            userAgent: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${browser.version()} Safari/537.36`,
+            locale: "en-IN",
+            timezoneId: "Asia/Kolkata",
         });
-        browser = rendered.browser; // closed by the existing code below and in `finally`
-        const page = rendered.page;
+
+        if (stabilizeOn && freezeTime) {
+            await installDeterministicEnvironment(context);
+            state.stab.freezeTime = true;
+        }
+
+        const page = await context.newPage();
+
+        // Make the page hold still before every screenshot (animations off,
+        // volatile elements masked, wait until the page stops changing)
+        // [E2-04] The raw, untouched screenshot is saved FIRST, so stabilized
+        // evidence never replaces what was really on screen.
+        // [E2-02] DOM/style evidence collected after raw snapshot but before stabilisation
+        state.prep = async (label = "shot") => {
+            if (stabilizerConfig.preserveRaw !== false) {
+                const slug = String(label).replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").slice(0, 30) || "shot";
+                const rawFile = `raw-${state.ts}-${state.rawObservations.length + 1}-${slug}.png`;
+                const raw = await captureRawObservation(page, path.join(screenshotDir, rawFile), (m) => record(m));
+                state.rawObservations.push({
+                    label,
+                    rawPath: raw.ok ? path.join(screenshotDir, rawFile) : null,
+                    rawUrl: raw.ok ? `/screenshots/${rawFile}` : null,
+                    observedAt: new Date().toISOString(),
+                });
+            }
+
+            // [E2-02] Collect evidence after raw observation, before stabilisation
+            if (domSession) {
+                const rec = await domSession.screenshotPoint(page, {
+                    label,
+                    rawOk: state.rawObservations[state.rawObservations.length - 1]?.rawPath ? true : false,
+                    rawObservationIndex: state.rawObservations.length - 1,
+                });
+            }
+
+            if (!stabilizeOn) return;
+            try {
+                const info = await stabilizePage(page, stabilizeOptions, (m) => record(m));
+                if (info.rejected) {
+                    const last = state.rawObservations[state.rawObservations.length - 1];
+                    if (last) {
+                        last.rejectionCode = info.code;
+                        last.rejectionReason = info.reason;
+                    }
+                    record(`Stabilizer rejected for "${label}": [${info.code}] ${info.reason}`);
+                    state.stab = { ...state.stab, rejected: true, code: info.code, reason: info.reason };
+                    return;
+                }
+                state.stab = { ...state.stab, ...info };
+            } catch (e) {
+                record(`Stabilizer skipped: ${String(e.message).split("\n")[0]}`);
+            }
+        };
+
+        await setupNavigationGuard(page, context, guard, (m) => record(m));
+
+        // Dismiss JS alert/confirm/prompt dialogs
+        page.on("dialog", async (dialog) => {
+            try {
+                const msg = dialog.message();
+                const type = dialog.type();
+                if (type === "beforeunload" && !guard.allowNav) {
+                    // Only dismiss beforeunload if navigation is not allowed
+                    await dialog.dismiss();
+                    guard.attempts++;
+                    record("Page tried to navigate away -> cancelled, staying on this URL");
+                } else {
+                    // Allow beforeunload when guard.allowNav is true, or handle other dialogs
+                    if (type === "beforeunload") {
+                        await dialog.accept();
+                    } else {
+                        await dialog.dismiss();
+                        stats.interactions++;
+                        stats.popupsHandled++;
+                        record(`JavaScript dialog dismissed: "${msg}"`, { type });
+                    }
+                }
+            } catch { }
+        });
+
+        record(`Opening ${parsedUrl.href}`);
+
+        const opened = await openAndCheckPage(page, parsedUrl.href, record);
+        Object.assign(loadInfo, opened.loadInfo);
+
+        if (!opened.assessable) {
+            await browser.close();
+            browser = null;
+            return res.json(finish(opened.status, {
+                message: opened.reason,
+                reason: opened.reason,
+                errorCode: opened.errorCode || null,
+                screenshotUrl: null,
+                elementScreenshotUrl: null,
+                elementScreenshots: [],
+            }));
+        }
+
+        // [E2-04] record timers / overlays present at load, before any stabilization
+        state.signalsAtLoad = await detectTemporalSignals(page);
+        record(`Temporal signals observed at load: ${state.signalsAtLoad.join(", ") || "none"}`);
+
         // ---------- Aditya Birla quote flow ----------
         if (parsedUrl.hostname.includes("adityabirlahealthinsurance.com")) {
-            const quoteResult = await runQuoteFlowUntilPhone(page, (m) => record(m));
+            const quoteResult = await runQuoteFlowUntilPhone(page, (m) => record(m), state.prep);
 
             if (quoteResult.success) {
                 // evidence crop for the requested selector (if any)
                 let selectorCropUrl = null;
                 const cropFile = `evidence-${state.ts}.png`;
+                await state.prep("evidence-crop");
                 if (await captureSelectorCrop(page, selector, path.join(screenshotDir, cropFile), (m) => record(m))) {
                     selectorCropUrl = `/screenshots/${cropFile}`;
                 }
@@ -1770,16 +2344,24 @@ app.post("/api/screenshot", async (req, res) => {
 
         // 1) Clear popups, fully load the page, then FULL-PAGE screenshot
         //    before touching anything.
-        stats.popupsHandled += await clearPopupsSettled(page);
-        record("Popups / cookie banners cleared");
+        // wait for an automatic popup to open, cancel it, then load the whole page
+        stats.popupsHandled += await waitAndDismissPopups(page, record, { observationPhase: "screenshot_initial_wait" });
         await scrollToLoadContent(page);
         record("Page fully loaded (lazy content scrolled in)");
-        stats.popupsHandled += await clearPopupsSettled(page);
+        // popups can also open while scrolling
+        stats.popupsHandled += await waitAndDismissPopups(page, record, { waitMs: 4000, minWaitMs: 1500, observationPhase: "screenshot_post_scroll_wait" });
         await page.evaluate(() => window.scrollTo(0, 0));
         await page.waitForTimeout(700);
 
         const fullFilename = `full-${state.ts}.png`;
-        await takeFullPage(page, path.join(screenshotDir, fullFilename), (m) => record(m));
+        await state.prep("full-page");
+        await takeFullPage(page, path.join(screenshotDir, fullFilename), (m) => record(m), {
+            // a popup that opens while the page is being captured is cancelled first
+            beforeTile: async () => {
+                await clearPopups(page);
+                await dismissOverlays(page, record);
+            },
+        });
         record("Full-page screenshot saved (before any interaction)", { filename: fullFilename });
         await snapshot(page, "initial page");
 
@@ -1796,10 +2378,49 @@ app.post("/api/screenshot", async (req, res) => {
         await page.evaluate(() => window.scrollTo(0, 0));
         guard.allowNav = true;
         await page.evaluate(() => { window.__navGuard = false; }).catch(() => { });
-        await safePhase("Nav pass", () => navDeepPass({ page, guard, state, stats, record, navReport }), page, guard, record);
+        const navResult = await safePhase("Nav pass", () => navDeepPass({ page, guard, state, stats, record, navReport }), page, guard, record);
         guard.allowNav = false;
+        if (navResult && navResult.blocked) {
+            record(`Security guard blocked during nav pass: ${navResult.securityBlocked.reason}`);
+            await browser.close();
+            browser = null;
+            return res.json(finish("blocked", {
+                message: `The site triggered a security guard during navigation: ${navResult.securityBlocked.reason}. The full-page screenshot and nav results above were captured before the block.`,
+                reason: navResult.securityBlocked.reason,
+                details: navResult.securityBlocked.details,
+                securityBlocked: true,
+                screenshotUrl: `/screenshots/${fullFilename}`,
+                elementScreenshotUrl: state.shots[0] ? state.shots[0].url : null,
+                elementScreenshots: state.shots,
+                navigationCheck: navReport,
+            }));
+        }
         await page.evaluate(() => { window.__navGuard = true; }).catch(() => { });
         record(`Nav bar pass finished: ${navReport.length} link(s) checked`);
+
+        if (guard.blocked) {
+            record("Waiting 20 seconds, then trying the page once more...");
+            await page.waitForTimeout(20000);
+            await page.goto(guard.homeFull, { waitUntil: "domcontentloaded", timeout: 60000 }).catch(() => { });
+            await page.waitForTimeout(2500);
+
+            const still = await isBlockedPage(page);
+            if (still) {
+                record(`Still blocked ("${still}") -> finishing with what was captured before the block`);
+                await browser.close();
+                browser = null;
+                return res.json(finish("blocked", {
+                    message: "The site started blocking the scan during the nav pass. The full-page screenshot and the nav results above were captured before that.",
+                    screenshotUrl: `/screenshots/${fullFilename}`,
+                    elementScreenshotUrl: state.shots[0] ? state.shots[0].url : null,
+                    elementScreenshots: state.shots,
+                    navigationCheck: navReport,
+                }));
+            }
+            guard.blocked = false;
+            record("Access restored -> continuing");
+            await clearPopupsSettled(page);
+        }
 
         // 4) Open every form-style dropdown on the page and fill it
         await page.evaluate(() => window.scrollTo(0, 0));
@@ -1817,8 +2438,27 @@ app.post("/api/screenshot", async (req, res) => {
         record("Quote button pass finished");
 
         // 6) Fill whatever is on the page now and follow Continue/Next,
-        //    stopping at the first sensitive field.
-        const { sensitive } = await fillAndAdvance(page, guard, stats, record);
+        //    stopping at the first sensitive field or security guard.
+        const { sensitive, securityBlocked } = await fillAndAdvance(page, guard, stats, record);
+
+        // --- E2-07: Check for guard block BEFORE any further page interaction ---
+        if (securityBlocked) {
+            record(`Guard blocked: ${securityBlocked.reason} (${securityBlocked.details})`);
+            guard.on = false;
+            await browser.close();
+            browser = null;
+            return res.json(finish("blocked", {
+                message: `Scan stopped: ${securityBlocked.reason}`,
+                reason: securityBlocked.reason,
+                details: securityBlocked.details,
+                screenshotUrl: `/screenshots/${fullFilename}`,
+                elementScreenshots: state.shots,
+                stoppedBeforeSensitiveField: true,
+                securityBlocked: true
+            }));
+        }
+
+        // Only interact with popups if NOT blocked
         stats.popupsHandled += await clearPopups(page).catch(() => 0);
 
         if (sensitive) {
@@ -1829,6 +2469,7 @@ app.post("/api/screenshot", async (req, res) => {
                 // main element shot: top of page down to the form (like the Aditya Birla one)
                 const container = await findCardContainer(sensitive.locator);
                 const mainFile = `element-${state.ts}-main.png`;
+                await state.prep("sensitive-field");
                 await captureElementShot(page, container, path.join(screenshotDir, mainFile));
                 state.shots.unshift({ label: "main (sensitive field area)", url: `/screenshots/${mainFile}` });
                 record("Element screenshot saved (at the sensitive field)", { filename: mainFile });
@@ -1841,24 +2482,20 @@ app.post("/api/screenshot", async (req, res) => {
             await page.evaluate(() => window.scrollTo(0, 0));
             await page.waitForTimeout(500);
 
-            let element = page.locator(elementSelector).first();
-            if (!(await element.isVisible().catch(() => false))) {
-                elementSelector = "body";
-                element = page.locator("body");
-            }
+            // Nothing was revealed: the element screenshot is the layout of the top of
+            // the page (the full page is already saved separately)
             const fallbackFile = `element-${state.ts}.png`;
-            await element.screenshot({
-                path: path.join(screenshotDir, fallbackFile),
-                animations: "disabled",
-                timeout: 30000,
-            });
+            elementSelector = "top of page";
+            await state.prep("top-of-page");
+            await captureElementShot(page, null, path.join(screenshotDir, fallbackFile));
             state.shots.push({ label: elementSelector, url: `/screenshots/${fallbackFile}` });
-            record("Element screenshot saved", { filename: fallbackFile, selector: elementSelector });
+            record("Element screenshot saved (layout of the top of the page)", { filename: fallbackFile });
         }
 
         // evidence crop for the requested selector (if any)
         let selectorCropUrl = null;
         const cropFile = `evidence-${state.ts}.png`;
+        await state.prep("evidence-crop");
         if (await captureSelectorCrop(page, selector, path.join(screenshotDir, cropFile), (m) => record(m))) {
             selectorCropUrl = `/screenshots/${cropFile}`;
         }
@@ -1903,12 +2540,235 @@ app.post("/api/screenshot", async (req, res) => {
         if (browser) {
             await browser.close().catch(() => { });
         }
+        if (domSession) {
+            domSession.afterSummary();
+        }
     }
 });
 
 // --------------------------------------------------
 // Scan history: how many scans ran, and the states / interactions of each
 // --------------------------------------------------
+// --------------------------------------------------
+// State script runner
+//   POST /api/script
+//   body: {
+//     "url": "https://...",            (or "url" inside the script)
+//     "script": { "name": "...", "steps": [ ... ] }   (an object, a JSON string or YAML text)
+//     "maxStates": 10,                 (optional state cap)
+//     "stabilize": false,              (optional, default on)
+//     "mask": [".chat"]                (optional volatile elements to cover)
+//   }
+// Runs the steps (click, type, wait, capture) on ONE page and saves every
+// captured state in order. A failed step is logged with its reason; the run
+// carries on. The scan is saved like every other scan (see /api/scans).
+// --------------------------------------------------
+app.post("/api/script", async (req, res) => {
+    const body = req.body || {};
+    const scriptInput = body.script !== undefined ? body.script : body.steps ? body : undefined;
+
+    if (scriptInput === undefined) {
+        return res.status(400).json({ error: 'Send a "script" with a list of "steps".' });
+    }
+
+    let parsed;
+    try {
+        parsed = parseScript(scriptInput, stateScriptConfig);
+    } catch (e) {
+        if (e instanceof ScriptError) return res.status(400).json({ error: e.message });
+        throw e;
+    }
+
+    const url = body.url || parsed.url;
+    let parsedUrl;
+    try {
+        parsedUrl = new URL(url);
+    } catch {
+        return res.status(400).json({ error: 'Send the page address as "url" (in the request or in the script).' });
+    }
+    if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+        return res.status(400).json({ error: "Only HTTP and HTTPS URLs are supported" });
+    }
+
+    const ts = Date.now();
+    const scanId = `scan-${ts}`;
+    const startedAt = new Date().toISOString();
+    const actions = [];
+    const record = (action, details = {}) => {
+        console.log(action);
+        actions.push({ action, time: new Date().toISOString(), ...details });
+    };
+
+    const loadInfo = { requestedUrl: parsedUrl.href, finalUrl: parsedUrl.href, redirected: false, redirectChain: [], statusCode: null };
+
+    const summarize = (status, extra = {}) => {
+        const summary = {
+            scanId,
+            type: "script",
+            url: parsedUrl.href,
+            scriptName: parsed.name,
+            status,
+            result: ASSESSED_STATUSES.includes(status) ? "assessed" : "could not assess",
+            statusCode: loadInfo.statusCode,
+            requestedUrl: loadInfo.requestedUrl,
+            finalUrl: loadInfo.finalUrl,
+            redirected: loadInfo.redirected,
+            redirectChain: loadInfo.redirectChain,
+            startedAt,
+            finishedAt: new Date().toISOString(),
+            durationMs: Date.now() - ts,
+            ...extra,
+            actionLog: actions,
+        };
+        try { saveScanSummary(scansDir, summary); } catch { }
+        return summary;
+    };
+
+    let browser;
+    try {
+        browser = await chromium.launch({ headless: true });
+        const context = await browser.newContext({
+            viewport: { width: 1366, height: 900 },
+            deviceScaleFactor: 1,
+            userAgent: `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${browser.version()} Safari/537.36`,
+            locale: "en-IN",
+            timezoneId: "Asia/Kolkata",
+        });
+        const page = await context.newPage();
+
+        // JavaScript alerts/confirms are dismissed and logged
+        page.on("dialog", async (dialog) => {
+            try {
+                record(`JavaScript dialog dismissed: "${dialog.message()}"`);
+                await dialog.dismiss();
+            } catch { }
+        });
+
+        // ---- open the page ----
+        record(`Opening ${parsedUrl.href}`);
+
+        const opened = await openAndCheckPage(page, parsedUrl.href, record);
+        Object.assign(loadInfo, opened.loadInfo);
+
+        if (!opened.assessable) {
+            await browser.close();
+            browser = null;
+            return res.json(summarize(opened.status, {
+                message: opened.reason,
+                reason: opened.reason,
+                errorCode: opened.errorCode || null,
+                capturedStates: [],
+                states: 0,
+                interactions: 0,
+                counts: { steps: parsed.steps.length, ok: 0, failed: 0, skipped: parsed.steps.length, statesCaptured: 0, statesSkipped: 0, interactions: 0 },
+            }));
+        }
+
+        // popups that open by themselves would sit on top of every state
+        await waitAndDismissPopups(page, record, { waitMs: 4000, minWaitMs: 1500, observationPhase: "script_pre_wait" });
+
+        // ---- keep every state steady (animations off, volatile parts masked) ----
+        const stabilizeOn = body.stabilize !== false;
+        const domSession = domEvidence?.createSession({ scanId, dir: scansDir, env: process.env }) || null;
+        const prep = stabilizeOn || domSession
+            ? async (info) => {
+                // [E2-02] collect evidence before stabilisation, with metadata from runner
+                if (domSession) await domSession.scriptPrepare(page, info);
+                if (stabilizeOn) {
+                    try {
+                        await stabilizePage(
+                            page,
+                            { maskSelectors: Array.isArray(body.mask) ? body.mask : [] },
+                            (m) => record(m)
+                        );
+                    } catch (e) {
+                        record(`Stabilizer skipped: ${String(e.message).split("\n")[0]}`);
+                    }
+                }
+            }
+            : null;
+
+        // ---- run the script ----
+        const result = await runStateScript(page, parsed, {
+            maxStates: body.maxStates,
+            outDir: screenshotDir,
+            filePrefix: `state-${scanId}`,
+            fileUrl: (file) => `/screenshots/${file}`,
+            prep,
+            afterCapture: domSession ? async (info) => {
+                await domSession.scriptComplete(info);
+            } : null,
+            log: (m) => record(m),
+        });
+
+        await browser.close();
+        browser = null;
+
+        return res.json(summarize(result.status, {
+            // same two numbers as every other scan: states captured, interactions done
+            states: result.counts.statesCaptured,
+            interactions: result.counts.interactions,
+            stateCap: result.stateCap,
+            capped: result.capped,
+            capturedStates: result.states,
+            skippedStates: result.skippedStates,
+            warnings: result.warnings,
+            counts: result.counts,
+            steps: result.steps,
+        }));
+    } catch (error) {
+        console.error("Script run failed:", error.message);
+        return res.status(500).json(summarize("failed", {
+            error: "State script run failed",
+            details: error.message,
+            capturedStates: [],
+            states: 0,
+            interactions: 0,
+        }));
+    } finally {
+        if (browser) await browser.close().catch(() => { });
+        if (domSession) {
+            domSession.afterSummary();
+        }
+    }
+});
+
+// --------------------------------------------------
+// Compare two screenshots from the screenshots folder.
+//   GET /api/compare?a=full-111.png&b=full-222.png[&threshold=0.01]
+// --------------------------------------------------
+app.get("/api/compare", async (req, res) => {
+    const { a, b } = req.query;
+    const safe = /^[\w.-]+\.png$/;
+
+    if (!safe.test(String(a || "")) || !safe.test(String(b || ""))) {
+        return res.status(400).json({ error: "Give two screenshot file names, for example ?a=full-1.png&b=full-2.png" });
+    }
+
+    const fileA = path.join(screenshotDir, a);
+    const fileB = path.join(screenshotDir, b);
+    if (!fs.existsSync(fileA) || !fs.existsSync(fileB)) {
+        return res.status(404).json({ error: "Screenshot not found" });
+    }
+
+    const options = {};
+    if (req.query.threshold !== undefined) {
+        const t = Number(req.query.threshold);
+        if (!Number.isFinite(t) || t < 0 || t > 1) {
+            return res.status(400).json({ error: "threshold must be a number between 0 and 1" });
+        }
+        options.threshold = t;
+    }
+
+    try {
+        const diffName = `diff-${Date.now()}.png`;
+        const result = await compareImages(fileA, fileB, { ...options, diffPath: path.join(screenshotDir, diffName) });
+        res.json({ a, b, ...result, diffPath: undefined, diffUrl: `/screenshots/${diffName}` });
+    } catch (err) {
+        res.status(500).json({ error: "Comparison failed", details: err.message });
+    }
+});
+
 app.get("/api/scans", (req, res) => {
     const scans = listScans(scansDir);
     res.json({
@@ -1926,5 +2786,5 @@ app.get("/api/scans/:id", (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Backend running at http://localhost:${PORT}`);
+    process.stdout.write(`Backend running at http://localhost:${PORT}\n`);
 });
