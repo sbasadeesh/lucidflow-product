@@ -7,18 +7,28 @@ export const recentScans = [
     date: "16 Oct 2026",
     status: "Completed",
     result: "4 potential dark patterns",
+    pages: [
+      "https://www.abcinsurance.example/claims",
+      "https://www.abcinsurance.example/renewal",
+      "https://www.abcinsurance.example/contact",
+    ],
   },
   {
     domain: "www.novafinance.example",
     date: "14 Oct 2026",
     status: "Needs review",
     result: "7 potential dark patterns",
+    pages: [
+      "https://www.novafinance.example/loans",
+      "https://www.novafinance.example/apply",
+    ],
   },
   {
     domain: "www.orbitcover.example",
     date: "10 Oct 2026",
     status: "Completed",
     result: "2 potential dark patterns",
+    pages: ["https://www.orbitcover.example/plans"],
   },
 ];
 
@@ -89,6 +99,7 @@ const TEMPLATES = [
     cause:
       "The banner copy and expiry date are maintained manually and are not verified against the approved campaign period.",
     severity: "MEDIUM",
+    confirmed: false, // P0 demo flag: shows the unconfirmed warning
     pattern: "FALSE URGENCY",
     effort: "LOW EFFORT",
     owner: "Marketing / Product / Compliance",
@@ -115,7 +126,7 @@ const hostOf = (u) => new URL(u).hostname.replace(/^www\./, "");
 
 // Builds the report only from what the user entered.
 // Pages from different websites -> every website (company) is shown.
-export function buildReport(scan) {
+export function buildReport(scan, { dropUnconfirmed = false } = {}) {
   const isDomain = scan.mode === "domain";
   const pages = isDomain
     ? SAMPLE_PATHS.map((p) => `https://${scan.host}${p === "/" ? "" : p}`)
@@ -166,6 +177,9 @@ export function buildReport(scan) {
     findings = [];
   }
 
+  const unconfirmed = findings.filter((f) => f.confirmed === false);
+  if (dropUnconfirmed) findings = findings.filter((f) => f.confirmed !== false);
+
   const counts = {};
   findings.forEach((f) => {
     const name = titleCase(f.pattern);
@@ -174,9 +188,6 @@ export function buildReport(scan) {
 
   // E7-06: count findings by severity
   const countSeverity = (...names) => findings.filter((f) => names.includes(f.severity)).length;
-
-  const names =
-    hosts.length > 1 ? `${hosts.slice(0, -1).join(", ")} and ${hosts[hosts.length - 1]}` : hosts[0];
 
   return {
     title: "Dark Pattern Assessment Report",
@@ -213,6 +224,7 @@ export function buildReport(scan) {
     themes: scan.themes ?? ["", "", ""],
     limitations: "This assessment is limited to the pages, states, and evidence included in the supplied scan data. Content or interactions outside that scope may not have been assessed. An absence of findings does not establish an absence of potential issues. Findings require human review and are not a legal determination.",
     findings,
+    unconfirmed: unconfirmed.map((f) => ({ id: f.id, title: f.title })),
     // Corrective action plan register (PDF + Excel)
     cap: findings.map((f, i) => ({
       id: padId("CAP", i + 1),
@@ -309,4 +321,36 @@ export const CATEGORIES = [
     "Rogue Malware / Scareware",
     "Using fake security warnings, misleading alerts or deceptive pop-ups to pressure a customer into paying, downloading software or sharing credentials.",
   ],
+];
+
+// Sample discovery result for the Whole domain preview (real discovery arrives in P1)
+export const DISCOVERY_TREE = {
+  name: "/",
+  count: 214,
+  children: [
+    { name: "/health-insurance", count: 38, children: [
+      { name: "/medicare-select", count: 1 },
+      { name: "/women-health-insurance", count: 1 },
+      { name: "/family-health", count: 1 },
+    ] },
+    { name: "/motor-insurance", count: 52, children: [
+      { name: "/car-insurance", count: 1 },
+      { name: "/two-wheeler-insurance", count: 1 },
+    ] },
+    { name: "/claims", count: 14, children: [{ name: "/claims-process", count: 1 }] },
+    { name: "/renewal", count: 9 },
+    { name: "/contact-us", count: 3 },
+    { name: "/other", count: 97 },
+  ],
+};
+
+export const DISCOVERY_URLS = [
+  { path: "/", template: "Home", depth: 0 },
+  { path: "/claims", template: "Claims", depth: 1 },
+  { path: "/renewal", template: "Renewal", depth: 1 },
+  { path: "/health-insurance", template: "Product", depth: 1 },
+  { path: "/health-insurance/medicare-select", template: "Product", depth: 2 },
+  { path: "/motor-insurance/car-insurance", template: "Product", depth: 2 },
+  { path: "/claims/claims-process", template: "Claims", depth: 2 },
+  { path: "/contact-us", template: "Contact", depth: 1 },
 ];

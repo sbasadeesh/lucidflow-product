@@ -2,12 +2,14 @@
 // Pages read from here, so text and numbers can change without touching the page code.
 
 export const NAV_LINKS = [
-  { to: "/", label: "Home" },
-  { to: "/new-scan", label: "New scan" },
-  { to: "/reports", label: "Reports" },
-  { to: "/history", label: "History" },
-  { to: "/schedule", label: "Schedule" },
-  { to: "/settings", label: "Settings" },
+  { label: "Home", to: "/", icon: "home" },
+  { label: "New scan", to: "/new-scan", icon: "plus" },
+  { label: "Reports", to: "/reports", icon: "report" },
+  { label: "Remediation", to: "/remediation", icon: "shieldCheck" },
+  { label: "Prevention", to: "/prevention", icon: "shield" },
+  { label: "History", to: "/history", icon: "clock" },
+  { label: "Schedule", to: "/schedule", icon: "calendar" },
+  { label: "Settings", to: "/settings", icon: "gear" },
 ];
 
 // Cautious wording policy: reports must contain "potential" and avoid "violation" or "non-compliant"
@@ -31,6 +33,7 @@ export const HOME = {
   runLabel: "Run scan",
   recentTitle: "Recent scans",
   scanRoute: "/scan",
+  maxUrls: 50, // most page URLs in one scan
   modes: {
     pages: {
       label: "Page URLs",
@@ -69,4 +72,39 @@ export const REPORT = {
 export const CAP_AI_PLACEHOLDER = {
   rootCause: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   action: "Sed do eiusmod tempor incididunt ut labore et dolore.",
+};
+
+export const PLANNED_LABEL = "Planned for a later phase";
+
+export const DISCOVERY = {
+  previewLabel: "Preview: live discovery arrives in P1",
+  treeTitle: "Page tree",
+  tableTitle: "URL table",
+  discoverLabel: "Discover pages",
+};
+
+export const SETTINGS_SECTIONS = [
+  { label: "Profile", to: "/settings/profile", icon: "user" },
+  { label: "Organisation", to: "/settings/organisation", icon: "building" },
+  { label: "Users and roles", to: "/settings/users-and-roles", icon: "users" },
+  { label: "Licence", to: "/settings/licence", icon: "file" },
+  { label: "Data and retention", to: "/settings/data-and-retention", icon: "database" },
+  { label: "Notifications", to: "/settings/notifications", icon: "bell" },
+];
+
+export const JOURNEY = {
+  homeLabel: "Home page URL",
+  homePlaceholder: "https://www.example.com",
+};
+
+export const CAP_MANUAL_REVIEW = {
+  header: "Manual review",
+  options: ["Yes", "No"],
+  placeholder: "[Yes / No]",
+};
+
+export const UNCONFIRMED = {
+  title: "Unconfirmed findings",
+  text: "Only confirmed findings are included in the PDF and CAP. These findings will be removed:",
+  ok: "OK",
 };

@@ -1,5 +1,5 @@
 import { COLORS, FONT_NAME } from "./excelTheme.js";
-import { CAP_AI_PLACEHOLDER } from "../config.js";
+import { CAP_AI_PLACEHOLDER, CAP_MANUAL_REVIEW } from "../config.js";
 
 const HEADER_ROW = 12; // logo + title block sit above this row
 const FIRST_COLUMN = 2; // column A is a narrow margin
@@ -20,7 +20,12 @@ export const CAP_COLUMNS = [
   },
   { header: "Root cause", width: 38, value: () => CAP_AI_PLACEHOLDER.rootCause },
   { header: "Corrective action", width: 44, value: () => CAP_AI_PLACEHOLDER.action },
-  { header: "Owner", width: 26, value: (c) => c.owner },
+  {
+    header: CAP_MANUAL_REVIEW.header,
+    width: 16,
+    value: () => "",
+    options: CAP_MANUAL_REVIEW.options,
+  },
   { header: "Due date", width: 11, value: () => "" },
   { header: "Status", width: 9, value: (c) => c.status, status: true },
   { header: "Revalidation result", width: 17, value: () => "Not started" },
@@ -117,6 +122,13 @@ function addDataRows(sheet, caps) {
       const cell = row.getCell(FIRST_COLUMN + c);
       cell.value = col.value(cap);
       styleDataCell(cell, col);
+      if (col.options) {
+        cell.dataValidation = {
+          type: "list",
+          allowBlank: true,
+          formulae: [`"${col.options.join(",")}"`],
+        };
+      }
     });
   });
 }

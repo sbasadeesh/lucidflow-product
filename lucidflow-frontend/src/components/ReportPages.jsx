@@ -1,5 +1,5 @@
 import { ABOUT, CATEGORIES, PRIORITY_THEMES } from "../data.js";
-import { REPORT, SUMMARY_AI_PLACEHOLDER, SEVERITY_ORDER } from "../config.js";
+import { CAP_MANUAL_REVIEW, REPORT, SUMMARY_AI_PLACEHOLDER, SEVERITY_ORDER } from "../config.js";
 import { useLayoutEffect, useRef } from "react";
 
 const FOOTER_URL = "https://ww1.sbainfo.in/lucidflow";
@@ -125,7 +125,6 @@ function Cover({ r }) {
 
 function Summary({ r }) {
   const colors = ["var(--text)", "var(--secondary)", "var(--secondary)", "var(--success)"];
-  const max = Math.max(...r.distribution.map((d) => d.count), 1);
 
   return (
     <div>
@@ -303,7 +302,7 @@ function CapRegister({ rows, first }) {
             <th>Finding</th>
             <th>Root cause</th>
             <th>Action</th>
-            <th>Owner</th>
+            <th>{CAP_MANUAL_REVIEW.header}</th>
             <th>Due</th>
             <th>Status</th>
           </tr>
@@ -323,7 +322,7 @@ function CapRegister({ rows, first }) {
                   ))}
                 </ul>
               </td>
-              <td>{c.owner}</td>
+              <td>{CAP_MANUAL_REVIEW.placeholder}</td>
               <td>{c.due}</td>
               <td>{c.status}</td>
             </tr>

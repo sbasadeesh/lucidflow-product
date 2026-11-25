@@ -1,8 +1,13 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import Home from "./Home.jsx";
+import ExcelJS from "exceljs";
+import { HOME } from "../config.js";
+import { buildReport, recentScans } from "../data.js";
+import { getScan } from "../scanStore.js";
+import { parseEntries } from "../urlUtils.js";
 
 function renderHome() {
   return render(
@@ -65,12 +70,12 @@ describe("Home screen", () => {
     expect(screen.getByText(/This is a domain, not a page/)).toBeInTheDocument();
   });
 
-  it("Given a page URL in Whole domain mode, then Run scan stays disabled", async () => {
+  it("Given a page URL in Whole domain mode, then Discover pages stays disabled", async () => {
     renderHome();
     await userEvent.click(screen.getByRole("button", { name: "Whole domain" }));
     await userEvent.type(domainInput(), "https://www.royalsundaram.in/copyright");
 
-    expect(runButton()).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Discover pages" })).toBeDisabled();
   });
 
   it("Given a valid URL, when I click Run scan, then the scan page opens", async () => {
@@ -79,5 +84,363 @@ describe("Home screen", () => {
     await userEvent.click(runButton());
 
     expect(screen.getByText("Scan page")).toBeInTheDocument();
+  });
+});
+describe("Home: Fill from previous findings and Upload from Excel", () => {
+  const setup = () =>
+    render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>,
+    );
+    const box = () => screen.getAllByRole("textbox")[0];
+  const press = (name) => fireEvent.click(screen.getByRole("button", { name }));
+  const WAIT = { timeout: 5000 };
+
+  async function xlsx(cells) {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("Sheet1");
+    cells.forEach((c) => ws.addRow([c]));
+    return wb.xlsx.writeBuffer();
+  }
+
+  function pick(container, content, name = "urls.xlsx") {
+    const file = new File(["x"], name);
+    file.arrayBuffer = async () => content;
+    const input = container.querySelector('input[type="file"]');
+    expect(input).not.toBeNull();
+    fireEvent.change(input, { target: { files: [file] } });
+  }
+
+  // Fill from previous findings
+    it("Given I click Fill from previous findings, then the pages of the latest scan are in the box", () => {
+    setup();
+    press("Fill from previous findings");
+    const filled = box().value.split(",").map((s) => s.trim());
+    expect(filled).toEqual(recentScans[0].pages);
+  });
+
+  it("Given I click Fill from previous findings twice, then the pages are not repeated", () => {
+    setup();
+    press("Fill from previous findings");
+    press("Fill from previous findings");
+    const filled = box().value.split(",").map((s) => s.trim());
+    expect(filled).toEqual(recentScans[0].pages);
+  });
+
+  // Upload from Excel
+  it("Given the page, then the file picker accepts only .xlsx files", () => {
+    const { container } = setup();
+    const input = container.querySelector('input[type="file"]');
+    expect(input).not.toBeNull();
+    expect(input.accept).toContain(".xlsx");
+  });
+
+  it("Given I click Upload from Excel, then the file picker opens", () => {
+    const { container } = setup();
+    const input = container.querySelector('input[type="file"]');
+    expect(input).not.toBeNull();
+    const spy = vi.spyOn(input, "click");
+    press("Upload from Excel");
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it("Given an Excel file with 3 URLs, then all 3 are in the box", async () => {
+    const { container } = setup();
+    pick(container, await xlsx(["https://a.com/1", "https://a.com/2", "https://a.com/3"]));
+    await waitFor(
+      () => expect(box().value).toBe("https://a.com/1, https://a.com/2, https://a.com/3"),
+      WAIT,
+    );
+    expect(screen.getByText("3 pages added")).toBeTruthy();
+  });
+
+  it("Given a header row in the file, then the header is skipped", async () => {
+    const { container } = setup();
+    pick(container, await xlsx(["URL", "https://a.com/1"]));
+    await waitFor(() => expect(box().value).toBe("https://a.com/1"), WAIT);
+  });
+
+  it("Given an Excel file with 60 URLs, then all 60 are in the box", async () => {
+    const { container } = setup();
+    const urls = Array.from({ length: 60 }, (_, i) => `https://a.com/p${i}`);
+    pick(container, await xlsx(urls));
+    await waitFor(() => expect(box().value.split(",")).toHaveLength(60), WAIT);
+  });
+
+  it("Given the same URL twice in the file, then it is added once", async () => {
+    const { container } = setup();
+    pick(container, await xlsx(["https://a.com/1", "https://a.com/1"]));
+    await waitFor(() => expect(box().value).toBe("https://a.com/1"), WAIT);
+  });
+
+  it("Given a hyperlink cell, then the link address is used", async () => {
+    const { container } = setup();
+    pick(container, await xlsx([{ text: "Claims", hyperlink: "https://a.com/claims" }]));
+    await waitFor(() => expect(box().value).toBe("https://a.com/claims"), WAIT);
+  });
+
+  it("Given text already in the box, then the Excel URLs are added after it", async () => {
+    const { container } = setup();
+    fireEvent.change(box(), { target: { value: "https://a.com/1" } });
+    pick(container, await xlsx(["https://a.com/2"]));
+    await waitFor(() => expect(box().value).toBe("https://a.com/1, https://a.com/2"), WAIT);
+  });
+
+  // Edge cases
+  it("Given a file that is not .xlsx, then a message shows and the box stays empty", async () => {
+    const { container } = setup();
+    pick(container, Buffer.from("hello"), "urls.txt");
+    expect(await screen.findByText("Please choose an Excel file (.xlsx).")).toBeTruthy();
+    expect(box().value).toBe("");
+  });
+
+  it("Given an Excel file with no URLs, then a message shows", async () => {
+    const { container } = setup();
+    pick(container, await xlsx([]));
+    expect(await screen.findByText("No URLs found in this file.", {}, WAIT)).toBeTruthy();
+  });
+
+  it("Given a .xlsx file that is not a real Excel file, then a message shows", async () => {
+    const { container } = setup();
+    pick(container, Buffer.from("hello"));
+    expect(await screen.findByText("This file could not be read.", {}, WAIT)).toBeTruthy();
+  });
+});
+
+describe("Home: page URL flow", () => {
+  const N = HOME.maxUrls;
+  const setup = () =>
+    render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>,
+    );
+  const box = () => screen.getAllByRole("textbox")[0];
+  const type = (v) => fireEvent.change(box(), { target: { value: v } });
+  const runBtn = () => screen.getByRole("button", { name: "Run scan" });
+  const urls = (n, host = "a.com") => Array.from({ length: n }, (_, i) => `https://${host}/p${i}`);
+
+  beforeEach(() => sessionStorage.clear());
+
+  // AC1: chips with a count
+  it("Given URLs separated by new lines and commas, then each shows as a chip", () => {
+    const { container } = setup();
+    type("https://a.com/1\nhttps://a.com/2, https://a.com/3");
+    expect(container.querySelectorAll(".chip")).toHaveLength(3);
+  });
+
+  it("Given 3 valid URLs, then the count shows 3 pages added", () => {
+    setup();
+    type(urls(3).join("\n"));
+    expect(screen.getByText("3 pages added")).toBeTruthy();
+  });
+
+  it("Given I click x on a chip, then it is removed and the count drops", () => {
+    const { container } = setup();
+    type(urls(3).join("\n"));
+    fireEvent.click(screen.getAllByText("×")[0]);
+    expect(container.querySelectorAll(".chip")).toHaveLength(2);
+    expect(screen.getByText("2 pages added")).toBeTruthy();
+  });
+
+  // AC2: invalid or duplicate URL is flagged and left out
+  it("Given a valid and an invalid URL, then the invalid one is flagged with a message and the count is 1", () => {
+    const { container } = setup();
+    type("https://a.com/claims, notaurl");
+    expect(container.querySelectorAll(".chip.bad")).toHaveLength(1);
+    expect(screen.getByText("notaurl: Not a valid URL")).toBeTruthy();
+    expect(screen.getByText("1 page added")).toBeTruthy();
+  });
+
+  it("Given a valid and an invalid URL, then Run scan stays enabled for the valid one", () => {
+    setup();
+    type("https://a.com/claims, notaurl");
+    expect(runBtn().disabled).toBe(false);
+  });
+
+  it("Given the same URL twice, then it shows once and a message says the repeat was left out", () => {
+    const { container } = setup();
+    type("https://a.com/x, https://a.com/x");
+    expect(container.querySelectorAll(".chip")).toHaveLength(1);
+    expect(screen.getByText("https://a.com/x: Repeated, left out")).toBeTruthy();
+  });
+
+  // AC3: each page on its own, results under one ID
+  it("Given Run scan with 3 URLs, then the saved scan has the 3 pages as separate entries", () => {
+    setup();
+    type(urls(3).join("\n"));
+    fireEvent.click(runBtn());
+    expect(getScan().urls).toEqual(urls(3));
+  });
+
+  it("Given an invalid and a repeated URL, then only the valid page is saved for scanning", () => {
+    setup();
+    type("https://a.com/x, https://a.com/x, notaurl");
+    fireEvent.click(runBtn());
+    expect(getScan().urls).toEqual(["https://a.com/x"]);
+  });
+
+  it("Given 3 pages, then the report has one ID and each finding is for its own page", () => {
+    const report = buildReport({ mode: "pages", host: "a.com", urls: urls(3), isDemo: true });
+    expect(report.id).toBe("LF-A-2026-001");
+    expect(report.findings.map((f) => f.url)).toEqual(urls(3));
+  });
+
+  // AC4: limit N from config
+  it("Given the config, then the limit N is 50", () => {
+    expect(N).toBe(50);
+  });
+
+  it("Given exactly N URLs, then they are accepted", () => {
+    setup();
+    type(urls(N).join("\n"));
+    expect(screen.getByText(`${N} pages added`)).toBeTruthy();
+    expect(runBtn().disabled).toBe(false);
+  });
+
+  it("Given more than N URLs, then a message shows and Run scan is disabled", () => {
+    setup();
+    type(urls(N + 1).join("\n"));
+    expect(screen.getByText(/Too many URLs/)).toBeTruthy();
+    expect(runBtn().disabled).toBe(true);
+  });
+
+  // Fill from previous findings: recent scans must hold valid page URLs
+  it("Given the recent scans, then each lists page URLs that pass the validator", () => {
+    recentScans.forEach((s) => {
+      expect(Array.isArray(s.pages)).toBe(true);
+      expect(s.pages.length).toBeGreaterThan(0);
+      expect(parseEntries(s.pages.join(","), "pages").every((i) => i.ok)).toBe(true);
+    });
+  });
+});
+
+describe("Home: journey order on Page URLs", () => {
+  const P = (n) => `https://a.com/p${n}`;
+  const setupJourney = () =>
+    render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>,
+    );
+  const typeUrls = (list) =>
+    fireEvent.change(screen.getAllByRole("textbox")[0], { target: { value: list.join("\n") } });
+  const order = (container) =>
+    [...container.querySelectorAll(".chip")].map((c) =>
+      c.textContent.replace(/^\d+/, "").replace(/×$/, ""),
+    );
+  const up = (i) => fireEvent.click(screen.getAllByRole("button", { name: "Move up" })[i]);
+  const down = (i) => fireEvent.click(screen.getAllByRole("button", { name: "Move down" })[i]);
+
+  beforeEach(() => sessionStorage.clear());
+
+  it("Given 3 URLs, then each page shows its order number 1, 2, 3", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    const nums = [...container.querySelectorAll(".cnum")].map((n) => n.textContent);
+    expect(nums).toEqual(["1", "2", "3"]);
+  });
+
+  it("Given 3 URLs, then the first Move up and the last Move down are disabled", () => {
+    setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    const ups = screen.getAllByRole("button", { name: "Move up" });
+    const downs = screen.getAllByRole("button", { name: "Move down" });
+    expect(ups.map((b) => b.disabled)).toEqual([true, false, false]);
+    expect(downs.map((b) => b.disabled)).toEqual([false, false, true]);
+  });
+
+  it("Given I click Move up on the 3rd page, then it becomes the 2nd", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    up(2);
+    expect(order(container)).toEqual([P(1), P(3), P(2)]);
+    expect(screen.getAllByRole("textbox")[0].value).toBe(`${P(1)}, ${P(3)}, ${P(2)}`);
+  });
+
+  it("Given I click Move down on the 1st page, then it becomes the 2nd", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    down(0);
+    expect(order(container)).toEqual([P(2), P(1), P(3)]);
+  });
+
+  it("Given I move a page, then the count stays the same and no page is lost", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    up(1);
+    expect(screen.getByText("3 pages added")).toBeTruthy();
+    expect([...order(container)].sort()).toEqual([P(1), P(2), P(3)]);
+  });
+
+  it("Given I remove the middle page, then 2 pages stay and the numbers are 1, 2", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    fireEvent.click(screen.getAllByText("×")[1]);
+    expect(order(container)).toEqual([P(1), P(3)]);
+    const nums = [...container.querySelectorAll(".cnum")].map((n) => n.textContent);
+    expect(nums).toEqual(["1", "2"]);
+    expect(screen.getByText("2 pages added")).toBeTruthy();
+  });
+
+  it("Given the order is changed, then an invalid entry still shows its message", () => {
+    const { container } = setupJourney();
+    typeUrls([P(1), "notaurl"]);
+    up(1);
+    expect(order(container)).toEqual(["notaurl", P(1)]);
+    expect(screen.getByText("notaurl: Not a valid URL")).toBeTruthy();
+    expect(screen.getByText("1 page added")).toBeTruthy();
+  });
+
+  it("Given Page URLs, then the Home page URL is disabled with a planned label", () => {
+    setupJourney();
+    expect(screen.getByLabelText("Home page URL").disabled).toBe(true);
+    expect(screen.getByText("Planned for a later phase")).toBeTruthy();
+  });
+
+  it("Given Whole domain, then there are no arrows and no Home page URL", () => {
+    setupJourney();
+    typeUrls([P(1), P(2)]);
+    fireEvent.click(screen.getByRole("button", { name: "Whole domain" }));
+    expect(screen.queryAllByRole("button", { name: "Move up" })).toHaveLength(0);
+    expect(screen.queryAllByRole("button", { name: "Move down" })).toHaveLength(0);
+    expect(screen.queryByLabelText("Home page URL")).toBeNull();
+  });
+
+  it("Given I reorder and click Run scan, then the saved scan keeps the new order", () => {
+    setupJourney();
+    typeUrls([P(1), P(2), P(3)]);
+    up(2);
+    fireEvent.click(screen.getByRole("button", { name: "Run scan" }));
+    const saved = JSON.parse(sessionStorage.getItem("lucidflow-scan"));
+    expect(saved.urls).toEqual([P(1), P(3), P(2)]);
+  });
+
+  it("Given 2 or more pages, then a note says pages are scanned in the order shown", () => {
+    setupJourney();
+    typeUrls([P(1), P(2)]);
+    expect(screen.getByText(/scanned in the order shown/i)).toBeTruthy();
+  });
+});
+describe("Home: Discover pages button", () => {
+  const renderIt = () =>
+    render(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>,
+    );
+
+  it("Given Whole domain, then the button says Discover pages", () => {
+    renderIt();
+    fireEvent.click(screen.getByRole("button", { name: "Whole domain" }));
+    expect(screen.getByRole("button", { name: "Discover pages" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Run scan" })).toBeNull();
+  });
+
+  it("Given Page URLs, then the button still says Run scan", () => {
+    renderIt();
+    expect(screen.getByRole("button", { name: "Run scan" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Discover pages" })).toBeNull();
   });
 });

@@ -264,3 +264,26 @@ describe("Report layout against the mock payload", () => {
     expect(dataUnavailableSheet).toBeTruthy();
   });
 });
+
+describe("CAP register columns (E7-15)", () => {
+  const capSheet = () => {
+    const report = reportOf("S2-three-findings");
+    const { container } = renderReport(report);
+    return sheetsOf(container)[2 + report.findings.length];
+  };
+
+  it("Given a report with findings, when the CAP register renders, then it shows a Manual review column and no Owner column", () => {
+    const heads = within(capSheet())
+      .getAllByRole("columnheader")
+      .map((h) => h.textContent);
+    expect(heads).toContain("Manual review");
+    expect(heads).not.toContain("Owner");
+  });
+
+  it("Given a report with findings, when the CAP register renders, then every row shows the [Yes / No] placeholder", () => {
+    const sheet = capSheet();
+    const rows = sheet.querySelectorAll("tbody tr").length;
+    expect(rows).toBeGreaterThan(0);
+    expect(within(sheet).getAllByText("[Yes / No]")).toHaveLength(rows);
+  });
+});

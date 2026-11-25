@@ -14,18 +14,18 @@ const cellOf = (sheet, rowNo, header) => sheet.getRow(rowNo).getCell(colOf(heade
 
 describe("CAP template", () => {
   // AC1
-  it("Given confirmed findings, when the CAP template is generated, then the table has the columns finding, owner, action and due date, with one row per finding", () => {
+  it("Given confirmed findings, when the CAP template is generated, then the table has the columns finding, manual review, action and due date, with one row per finding", () => {
     const report = reportOf("S2-three-findings");
     const sheet = sheetOf(report);
 
-    ["Finding", "Owner", "Corrective action", "Due date"].forEach((h) => {
+    ["Finding", "Manual review", "Corrective action", "Due date"].forEach((h) => {
       expect(sheet.getRow(HEADER_ROW).getCell(colOf(h)).value).toBe(h);
     });
 
     report.cap.forEach((cap, i) => {
       const row = HEADER_ROW + 1 + i;
       expect(cellOf(sheet, row, "Finding").value).toBe(cap.findingRef);
-      expect(cellOf(sheet, row, "Owner").value).toBe(cap.owner);
+      expect(cellOf(sheet, row, "Manual review").dataValidation.formulae[0]).toBe('"Yes,No"');
       expect(cellOf(sheet, row, "Corrective action").value).toBe(CAP_AI_PLACEHOLDER.action);
     });
 

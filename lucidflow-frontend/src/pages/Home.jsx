@@ -1,36 +1,98 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Topbar from "../components/Topbar.jsx";
-import { HOME } from "../config.js";
+import Icon from "../components/Icon.jsx";
+import { DISCOVERY, HOME, JOURNEY, PLANNED_LABEL } from "../config.js";
 import { recentScans } from "../data.js";
 import { saveScan } from "../scanStore.js";
-import { parseEntries } from "../urlUtils.js";
+import { findRepeats, parseEntries } from "../urlUtils.js";
+
+// A cell can hold plain text or a hyperlink object
+const asText = (v) => (v && typeof v === "object" ? v.hyperlink || v.text || "" : (v ?? ""));
+
+// Reads page URLs from column A of the first sheet.
+async function readUrlsFromExcel(buffer) {
+  const { default: ExcelJS } = await import("exceljs");
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buffer);
+  const sheet = wb.worksheets[0];
+  if (!sheet) return [];
+
+  const urls = [];
+  sheet.getColumn(1).eachCell((cell) => {
+    const t = String(asText(cell.value)).trim();
+    if (t.includes(".") && !/\s/.test(t)) urls.push(t);
+  });
+  return [...new Set(urls)];
+}
 
 export default function Home() {
   const navigate = useNavigate();
   const [mode, setMode] = useState("pages");
   const [texts, setTexts] = useState({ pages: "", domain: "" });
+  const fileRef = useRef(null);
+  const [notice, setNotice] = useState("");
 
   const current = HOME.modes[mode];
   const text = texts[mode];
   const items = parseEntries(text, mode);
   const errors = items.filter((i) => !i.ok);
-  const canRun = items.length > 0 && errors.length === 0;
+  const valid = items.filter((i) => i.ok);
+  const repeats = [...new Set(findRepeats(text, mode))];
+  const tooMany = mode === "pages" && items.length > HOME.maxUrls;
+  const canRun = valid.length > 0 && !tooMany;
 
-  const setText = (value) => setTexts({ ...texts, [mode]: value });
-  const removeItem = (raw) =>
-    setText(
-      items
-        .filter((i) => i.raw !== raw)
-        .map((i) => i.raw)
-        .join(", "),
-    );
+  const setText = (value) => setTexts((t) => ({ ...t, [mode]: value }));
+  const writeItems = (list) => setText(list.map((i) => i.raw).join(", "));
+  const removeItem = (raw) => writeItems(items.filter((i) => i.raw !== raw));
+
+  // Move one entry a step up (-1) or down (+1); the scan runs in this order
+  const moveItem = (index, step) => {
+    const to = index + step;
+    if (to < 0 || to >= items.length) return;
+    const next = [...items];
+    [next[index], next[to]] = [next[to], next[index]];
+    writeItems(next);
+  };
+
+  // Add URLs to the Page URLs box, keeping what is already there (no repeats)
+  const addUrls = (list) =>
+    setTexts((t) => {
+      const have = t.pages
+        .split(/[,\n]+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      return { ...t, pages: [...new Set([...have, ...list])].join(", ") };
+    });
+
+  const fillFromPrevious = () => addUrls(recentScans[0].pages);
+
+  const onFile = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".xlsx")) {
+      setNotice("Please choose an Excel file (.xlsx).");
+      return;
+    }
+    try {
+      const urls = await readUrlsFromExcel(await file.arrayBuffer());
+      if (urls.length === 0) {
+        setNotice("No URLs found in this file.");
+        return;
+      }
+      addUrls(urls);
+      setNotice("");
+    } catch {
+      setNotice("This file could not be read.");
+    }
+  };
 
   const run = () => {
     saveScan({
       mode,
-      host: items[0].host,
-      urls: mode === "pages" ? items.map((i) => i.url) : [],
+      host: valid[0].host,
+      urls: mode === "pages" ? valid.map((i) => i.url) : [],
     });
     navigate(HOME.scanRoute);
   };
@@ -67,16 +129,43 @@ export default function Home() {
 
           {mode === "pages" && (
             <div className="links">
-              <button className="link">Upload from Excel</button>
-              <button className="link">Fill from previous findings</button>
+              <input ref={fileRef} type="file" accept=".xlsx" hidden onChange={onFile} />
+              <button className="link" onClick={() => fileRef.current.click()}>
+                Upload from Excel
+              </button>
+              <button className="link" onClick={fillFromPrevious}>
+                Fill from previous findings
+              </button>
             </div>
           )}
+          {notice && <p className="error">{notice}</p>}
 
           {items.length > 0 && (
             <div className="chips">
-              {items.map((i) => (
+              {items.map((i, k) => (
                 <span className={"chip" + (i.ok ? "" : " bad")} key={i.raw}>
+                  {mode === "pages" && <span className="cnum">{k + 1}</span>}
                   {i.ok ? i.url : i.raw}
+                  {mode === "pages" && (
+                    <>
+                      <button
+                        type="button"
+                        aria-label="Move up"
+                        disabled={k === 0}
+                        onClick={() => moveItem(k, -1)}
+                      >
+                        <Icon name="arrowUp" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Move down"
+                        disabled={k === items.length - 1}
+                        onClick={() => moveItem(k, 1)}
+                      >
+                        <Icon name="arrowDown" />
+                      </button>
+                    </>
+                  )}
                   <button onClick={() => removeItem(i.raw)}>×</button>
                 </span>
               ))}
@@ -88,14 +177,43 @@ export default function Home() {
               {e.raw}: {e.error}
             </p>
           ))}
-          {mode === "pages" && canRun && (
-            <p className="muted">
-              {items.length} page{items.length > 1 ? "s" : ""} added
+          {repeats.map((r) => (
+            <p className="error" key={r}>
+              {r}: Repeated, left out
             </p>
+          ))}
+          {tooMany && (
+            <p className="error">
+              Too many URLs: {items.length} entered, the limit is {HOME.maxUrls}. Remove some and
+              try again.
+            </p>
+          )}
+          {mode === "pages" && valid.length > 0 && (
+            <>
+              <p className="muted">
+                {valid.length} page{valid.length > 1 ? "s" : ""} added
+              </p>
+              <p className="muted">Pages are scanned in the order shown. Use the arrows to change it.</p>
+            </>
+          )}
+
+          {mode === "pages" && (
+            <>
+              <label className="label" htmlFor="home-url">
+                {JOURNEY.homeLabel}
+              </label>
+              <input
+                id="home-url"
+                disabled
+                placeholder={JOURNEY.homePlaceholder}
+                aria-label={JOURNEY.homeLabel}
+              />
+              <p className="planned">{PLANNED_LABEL}</p>
+            </>
           )}
 
           <button className="btn primary" disabled={!canRun} onClick={run}>
-            {HOME.runLabel}
+            {mode === "domain" ? DISCOVERY.discoverLabel : HOME.runLabel}
           </button>
         </div>
 

@@ -4,9 +4,12 @@ import Home from "./pages/Home.jsx";
 import History from "./pages/History.jsx";
 import Schedule from "./pages/Schedule.jsx";
 import Settings from "./pages/Settings.jsx";
+import SettingsSection from "./pages/SettingsSection.jsx";
 import Scan from "./pages/Scan.jsx";
 import ReportPreview from "./pages/ReportPreview.jsx";
 import ReportReady from "./pages/ReportReady.jsx";
+import Remediation from "./pages/Remediation.jsx";
+import Prevention from "./pages/Prevention.jsx";
 import { useEffect } from "react";
 import { applyTheme } from "./theme.js";
 
@@ -24,9 +27,13 @@ useEffect(() => {
         <Route path="/scan" element={<Scan />} />
         <Route path="/reports" element={<ReportPreview />} />
         <Route path="/reports/ready" element={<ReportReady />} />
+        <Route path="/remediation" element={<Remediation />} />
+        <Route path="/prevention" element={<Prevention />} />
         <Route path="/history" element={<History />} />
         <Route path="/schedule" element={<Schedule />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/settings" element={<Settings />}>
+          <Route path=":section" element={<SettingsSection />} />
+        </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

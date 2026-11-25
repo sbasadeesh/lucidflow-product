@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Topbar from "../components/Topbar.jsx";
-import { buildReport, SAMPLE_PATHS } from "../data.js";
+import Icon from "../components/Icon.jsx";
+import { buildReport, DISCOVERY_TREE, DISCOVERY_URLS, SAMPLE_PATHS } from "../data.js";
 import { getScan } from "../scanStore.js";
-import { SCAN } from "../config.js";
+import { DISCOVERY, SCAN } from "../config.js";
 
 const DOMAIN_PAGES = SCAN.domainPages;
 
@@ -16,7 +17,11 @@ export default function Scan() {
 
 function ScanRun({ scan, navigate }) {
   const isDomain = scan.mode === "domain";
-  const report = buildReport(scan);
+  const showMap = scan.mode === "pages" && scan.urls.length > 1; // order only matters for 2 or more pages
+  // The scan counter uses demo findings until a scan supplies its own.
+  const report = buildReport(
+    Array.isArray(scan.findings) || scan.isDemo === true ? scan : { ...scan, isDemo: true },
+  );
   const total = isDomain ? DOMAIN_PAGES : scan.urls.length;
 
   // Whole domain: Discovering -> Scanning. Page URLs: straight to Scanning.
@@ -70,6 +75,7 @@ function ScanRun({ scan, navigate }) {
       <>
         <Topbar title={`Discovering pages on ${scan.host}`} />
         <div className="content">
+          <p className="disc-preview">{DISCOVERY.previewLabel}</p>
           <h2 className="big">Discovering pages on {scan.host}</h2>
           <div className="bar">
             <div style={{ width: `${Math.round((found / DOMAIN_PAGES) * 100)}%` }} />
@@ -102,6 +108,16 @@ function ScanRun({ scan, navigate }) {
               </li>
             ))}
           </ul>
+          <div className="disc-split">
+            <div className="card">
+              <h3 className="section">{DISCOVERY.treeTitle}</h3>
+              <PageTree node={DISCOVERY_TREE} label={scan.host} />
+            </div>
+            <div className="card">
+              <h3 className="section">{DISCOVERY.tableTitle}</h3>
+              <UrlTable host={scan.host} />
+            </div>
+          </div>
           <div className="actions left">
             <button className="btn ghost" onClick={() => setStatus("Scanning")}>
               Stop and review
@@ -136,6 +152,12 @@ function ScanRun({ scan, navigate }) {
             <b>Potential dark patterns found so far: {patterns}</b>
           </div>
         </div>
+        {showMap && (
+          <>
+            <p className="muted">One session: pages are scanned in the order you set.</p>
+            <StateMap urls={scan.urls} current={current} findings={report.findings} />
+          </>
+        )}
         <div className="actions">
           <button className="btn ghost" onClick={() => setPaused(!paused)}>
             {paused ? "Resume" : "Pause"}
@@ -147,5 +169,75 @@ function ScanRun({ scan, navigate }) {
         <p className="muted">You can close this window. We will notify you when it finishes.</p>
       </div>
     </>
+  );
+}
+
+// State map: one box per page, in order, with an arrow to the next page
+function StateMap({ urls, current, findings }) {
+  return (
+    <ol className="smap" aria-label="State map">
+      {urls.map((url, k) => {
+        const state = k < current ? "Scanned" : k === current ? "Scanning" : "Waiting";
+        const count = findings.filter((f) => f.url === url).length;
+        return (
+          <li key={url} className={"snode " + state.toLowerCase()}>
+            <div className="sbox">
+              <span className="snum">{k + 1}</span>
+              <span className="surl">{url}</span>
+              <b className="sstate">
+                {state}
+                {state === "Scanned" ? `: ${count} potential` : ""}
+              </b>
+            </div>
+            {k < urls.length - 1 && (
+              <span className="sarrow" aria-hidden="true">
+                <Icon name="arrowDown" />
+              </span>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+// Page tree from sample data (live discovery arrives in P1)
+function PageTree({ node, label }) {
+  return (
+    <ul className="disc-tree">
+      <li>
+        <span>{label || node.name}</span> <span className="disc-count">{node.count}</span>
+        {node.children?.map((c) => (
+          <PageTree key={c.name} node={c} />
+        ))}
+      </li>
+    </ul>
+  );
+}
+
+// URL table from sample data
+function UrlTable({ host }) {
+  return (
+    <table className="list">
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th>Template</th>
+          <th>Depth</th>
+        </tr>
+      </thead>
+      <tbody>
+        {DISCOVERY_URLS.map((u) => (
+          <tr key={u.path}>
+            <td>
+              https://{host}
+              {u.path === "/" ? "" : u.path}
+            </td>
+            <td>{u.template}</td>
+            <td>{u.depth}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
