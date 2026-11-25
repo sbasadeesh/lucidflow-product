@@ -238,3 +238,364 @@ jobs:
           echo "E2-10: when present on integration candidate"
           echo "E2-11: when present on integration candidate"
           echo "npm test (full suite): All suites with --test-concurrency=3"
+
+  test-frontend-pr-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Decide frontend validation scope (full PR diff)
+        id: fe-scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          REPO_ROOT="${GITHUB_WORKSPACE:?missing GITHUB_WORKSPACE}"
+          cd "$REPO_ROOT"
+          git fetch --no-tags origin "$BASE_SHA" "$HEAD_SHA"
+          pr_diff_z="$(mktemp)"
+          trap 'rm -f "$pr_diff_z"' EXIT
+          if ! git -C "$REPO_ROOT" diff --name-only -z "$BASE_SHA" "$HEAD_SHA" >"$pr_diff_z"; then
+            echo "::error::git diff (PR scope) failed for $BASE_SHA..$HEAD_SHA"
+            exit 1
+          fi
+          pr_files=()
+          if [ -s "$pr_diff_z" ]; then
+            mapfile -d '' -t pr_files <"$pr_diff_z"
+            if [ "${#pr_files[@]}" -gt 0 ] && [ -z "${pr_files[$((${#pr_files[@]} - 1))]}" ]; then
+              unset "pr_files[$((${#pr_files[@]} - 1))]"
+            fi
+          fi
+          run=false
+          for path in "${pr_files[@]}"; do
+            case "$path" in
+              lucidflow-frontend/*|.github/workflows/e2-02-dom-evidence-validate.yml)
+                run=true
+                break
+                ;;
+            esac
+          done
+          if [ "$run" = "false" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "No lucidflow-frontend or workflow changes in PR diff ($BASE_SHA..$HEAD_SHA); skipping."
+            exit 0
+          fi
+          echo "run=true" >> "$GITHUB_OUTPUT"
+          echo "PR base SHA: $BASE_SHA"
+          echo "PR head SHA: $HEAD_SHA"
+
+      - name: Record tested revision (exact PR head)
+        if: steps.fe-scope.outputs.run == 'true'
+        id: revision
+        run: |
+          sha="$(git rev-parse HEAD)"
+          tree="$(git rev-parse HEAD^{tree})"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "tree=$tree" >> "$GITHUB_OUTPUT"
+          echo "=== Frontend PR head job ==="
+          echo "Commit tested: $sha"
+          echo "Tree tested:  $tree"
+          test "$sha" = "${{ github.event.pull_request.head.sha }}"
+
+      - name: Setup Node.js (frontend)
+        if: steps.fe-scope.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: lucidflow-frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        if: steps.fe-scope.outputs.run == 'true'
+        working-directory: lucidflow-frontend
+        run: npm ci
+
+      - name: Run frontend unit tests
+        if: steps.fe-scope.outputs.run == 'true'
+        working-directory: lucidflow-frontend
+        timeout-minutes: 5
+        run: npm run test:run
+
+      - name: Run frontend production build
+        if: steps.fe-scope.outputs.run == 'true'
+        working-directory: lucidflow-frontend
+        timeout-minutes: 5
+        run: npm run build
+
+      - name: Lint PR-changed frontend source files (required gate)
+        if: steps.fe-scope.outputs.run == 'true'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          REPO_ROOT="${GITHUB_WORKSPACE:?missing GITHUB_WORKSPACE}"
+          cd "$REPO_ROOT"
+
+          diff_z="$(mktemp)"
+          delta_z="$(mktemp)"
+          trap 'rm -f "$diff_z" "$delta_z"' EXIT
+
+          if ! git -C "$REPO_ROOT" diff --name-only -z --diff-filter=ACMRT "$BASE_SHA" "$HEAD_SHA" -- lucidflow-frontend/src/ >"$diff_z"; then
+            echo "::error::git diff (lintable paths) failed for $BASE_SHA..$HEAD_SHA"
+            exit 1
+          fi
+          if ! git -C "$REPO_ROOT" diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA" -- lucidflow-frontend/src/ >"$delta_z"; then
+            echo "::error::git diff (src delta) failed for $BASE_SHA..$HEAD_SHA"
+            exit 1
+          fi
+
+          src_delta=()
+          if [ -s "$delta_z" ]; then
+            mapfile -d '' -t src_delta <"$delta_z"
+            if [ "${#src_delta[@]}" -gt 0 ] && [ -z "${src_delta[$((${#src_delta[@]} - 1))]}" ]; then
+              unset "src_delta[$((${#src_delta[@]} - 1))]"
+            fi
+          fi
+          src_delta_count=${#src_delta[@]}
+
+          repo_paths=()
+          if [ -s "$diff_z" ]; then
+            mapfile -d '' -t repo_paths <"$diff_z"
+            if [ "${#repo_paths[@]}" -gt 0 ] && [ -z "${repo_paths[$((${#repo_paths[@]} - 1))]}" ]; then
+              unset "repo_paths[$((${#repo_paths[@]} - 1))]"
+            fi
+          fi
+
+          lint_paths=()
+          for repo_path in "${repo_paths[@]}"; do
+            rel="${repo_path#lucidflow-frontend/}"
+            if [ -f "$REPO_ROOT/lucidflow-frontend/$rel" ]; then
+              lint_paths+=("$rel")
+            else
+              echo "Note: diff entry is not a present file (e.g. deletion): $repo_path"
+            fi
+          done
+
+          echo "=== Changed-file eslint discovery (repo root git diff) ==="
+          echo "BASE_SHA=$BASE_SHA"
+          echo "HEAD_SHA=$HEAD_SHA"
+          echo "lucidflow-frontend/src delta entries (ACMR): $src_delta_count"
+          echo "Resolved lintable files (ACMRT, present on disk): ${#lint_paths[@]}"
+
+          if [ "$src_delta_count" -gt 0 ] && [ "${#lint_paths[@]}" -eq 0 ]; then
+            echo "::error::Unexpected empty lint target list while PR has lucidflow-frontend/src changes."
+            exit 1
+          fi
+          if [ "${#lint_paths[@]}" -eq 0 ]; then
+            echo "No lucidflow-frontend/src paths in PR diff (workflow-only or non-src change). Skipping changed-file eslint."
+            exit 0
+          fi
+
+          printf 'ESLint targets:\n'
+          printf ' - %s\n' "${lint_paths[@]}"
+
+          cd "$REPO_ROOT/lucidflow-frontend"
+          npx eslint "${lint_paths[@]}"
+
+      - name: Full-tree eslint policy
+        if: steps.fe-scope.outputs.run == 'true'
+        run: |
+          echo "Full-tree npm run lint is NOT gated until LINT-CLEANUP-MAIN removes known debt:"
+          echo "  - lucidflow-frontend/src/components/ReportPages.jsx:128 (no-unused-vars: max)"
+          echo "  - lucidflow-frontend/src/data.js:178 (no-unused-vars: names)"
+          echo "After cleanup, add a required npm run lint step in lucidflow-frontend."
+          echo "Current merge gate: PR-changed-file eslint only."
+
+  test-frontend-integration-with-main:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout PR base
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+
+      - name: Decide frontend validation scope (full PR diff)
+        id: fe-scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          REPO_ROOT="${GITHUB_WORKSPACE:?missing GITHUB_WORKSPACE}"
+          cd "$REPO_ROOT"
+          git fetch --no-tags origin "$BASE_SHA" "$HEAD_SHA"
+          pr_diff_z="$(mktemp)"
+          trap 'rm -f "$pr_diff_z"' EXIT
+          if ! git -C "$REPO_ROOT" diff --name-only -z "$BASE_SHA" "$HEAD_SHA" >"$pr_diff_z"; then
+            echo "::error::git diff (PR scope) failed for $BASE_SHA..$HEAD_SHA"
+            exit 1
+          fi
+          pr_files=()
+          if [ -s "$pr_diff_z" ]; then
+            mapfile -d '' -t pr_files <"$pr_diff_z"
+            if [ "${#pr_files[@]}" -gt 0 ] && [ -z "${pr_files[$((${#pr_files[@]} - 1))]}" ]; then
+              unset "pr_files[$((${#pr_files[@]} - 1))]"
+            fi
+          fi
+          run=false
+          for path in "${pr_files[@]}"; do
+            case "$path" in
+              lucidflow-frontend/*|.github/workflows/e2-02-dom-evidence-validate.yml)
+                run=true
+                break
+                ;;
+            esac
+          done
+          if [ "$run" = "false" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "No lucidflow-frontend or workflow changes in PR diff ($BASE_SHA..$HEAD_SHA); skipping."
+            exit 0
+          fi
+          echo "run=true" >> "$GITHUB_OUTPUT"
+
+      - name: Record base revision
+        if: steps.fe-scope.outputs.run == 'true'
+        id: base-rev
+        run: |
+          sha="$(git rev-parse HEAD)"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          test "$sha" = "${{ github.event.pull_request.base.sha }}"
+
+      - name: Fetch PR head and merge into base (uncommitted)
+        if: steps.fe-scope.outputs.run == 'true'
+        id: merge-integration
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$HEAD_SHA"
+          git config user.email "ci@github.com"
+          git config user.name "GitHub Actions"
+          if ! git merge --no-commit --no-ff FETCH_HEAD; then
+            echo "::error::Merge of PR head into base failed (conflict)."
+            git merge --abort 2>/dev/null || true
+            exit 1
+          fi
+          tree="$(git write-tree)"
+          merge_head="$(git rev-parse MERGE_HEAD)"
+          test "$merge_head" = "$HEAD_SHA"
+          echo "tree=$tree" >> "$GITHUB_OUTPUT"
+          echo "pr_head=$merge_head" >> "$GITHUB_OUTPUT"
+          echo "=== Frontend integration job ==="
+          echo "Base SHA:    ${{ github.event.pull_request.base.sha }}"
+          echo "PR head SHA: $merge_head"
+          echo "Tree tested: $tree (uncommitted merge of head into base)"
+
+      - name: Setup Node.js (frontend)
+        if: steps.fe-scope.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: lucidflow-frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        if: steps.fe-scope.outputs.run == 'true'
+        working-directory: lucidflow-frontend
+        run: npm ci
+
+      - name: Run frontend unit tests on integration candidate
+        if: steps.fe-scope.outputs.run == 'true'
+        working-directory: lucidflow-frontend
+        timeout-minutes: 5
+        run: npm run test:run
+
+      - name: Run frontend production build on integration candidate
+        if: steps.fe-scope.outputs.run == 'true'
+        working-directory: lucidflow-frontend
+        timeout-minutes: 5
+        run: npm run build
+
+      - name: Lint PR-changed frontend source files on integration (required gate)
+        if: steps.fe-scope.outputs.run == 'true'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          REPO_ROOT="${GITHUB_WORKSPACE:?missing GITHUB_WORKSPACE}"
+          cd "$REPO_ROOT"
+
+          diff_z="$(mktemp)"
+          delta_z="$(mktemp)"
+          trap 'rm -f "$diff_z" "$delta_z"' EXIT
+
+          if ! git -C "$REPO_ROOT" diff --name-only -z --diff-filter=ACMRT "$BASE_SHA" "$HEAD_SHA" -- lucidflow-frontend/src/ >"$diff_z"; then
+            echo "::error::git diff (lintable paths) failed for $BASE_SHA..$HEAD_SHA"
+            exit 1
+          fi
+          if ! git -C "$REPO_ROOT" diff --name-only -z --diff-filter=ACMR "$BASE_SHA" "$HEAD_SHA" -- lucidflow-frontend/src/ >"$delta_z"; then
+            echo "::error::git diff (src delta) failed for $BASE_SHA..$HEAD_SHA"
+            exit 1
+          fi
+
+          src_delta=()
+          if [ -s "$delta_z" ]; then
+            mapfile -d '' -t src_delta <"$delta_z"
+            if [ "${#src_delta[@]}" -gt 0 ] && [ -z "${src_delta[$((${#src_delta[@]} - 1))]}" ]; then
+              unset "src_delta[$((${#src_delta[@]} - 1))]"
+            fi
+          fi
+          src_delta_count=${#src_delta[@]}
+
+          repo_paths=()
+          if [ -s "$diff_z" ]; then
+            mapfile -d '' -t repo_paths <"$diff_z"
+            if [ "${#repo_paths[@]}" -gt 0 ] && [ -z "${repo_paths[$((${#repo_paths[@]} - 1))]}" ]; then
+              unset "repo_paths[$((${#repo_paths[@]} - 1))]"
+            fi
+          fi
+
+          lint_paths=()
+          for repo_path in "${repo_paths[@]}"; do
+            rel="${repo_path#lucidflow-frontend/}"
+            if [ -f "$REPO_ROOT/lucidflow-frontend/$rel" ]; then
+              lint_paths+=("$rel")
+            else
+              echo "Note: diff entry is not a present file (e.g. deletion): $repo_path"
+            fi
+          done
+
+          echo "=== Changed-file eslint discovery on integration candidate (repo root git diff) ==="
+          echo "BASE_SHA=$BASE_SHA"
+          echo "HEAD_SHA=$HEAD_SHA"
+          echo "Integration tree under test: ${{ steps.merge-integration.outputs.tree }}"
+          echo "lucidflow-frontend/src delta entries (ACMR): $src_delta_count"
+          echo "Resolved lintable files (ACMRT, present on disk): ${#lint_paths[@]}"
+
+          if [ "$src_delta_count" -gt 0 ] && [ "${#lint_paths[@]}" -eq 0 ]; then
+            echo "::error::Unexpected empty lint target list while PR has lucidflow-frontend/src changes."
+            exit 1
+          fi
+          if [ "${#lint_paths[@]}" -eq 0 ]; then
+            echo "No lucidflow-frontend/src paths in PR diff. Skipping changed-file eslint."
+            exit 0
+          fi
+
+          printf 'ESLint targets:\n'
+          printf ' - %s\n' "${lint_paths[@]}"
+
+          cd "$REPO_ROOT/lucidflow-frontend"
+          npx eslint "${lint_paths[@]}"
+
+      - name: Full-tree eslint policy
+        if: steps.fe-scope.outputs.run == 'true'
+        run: |
+          echo "Full-tree npm run lint is NOT gated until LINT-CLEANUP-MAIN removes known debt:"
+          echo "  - lucidflow-frontend/src/components/ReportPages.jsx:128 (no-unused-vars: max)"
+          echo "  - lucidflow-frontend/src/data.js:178 (no-unused-vars: names)"
+          echo "After cleanup, add a required npm run lint step in lucidflow-frontend."
+          echo "Current merge gate: PR-changed-file eslint only."
