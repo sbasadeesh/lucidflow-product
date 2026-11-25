@@ -1,0 +1,831 @@
+{
+  "name": "final state",
+  "timestamp": "2026-11-06T05:00:32.250Z",
+  "pageUrl": "https://www.adityabirlahealthinsurance.com/login",
+  "title": "Health Insurance Login - Aditya Birla Capital Health Insurance",
+  "viewport": {
+    "width": 1366,
+    "height": 900
+  },
+  "queries": [
+    {
+      "query": "body",
+      "matched": 1,
+      "error": null
+    },
+    {
+      "query": "a, button, input, select, textarea, label, h1, h2, h3, img, [role='button'], [role='dialog'], [aria-modal='true'], dialog",
+      "matched": 684,
+      "error": null
+    }
+  ],
+  "elements": [
+    {
+      "selector": "html > body",
+      "selectorUnique": true,
+      "tag": "body",
+      "id": null,
+      "classes": [
+        "mat-typography",
+        "preLogin"
+      ],
+      "text": "ABC Home ABC Solutions 1800-270-7000 Products Health Corner Claims Hospital Netw",
+      "size": {
+        "width": 1366,
+        "height": 900
+      },
+      "position": {
+        "x": 0,
+        "y": 137
+      },
+      "colour": {
+        "color": "rgb(51, 51, 51)",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": true,
+        "reason": null,
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": true
+      },
+      "computed": {
+        "width": "1366px",
+        "height": "900px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(1) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [],
+      "text": "ABC Home",
+      "size": {
+        "width": 130.69,
+        "height": 30.59
+      },
+      "position": {
+        "x": 912.34,
+        "y": 4.7
+      },
+      "colour": {
+        "color": "rgb(255, 255, 255)",
+        "backgroundColor": "rgb(201, 20, 41)",
+        "effectiveBackgroundColor": "rgb(201, 20, 41)"
+      },
+      "visibility": {
+        "visible": true,
+        "reason": null,
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": true
+      },
+      "computed": {
+        "width": "130.688px",
+        "height": "30.5938px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [
+        "dropdown-toggle",
+        "overlay-btn"
+      ],
+      "text": "ABC Solutions",
+      "size": {
+        "width": 129.84,
+        "height": 29.59
+      },
+      "position": {
+        "x": 1058.03,
+        "y": 5.2
+      },
+      "colour": {
+        "color": "rgb(201, 20, 41)",
+        "backgroundColor": "rgb(255, 255, 255)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": true,
+        "reason": null,
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": true
+      },
+      "computed": {
+        "width": "129.844px",
+        "height": "29.5938px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > a > em > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [
+        "dropdown_arrow"
+      ],
+      "text": "",
+      "size": {
+        "width": 12,
+        "height": 12
+      },
+      "position": {
+        "x": 1162.88,
+        "y": 14.78
+      },
+      "colour": {
+        "color": "rgb(201, 20, 41)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": true,
+        "reason": null,
+        "display": "inline",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": true
+      },
+      "computed": {
+        "width": "12px",
+        "height": "12px",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(1) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [],
+      "text": "Home Finance",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(1) > a > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(2) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [],
+      "text": "Personal Finance",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(2) > a > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(3) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [],
+      "text": "SME Finance",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(3) > a > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(4) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [],
+      "text": "Loan Against Securities",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(4) > a > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(5) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [],
+      "text": "Business",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(5) > a > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(6) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [],
+      "text": "Loan Against Property",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(1) > ul > li:nth-of-type(6) > a > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(2) > ul > li:nth-of-type(1) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [],
+      "text": "Mutual Funds",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(2) > ul > li:nth-of-type(1) > a > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(2) > ul > li:nth-of-type(2) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [],
+      "text": "Stock and Securities",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(2) > ul > li:nth-of-type(2) > a > img",
+      "selectorUnique": true,
+      "tag": "img",
+      "id": null,
+      "classes": [],
+      "text": "",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "auto",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    },
+    {
+      "selector": "#top-header > div:nth-of-type(2) > div > div > div:nth-of-type(1) > div:nth-of-type(2) > ul > li:nth-of-type(3) > a",
+      "selectorUnique": true,
+      "tag": "a",
+      "id": null,
+      "classes": [],
+      "text": "Wealth",
+      "size": {
+        "width": 0,
+        "height": 0
+      },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "colour": {
+        "color": "rgba(0, 0, 0, 0.8)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "effectiveBackgroundColor": "rgb(255, 255, 255)"
+      },
+      "visibility": {
+        "visible": false,
+        "reason": "zero size",
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "inViewport": false
+      },
+      "computed": {
+        "width": "100%",
+        "height": "auto",
+        "fontSize": "14px",
+        "fontWeight": "400",
+        "position": "static",
+        "zIndex": "auto",
+        "pointerEvents": "auto"
+      }
+    }
+  ],
+  "truncated": false
+}

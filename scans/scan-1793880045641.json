@@ -1,0 +1,638 @@
+{
+  "scanId": "scan-1793880045641",
+  "url": "https://www.tataaig.com/",
+  "status": "completed",
+  "startedAt": "2026-11-05T12:00:45.641Z",
+  "finishedAt": "2026-11-05T12:05:23.959Z",
+  "durationMs": 278318,
+  "states": 14,
+  "interactions": 38,
+  "interactionBreakdown": {
+    "clicks": 25,
+    "hovers": 13,
+    "fieldsFilled": 0,
+    "selections": 0,
+    "dialogsHandled": 0
+  },
+  "fieldsFilled": 0,
+  "stepsVisited": 1,
+  "popupsHandled": 0,
+  "domStates": [
+    {
+      "name": "initial page",
+      "index": 1,
+      "timestamp": "2026-11-05T12:01:47.325Z",
+      "url": "https://www.tataaig.com/",
+      "dom": {
+        "saved": true,
+        "file": "scan-1793880045641-01-initial-page.dom.html",
+        "url": "/snapshots/scan-1793880045641-01-initial-page.dom.html",
+        "timestamp": "2026-11-05T12:01:47.325Z",
+        "bytes": 215506,
+        "elementCount": 2633,
+        "scriptsRemoved": 80,
+        "reason": null
+      },
+      "styles": {
+        "saved": true,
+        "file": "scan-1793880045641-01-initial-page.styles.json",
+        "url": "/snapshots/scan-1793880045641-01-initial-page.styles.json",
+        "timestamp": "2026-11-05T12:01:47.325Z",
+        "elements": 21,
+        "truncated": false,
+        "queries": [
+          {
+            "query": "body",
+            "matched": 1,
+            "error": null
+          },
+          {
+            "query": "a, button, input, select, textarea, label, h1, h2, h3, img, [role='button'], [role='dialog'], [aria-modal='true'], dialog",
+            "matched": 626,
+            "error": null
+          }
+        ],
+        "reason": null
+      }
+    },
+    {
+      "name": "final state",
+      "index": 2,
+      "timestamp": "2026-11-05T12:05:20.245Z",
+      "url": "https://www.tataaig.com/financial-liabilities-insurance",
+      "dom": {
+        "saved": true,
+        "file": "scan-1793880045641-02-final-state.dom.html",
+        "url": "/snapshots/scan-1793880045641-02-final-state.dom.html",
+        "timestamp": "2026-11-05T12:05:20.245Z",
+        "bytes": 345907,
+        "elementCount": 1155,
+        "scriptsRemoved": 84,
+        "reason": null
+      },
+      "styles": {
+        "saved": true,
+        "file": "scan-1793880045641-02-final-state.styles.json",
+        "url": "/snapshots/scan-1793880045641-02-final-state.styles.json",
+        "timestamp": "2026-11-05T12:05:20.245Z",
+        "elements": 21,
+        "truncated": false,
+        "queries": [
+          {
+            "query": "body",
+            "matched": 1,
+            "error": null
+          },
+          {
+            "query": "a, button, input, select, textarea, label, h1, h2, h3, img, [role='button'], [role='dialog'], [aria-modal='true'], dialog",
+            "matched": 309,
+            "error": null
+          }
+        ],
+        "reason": null
+      }
+    }
+  ],
+  "navLinksChecked": 25,
+  "message": "Done",
+  "screenshotUrl": "/screenshots/full-1793880045641.png",
+  "elementScreenshotUrl": "/screenshots/element-1793880045641.png",
+  "elementScreenshots": [
+    {
+      "label": "body",
+      "url": "/screenshots/element-1793880045641.png"
+    }
+  ],
+  "selectorCropUrl": null,
+  "stoppedBeforeSensitiveField": false,
+  "sensitiveField": null,
+  "dropdowns": {
+    "handled": 0,
+    "skipped": 0
+  },
+  "navigationCheck": [
+    {
+      "menu": "Claims",
+      "item": "Marine Cargo",
+      "result": "URL changed",
+      "url": "https://www.tataaig.com/sme-insurance/marine-insurance"
+    },
+    {
+      "menu": "Claims",
+      "item": "Group Health",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Claims",
+      "item": "Fire & Burglary",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Claims",
+      "item": "Marine Open",
+      "result": "URL changed",
+      "url": "https://www.tataaig.com/sme-insurance/fire-burglary-insurance"
+    },
+    {
+      "menu": "Claims",
+      "item": "Workmen Insurance",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Claims",
+      "item": "Professional Indemnity",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Claims",
+      "item": "Student Travel",
+      "result": "URL changed",
+      "url": "https://www.tataaig.com/sme-insurance/pi-insurance"
+    },
+    {
+      "menu": "Claims",
+      "item": "Accident Insurance",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Claims",
+      "item": "Home Insurance",
+      "result": "URL changed",
+      "url": "https://www.tataaig.com/home-insurance"
+    },
+    {
+      "menu": "Claims",
+      "item": "Casualty Insurance",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Claims",
+      "item": "Private Client Group Insurance",
+      "result": "URL changed",
+      "url": "https://www.tataaig.com/private-client-group-insurance"
+    },
+    {
+      "menu": "Claims",
+      "item": "Financial Lines",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Get Quote",
+      "item": "Get Quote",
+      "result": "URL changed",
+      "url": "https://www.tataaig.com/financial-liabilities-insurance"
+    },
+    {
+      "menu": "Support",
+      "item": "Marine Cargo",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Support",
+      "item": "Group Health",
+      "result": "URL changed",
+      "url": "https://www.tataaig.com/sme-insurance/group-health-insurance"
+    },
+    {
+      "menu": "Support",
+      "item": "Fire & Burglary",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Support",
+      "item": "Marine Open",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Support",
+      "item": "Workmen Insurance",
+      "result": "URL changed",
+      "url": "https://www.tataaig.com/sme-insurance/marine-insurance/annual-open-policy"
+    },
+    {
+      "menu": "Support",
+      "item": "Professional Indemnity",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Support",
+      "item": "Student Travel",
+      "result": "URL changed",
+      "url": "https://www.tataaig.com/travel-insurance/student-travel-insurance"
+    },
+    {
+      "menu": "Support",
+      "item": "Accident Insurance",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Support",
+      "item": "Home Insurance",
+      "result": "URL changed",
+      "url": "https://www.tataaig.com/individual-personal-accident-insurance"
+    },
+    {
+      "menu": "Support",
+      "item": "Casualty Insurance",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    },
+    {
+      "menu": "Support",
+      "item": "Private Client Group Insurance",
+      "result": "URL changed",
+      "url": "https://www.tataaig.com/private-client-group-insurance"
+    },
+    {
+      "menu": "Support",
+      "item": "Financial Lines",
+      "result": "URL unchanged",
+      "url": "https://www.tataaig.com/"
+    }
+  ],
+  "actionLog": [
+    {
+      "action": "Opening https://www.tataaig.com/",
+      "time": "2026-11-05T12:00:46.195Z"
+    },
+    {
+      "action": "Rendered in 29202 ms (HTTP 200, network idle)",
+      "time": "2026-11-05T12:01:15.398Z"
+    },
+    {
+      "action": "Loaded URL: https://www.tataaig.com/",
+      "time": "2026-11-05T12:01:15.400Z"
+    },
+    {
+      "action": "Page title: TATA AIG | Buy Car, Bike, Health & Travel Insurance Online",
+      "time": "2026-11-05T12:01:15.406Z"
+    },
+    {
+      "action": "Popups / cookie banners cleared",
+      "time": "2026-11-05T12:01:18.032Z"
+    },
+    {
+      "action": "Page fully loaded (lazy content scrolled in)",
+      "time": "2026-11-05T12:01:31.855Z"
+    },
+    {
+      "action": "Full page captured in 7 screens",
+      "time": "2026-11-05T12:01:47.324Z"
+    },
+    {
+      "action": "Full-page screenshot saved (before any interaction)",
+      "time": "2026-11-05T12:01:47.325Z",
+      "filename": "full-1793880045641.png"
+    },
+    {
+      "action": "DOM and styles saved for state \"initial page\"",
+      "time": "2026-11-05T12:01:47.811Z",
+      "dom": "scan-1793880045641-01-initial-page.dom.html",
+      "styles": "scan-1793880045641-01-initial-page.styles.json"
+    },
+    {
+      "action": "Navigation guard ON - staying on this URL",
+      "time": "2026-11-05T12:01:47.817Z"
+    },
+    {
+      "action": "Nav 1: \"Claims\" - hovering",
+      "time": "2026-11-05T12:01:47.859Z"
+    },
+    {
+      "action": "Nav 1: dropdown opened with 12 link(s), URL unchanged so far",
+      "time": "2026-11-05T12:01:49.715Z"
+    },
+    {
+      "action": "Nav 1.1: \"Marine Cargo\" - clicking",
+      "time": "2026-11-05T12:01:49.718Z"
+    },
+    {
+      "action": "Nav 1.1: URL changed to https://www.tataaig.com/sme-insurance/marine-insurance",
+      "time": "2026-11-05T12:01:52.569Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-11-05T12:02:37.198Z"
+    },
+    {
+      "action": "Nav 1: hovering \"Claims\" again",
+      "time": "2026-11-05T12:02:37.198Z"
+    },
+    {
+      "action": "Nav 1.2: \"Group Health\" - clicking",
+      "time": "2026-11-05T12:02:38.783Z"
+    },
+    {
+      "action": "Nav 1.2: URL unchanged",
+      "time": "2026-11-05T12:02:41.847Z"
+    },
+    {
+      "action": "Nav 1.3: \"Fire & Burglary\" - clicking",
+      "time": "2026-11-05T12:02:41.857Z"
+    },
+    {
+      "action": "Nav 1.3: URL unchanged",
+      "time": "2026-11-05T12:02:43.922Z"
+    },
+    {
+      "action": "Nav 1.4: \"Marine Open\" - clicking",
+      "time": "2026-11-05T12:02:43.936Z"
+    },
+    {
+      "action": "Nav 1.4: URL changed to https://www.tataaig.com/sme-insurance/fire-burglary-insurance",
+      "time": "2026-11-05T12:02:46.641Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-11-05T12:02:53.681Z"
+    },
+    {
+      "action": "Nav 1: hovering \"Claims\" again",
+      "time": "2026-11-05T12:02:53.682Z"
+    },
+    {
+      "action": "Nav 1.5: \"Workmen Insurance\" - clicking",
+      "time": "2026-11-05T12:02:55.988Z"
+    },
+    {
+      "action": "Nav 1.5: URL unchanged",
+      "time": "2026-11-05T12:02:58.059Z"
+    },
+    {
+      "action": "Nav 1.6: \"Professional Indemnity\" - clicking",
+      "time": "2026-11-05T12:02:58.077Z"
+    },
+    {
+      "action": "Nav 1.6: URL unchanged",
+      "time": "2026-11-05T12:03:00.369Z"
+    },
+    {
+      "action": "Nav 1.7: \"Student Travel\" - clicking",
+      "time": "2026-11-05T12:03:00.378Z"
+    },
+    {
+      "action": "Nav 1.7: URL changed to https://www.tataaig.com/sme-insurance/pi-insurance",
+      "time": "2026-11-05T12:03:03.282Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-11-05T12:03:08.174Z"
+    },
+    {
+      "action": "Nav 1: hovering \"Claims\" again",
+      "time": "2026-11-05T12:03:08.174Z"
+    },
+    {
+      "action": "Nav 1.8: \"Accident Insurance\" - clicking",
+      "time": "2026-11-05T12:03:09.650Z"
+    },
+    {
+      "action": "Nav 1.8: URL unchanged",
+      "time": "2026-11-05T12:03:13.284Z"
+    },
+    {
+      "action": "Nav 1.9: \"Home Insurance\" - clicking",
+      "time": "2026-11-05T12:03:14.196Z"
+    },
+    {
+      "action": "Nav 1.9: URL changed to https://www.tataaig.com/home-insurance",
+      "time": "2026-11-05T12:03:16.663Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-11-05T12:03:21.748Z"
+    },
+    {
+      "action": "Nav 1: hovering \"Claims\" again",
+      "time": "2026-11-05T12:03:21.749Z"
+    },
+    {
+      "action": "Nav 1.10: \"Casualty Insurance\" - clicking",
+      "time": "2026-11-05T12:03:23.607Z"
+    },
+    {
+      "action": "Nav 1.10: URL unchanged",
+      "time": "2026-11-05T12:03:27.626Z"
+    },
+    {
+      "action": "Nav 1.11: \"Private Client Group Insurance\" - clicking",
+      "time": "2026-11-05T12:03:27.641Z"
+    },
+    {
+      "action": "Nav 1.11: URL changed to https://www.tataaig.com/private-client-group-insurance",
+      "time": "2026-11-05T12:03:29.799Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-11-05T12:03:35.895Z"
+    },
+    {
+      "action": "Nav 1: hovering \"Claims\" again",
+      "time": "2026-11-05T12:03:35.895Z"
+    },
+    {
+      "action": "Nav 1.12: \"Financial Lines\" - clicking",
+      "time": "2026-11-05T12:03:37.237Z"
+    },
+    {
+      "action": "Nav 1.12: URL unchanged",
+      "time": "2026-11-05T12:03:40.605Z"
+    },
+    {
+      "action": "Nav 2: \"Get Quote\" - hovering",
+      "time": "2026-11-05T12:03:44.250Z"
+    },
+    {
+      "action": "Nav 2: \"Get Quote\" - nothing on hover, clicking",
+      "time": "2026-11-05T12:03:45.384Z"
+    },
+    {
+      "action": "Nav 2: URL changed to https://www.tataaig.com/financial-liabilities-insurance",
+      "time": "2026-11-05T12:03:47.052Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-11-05T12:03:51.736Z"
+    },
+    {
+      "action": "Nav 3: \"Support\" - hovering",
+      "time": "2026-11-05T12:03:51.766Z"
+    },
+    {
+      "action": "Nav 3: dropdown opened with 12 link(s), URL unchanged so far",
+      "time": "2026-11-05T12:03:53.610Z"
+    },
+    {
+      "action": "Nav 3.1: \"Marine Cargo\" - clicking",
+      "time": "2026-11-05T12:03:53.637Z"
+    },
+    {
+      "action": "Nav 3.1: URL unchanged",
+      "time": "2026-11-05T12:03:56.428Z"
+    },
+    {
+      "action": "Nav 3.2: \"Group Health\" - clicking",
+      "time": "2026-11-05T12:03:56.870Z"
+    },
+    {
+      "action": "Nav 3.2: URL changed to https://www.tataaig.com/sme-insurance/group-health-insurance",
+      "time": "2026-11-05T12:03:59.778Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-11-05T12:04:05.040Z"
+    },
+    {
+      "action": "Nav 3: hovering \"Support\" again",
+      "time": "2026-11-05T12:04:05.041Z"
+    },
+    {
+      "action": "Nav 3.3: \"Fire & Burglary\" - clicking",
+      "time": "2026-11-05T12:04:06.258Z"
+    },
+    {
+      "action": "Nav 3.3: URL unchanged",
+      "time": "2026-11-05T12:04:08.646Z"
+    },
+    {
+      "action": "Nav 3.4: \"Marine Open\" - clicking",
+      "time": "2026-11-05T12:04:08.698Z"
+    },
+    {
+      "action": "Nav 3.4: URL unchanged",
+      "time": "2026-11-05T12:04:10.756Z"
+    },
+    {
+      "action": "Nav 3.5: \"Workmen Insurance\" - clicking",
+      "time": "2026-11-05T12:04:13.264Z"
+    },
+    {
+      "action": "Nav 3.5: URL changed to https://www.tataaig.com/sme-insurance/marine-insurance/annual-open-policy",
+      "time": "2026-11-05T12:04:19.396Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-11-05T12:04:26.072Z"
+    },
+    {
+      "action": "Nav 3: hovering \"Support\" again",
+      "time": "2026-11-05T12:04:26.072Z"
+    },
+    {
+      "action": "Nav 3.6: \"Professional Indemnity\" - clicking",
+      "time": "2026-11-05T12:04:27.479Z"
+    },
+    {
+      "action": "Nav 3.6: URL unchanged",
+      "time": "2026-11-05T12:04:30.096Z"
+    },
+    {
+      "action": "Nav 3.7: \"Student Travel\" - clicking",
+      "time": "2026-11-05T12:04:30.112Z"
+    },
+    {
+      "action": "Nav 3.7: URL changed to https://www.tataaig.com/travel-insurance/student-travel-insurance",
+      "time": "2026-11-05T12:04:32.238Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-11-05T12:04:39.107Z"
+    },
+    {
+      "action": "Nav 3: hovering \"Support\" again",
+      "time": "2026-11-05T12:04:39.107Z"
+    },
+    {
+      "action": "Nav 3.8: \"Accident Insurance\" - clicking",
+      "time": "2026-11-05T12:04:40.421Z"
+    },
+    {
+      "action": "Nav 3.8: URL unchanged",
+      "time": "2026-11-05T12:04:43.411Z"
+    },
+    {
+      "action": "Nav 3.9: \"Home Insurance\" - clicking",
+      "time": "2026-11-05T12:04:46.409Z"
+    },
+    {
+      "action": "Nav 3.9: URL changed to https://www.tataaig.com/individual-personal-accident-insurance",
+      "time": "2026-11-05T12:04:50.077Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-11-05T12:04:55.761Z"
+    },
+    {
+      "action": "Nav 3: hovering \"Support\" again",
+      "time": "2026-11-05T12:04:55.762Z"
+    },
+    {
+      "action": "Nav 3.10: \"Casualty Insurance\" - clicking",
+      "time": "2026-11-05T12:04:57.036Z"
+    },
+    {
+      "action": "Nav 3.10: URL unchanged",
+      "time": "2026-11-05T12:04:59.487Z"
+    },
+    {
+      "action": "Nav 3.11: \"Private Client Group Insurance\" - clicking",
+      "time": "2026-11-05T12:04:59.513Z"
+    },
+    {
+      "action": "Nav 3.11: URL changed to https://www.tataaig.com/private-client-group-insurance",
+      "time": "2026-11-05T12:05:01.653Z"
+    },
+    {
+      "action": "Back on the original URL",
+      "time": "2026-11-05T12:05:09.346Z"
+    },
+    {
+      "action": "Nav 3: hovering \"Support\" again",
+      "time": "2026-11-05T12:05:09.346Z"
+    },
+    {
+      "action": "Nav 3.12: \"Financial Lines\" - clicking",
+      "time": "2026-11-05T12:05:12.129Z"
+    },
+    {
+      "action": "Nav 3.12: URL unchanged",
+      "time": "2026-11-05T12:05:15.592Z"
+    },
+    {
+      "action": "Nav bar pass finished: 25 link(s) checked",
+      "time": "2026-11-05T12:05:19.144Z"
+    },
+    {
+      "action": "Dropdown pass finished: 0 filled, 0 skipped",
+      "time": "2026-11-05T12:05:19.151Z"
+    },
+    {
+      "action": "Quote button pass finished",
+      "time": "2026-11-05T12:05:19.162Z"
+    },
+    {
+      "action": "Element screenshot saved",
+      "time": "2026-11-05T12:05:20.245Z",
+      "filename": "element-1793880045641.png",
+      "selector": "body"
+    },
+    {
+      "action": "DOM and styles saved for state \"final state\"",
+      "time": "2026-11-05T12:05:20.594Z",
+      "dom": "scan-1793880045641-02-final-state.dom.html",
+      "styles": "scan-1793880045641-02-final-state.styles.json"
+    }
+  ]
+}
