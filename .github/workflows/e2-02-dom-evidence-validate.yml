@@ -49,6 +49,9 @@ jobs:
           echo ""
           echo "=== E2-10 Test Files ==="
           find E2-10_tests -type f -name '*_test.js' 2>/dev/null | sort || true
+          echo ""
+          echo "=== E2-11 Test Files ==="
+          find E2-11_tests -type f -name '*_test.js' 2>/dev/null | sort || true
 
       - name: Run E2-02 tests (new feature)
         timeout-minutes: 2
@@ -73,6 +76,14 @@ jobs:
           set -o pipefail
           npm run test:e2-10 2>&1 | tee e2-10-output.log
 
+      - name: Run E2-11 context matrix tests
+        if: hashFiles('E2-11_tests/context_matrix_test.js') != ''
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:e2-11 2>&1 | tee e2-11-output.log
+
       - name: Upload test output artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -83,6 +94,7 @@ jobs:
             e2-04-output.log
             e2-07-output.log
             e2-10-output.log
+            e2-11-output.log
           if-no-files-found: ignore
           retention-days: 30
 
@@ -96,6 +108,7 @@ jobs:
           echo "E2-04 (regression): 4 test files"
           echo "E2-07 (regression): 2 test files"
           echo "E2-10: when present on PR head"
+          echo "E2-11: when present on PR head"
 
   test-integration-with-main:
     runs-on: ubuntu-latest
@@ -181,6 +194,14 @@ jobs:
           set -o pipefail
           npm run test:e2-10 2>&1 | tee e2-10-integration.log
 
+      - name: Run E2-11 context matrix tests on integration
+        if: hashFiles('E2-11_tests/context_matrix_test.js') != ''
+        timeout-minutes: 3
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:e2-11 2>&1 | tee e2-11-integration.log
+
       - name: Run npm test (full regression suite)
         timeout-minutes: 10
         run: npm test 2>&1 | tee regression-full.log
@@ -196,6 +217,7 @@ jobs:
             e2-04-integration.log
             e2-07-integration.log
             e2-10-integration.log
+            e2-11-integration.log
             regression-full.log
           if-no-files-found: ignore
           retention-days: 30
@@ -214,4 +236,5 @@ jobs:
           echo "E2-04 (regression): 4 test files"
           echo "E2-07 (regression): 2 test files"
           echo "E2-10: when present on integration candidate"
+          echo "E2-11: when present on integration candidate"
           echo "npm test (full suite): All suites with --test-concurrency=3"

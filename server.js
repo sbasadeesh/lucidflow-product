@@ -30,6 +30,7 @@ const { checkSecurityGuards } = require("./security-guard/securityGuard");
 const overlayObservationConfig = require("./overlayObservation/overlayObservation.config");
 const { createOverlayObserver, formatDiagnostics } = require("./overlayObservation/overlayObserver");
 const { snapshotOverlays, identifyTarget } = require("./overlayObservation/overlaySnapshot");
+const { analyzeContexts } = require("./context_analyzer/context_analyzer");
 // [E2-02] DOM/style evidence prototype: allowlisted structural/style JSON (off by default)
 const domEvidence = (() => {
     try { return require("./domEvidence/domEvidence"); } catch { return null; }
@@ -2154,6 +2155,8 @@ app.post("/api/screenshot", async (req, res) => {
 
     const scanId = `scan-${state.ts}`;
     const startedAt = new Date().toISOString();
+    // [E2-11] ADDED public JSON field on /api/screenshot summaries. SAFE_HOLD does not stop the scan.
+    let contextSupportMatrix = null;
     const domSession = domEvidence?.createSession({ scanId, dir: scansDir, env: process.env }) || null;
     if (domEvidence?.startupLine) {
         const line = domEvidence.startupLine(domEvidence.resolveGate(process.env));
@@ -2192,6 +2195,7 @@ app.post("/api/screenshot", async (req, res) => {
             stabilizer: state.stab,
             rawObservations: buildRawObservationManifest(state.rawObservations),   // [E2-04]
             signalsAtLoad: state.signalsAtLoad,                                     // [E2-04]
+            contextSupportMatrix,                                                   // [E2-11] ADDED public JSON field
             ...extra,
             actionLog: actions,
         };
@@ -2311,6 +2315,10 @@ app.post("/api/screenshot", async (req, res) => {
         // [E2-04] record timers / overlays present at load, before any stabilization
         state.signalsAtLoad = await detectTemporalSignals(page);
         record(`Temporal signals observed at load: ${state.signalsAtLoad.join(", ") || "none"}`);
+
+        // [E2-11] Once per scan. Unsupported contexts are reported; they do not stop the scan.
+        contextSupportMatrix = await analyzeContexts(page);
+        record(`Context matrix: ${contextSupportMatrix.status} (${contextSupportMatrix.reason || "none"})`);
 
         // ---------- Aditya Birla quote flow ----------
         if (parsedUrl.hostname.includes("adityabirlahealthinsurance.com")) {
@@ -2611,6 +2619,8 @@ app.post("/api/script", async (req, res) => {
     };
 
     const loadInfo = { requestedUrl: parsedUrl.href, finalUrl: parsedUrl.href, redirected: false, redirectChain: [], statusCode: null };
+    // [E2-11] ADDED public JSON field on /api/script summaries. SAFE_HOLD does not stop the run.
+    let contextSupportMatrix = null;
 
     const summarize = (status, extra = {}) => {
         const summary = {
@@ -2628,6 +2638,7 @@ app.post("/api/script", async (req, res) => {
             startedAt,
             finishedAt: new Date().toISOString(),
             durationMs: Date.now() - ts,
+            contextSupportMatrix, // [E2-11] ADDED public JSON field
             ...extra,
             actionLog: actions,
         };
@@ -2677,6 +2688,10 @@ app.post("/api/script", async (req, res) => {
 
         // popups that open by themselves would sit on top of every state
         await waitAndDismissPopups(page, record, { waitMs: 4000, minWaitMs: 1500, observationPhase: "script_pre_wait" });
+
+        // [E2-11] Once per script run. Unsupported contexts are reported; they do not stop the run.
+        contextSupportMatrix = await analyzeContexts(page);
+        record(`Context matrix: ${contextSupportMatrix.status} (${contextSupportMatrix.reason || "none"})`);
 
         // ---- keep every state steady (animations off, volatile parts masked) ----
         const stabilizeOn = body.stabilize !== false;
