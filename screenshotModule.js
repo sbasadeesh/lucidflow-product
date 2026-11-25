@@ -9,6 +9,53 @@
 const fs = require("fs");
 const path = require("path");
 
+// [E2-10] Visible landmark, then hidden spinner. Timeout is a typed SAFE_HOLD.
+// A page with no matching landmark and no spinner has nothing to wait for.
+async function waitForReadiness(page, options = {}) {
+    const timeoutMs = options.timeoutMs || 10000;
+    const landmarkSelector = options.landmark || "main, h1, [data-testid='main']";
+    const spinnerSelector = options.spinner || ".spinner, .loading, [role='progressbar']";
+
+    const start = Date.now();
+    const deadline = start + timeoutMs;
+    const landmark = page.locator(landmarkSelector).first();
+    const spinner = page.locator(spinnerSelector).first();
+
+    try {
+        while (Date.now() <= deadline) {
+            const landmarkCount = await landmark.count();
+            const landmarkVisible = landmarkCount > 0 && await landmark.isVisible().catch(() => false);
+            const spinnerVisible = await spinner.isVisible().catch(() => false);
+
+            if (landmarkVisible && !spinnerVisible) {
+                return { status: "CONTROL_OK", durationMs: Date.now() - start };
+            }
+            // No landmark in the document and no spinner: the page is already idle.
+            if (landmarkCount === 0 && !spinnerVisible) {
+                return { status: "CONTROL_OK", durationMs: Date.now() - start };
+            }
+
+            const remaining = deadline - Date.now();
+            if (remaining <= 0) break;
+            await page.waitForTimeout(Math.min(100, remaining));
+        }
+
+        return {
+            status: "SAFE_HOLD",
+            reason: "READINESS_TIMEOUT",
+            details: `Landmark "${landmarkSelector}" or spinner did not resolve within ${timeoutMs}ms`,
+            durationMs: Date.now() - start
+        };
+    } catch (err) {
+        return {
+            status: "SAFE_HOLD",
+            reason: "READINESS_TIMEOUT",
+            details: `Landmark "${landmarkSelector}" or spinner did not resolve within ${timeoutMs}ms`,
+            durationMs: Date.now() - start
+        };
+    }
+}
+
 async function scrollToLoadContent(page) {
     await page.waitForLoadState("load", { timeout: 30000 }).catch(() => { });
     await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => { });
@@ -361,6 +408,7 @@ function buildRawObservationManifest(entries = []) {
 }
 
 module.exports = {
+    waitForReadiness,
     scrollToLoadContent,
     takeFullPage,
     captureElementShot,

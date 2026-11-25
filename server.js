@@ -13,6 +13,7 @@ const {
     listScans,
     readScan,
     buildRawObservationManifest,   // [E2-04]
+    waitForReadiness,
 } = require("./screenshotModule");
 const {
     stabilizePage,
@@ -2350,6 +2351,25 @@ app.post("/api/screenshot", async (req, res) => {
         //    before touching anything.
         // wait for an automatic popup to open, cancel it, then load the whole page
         stats.popupsHandled += await waitAndDismissPopups(page, record, { observationPhase: "screenshot_initial_wait" });
+
+        // [E2-10] Readiness before scroll. SAFE_HOLD closes the browser and is not an assessed status.
+        const readiness = await waitForReadiness(page, { timeoutMs: 10000 });
+        record(`Readiness check: ${readiness.status} (${readiness.durationMs}ms)`);
+        if (readiness.status === "SAFE_HOLD") {
+            record(`Controlled rejection: ${readiness.reason}`);
+            await browser.close();
+            browser = null;
+            return res.json(finish("not_assessed", {
+                message: `Scan stopped: ${readiness.reason}`,
+                reason: readiness.reason,
+                details: readiness.details,
+                readinessMetrics: readiness,
+                screenshotUrl: null,
+                elementScreenshotUrl: null,
+                elementScreenshots: [],
+            }));
+        }
+
         await scrollToLoadContent(page);
         record("Page fully loaded (lazy content scrolled in)");
         // popups can also open while scrolling
