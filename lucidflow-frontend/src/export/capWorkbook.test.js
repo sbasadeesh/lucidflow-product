@@ -26,7 +26,8 @@ describe("CAP template", () => {
       const row = HEADER_ROW + 1 + i;
       expect(cellOf(sheet, row, "Finding").value).toBe(cap.findingRef);
       expect(cellOf(sheet, row, "Owner").value).toBe(cap.owner);
-      expect(cellOf(sheet, row, "Corrective action").value).toBe(CAP_AI_PLACEHOLDER.action);    });
+      expect(cellOf(sheet, row, "Corrective action").value).toBe(CAP_AI_PLACEHOLDER.action);
+    });
 
     // no extra row after the last finding
     expect(sheet.getRow(HEADER_ROW + 1 + report.cap.length).hasValues).toBe(false);
@@ -53,7 +54,6 @@ describe("CAP template", () => {
     });
     expect(sheet.getRow(HEADER_ROW + 1).hasValues).toBe(false);
   });
-});
 
   // AI columns
   it("Given any findings, when the CAP template is generated, then Root cause and Corrective action hold placeholder text until the AI is connected", () => {
@@ -64,3 +64,4 @@ describe("CAP template", () => {
       expect(cellOf(sheet, row, "Corrective action").value).toBe(CAP_AI_PLACEHOLDER.action);
     });
   });
+});

@@ -1,3014 +1,0 @@
-
-> lucidflow-frontend@0.1.0 test:run
-> vitest run src/pages/SettingsPages.test.jsx
-
-
-[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mC:/Users/reshm/Downloads/tasks/E7-08/lucidflow-frontend[39m
-
- [31m‚ùØ[39m src/pages/SettingsPages.test.jsx [2m([22m[2m0 test[22m[2m)[22m
-
-node.exe : [31m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[1m[7m Failed Suites 1 [27m[22m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[39m
-At C:\Program Files\nodejs\npm.ps1:29 char:3
-+   & $NODE_EXE $NPM_CLI_JS $args
-+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: ([31m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[1m...22m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[39m:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
-
-[31m[1m[7m FAIL [27m[22m[39m src/pages/SettingsPages.test.jsx[2m [ src/pages/SettingsPages.test.jsx ][22m
-[31m[1mError[22m: Failed to resolve import "./SettingsSection.jsx" from "src/pages/SettingsPages.test.jsx". Does the file exist?[39m
-  Plugin: [35mvite:import-analysis[39m
-  File: [36mC:/Users/reshm/Downloads/tasks/E7-08/lucidflow-frontend/src/pages/SettingsPages.test.jsx[39m:6:28
-[33m  5  |  import Layout from "../components/Layout.jsx";
-  6  |  import Settings from "./Settings.jsx";
-  7  |  import SettingsSection from "./SettingsSection.jsx";
-     |                               ^
-  8  |  import { SETTINGS_SECTIONS, PLANNED_LABEL } from "../config.js";
-  9  |  function renderAt(path) {[39m
-[90m [2m‚ùØ[22m TransformPluginContext._formatError node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49258:41[22m[39m
-[90m [2m‚ùØ[22m TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49253:16[22m[39m
-[90m [2m‚ùØ[22m normalizeUrl node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64307:23[22m[39m
-[90m [2m‚ùØ[22m node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64439:39[22m[39m
-[90m [2m‚ùØ[22m TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64366:7[22m[39m
-[90m [2m‚ùØ[22m PluginContainer.transform node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49099:18[22m[39m
-[90m [2m‚ùØ[22m loadAndTransform node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m51978:27[22m[39m
-
-[31m[2m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[1/1]‚éØ[22m[39m
-
-[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
-[2m      Tests [22m [2mno tests[22m
-[2m   Start at [22m 10:40:39
-[2m   Duration [22m 2.28s[2m (transform 86ms, setup 149ms, collect 0ms, tests 0ms, environment 1.09s, prepare 290ms)[22m
-
-
-> lucidflow-frontend@0.1.0 test:run
-> vitest run src/pages/SettingsPages.test.jsx
-
-
-[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mC:/Users/reshm/Downloads/tasks/E7-08/lucidflow-frontend[39m
-
-node.exe : [90mstderr[2m | src/pages/SettingsPages.test.jsx[2m > [22m[2mSettings dummy pages[2m > [22m[2mGiven Settings, when it opens, then the 6 options show, 
-none is active and the right side is blank
-At C:\Program Files\nodejs\npm.ps1:29 char:3
-+   & $NODE_EXE $NPM_CLI_JS $args
-+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: ([90mstderr[2m...t side is blank:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
-[22m[39m‚ö†Ô∏è React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future 
-flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-‚ö†Ô∏è React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. 
-For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
- [31m‚ùØ[39m src/pages/SettingsPages.test.jsx [2m([22m[2m10 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 331[2mms[22m[39m
-[31m   [31m√ó[31m Settings dummy pages[2m > [22mGiven Settings, when it opens, then the 6 options show, none is active and the right side is blank[90m 155[2mms[22m[31m[39m
-[31m     ‚Üí expected <section ‚Ä¶(1)></section> to be null[39m
-
-[31m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[1m[7m Failed Tests 1 [27m[22m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[39m
-
-[31m[1m[7m FAIL [27m[22m[39m src/pages/SettingsPages.test.jsx[2m > [22mSettings dummy pages[2m > [22mGiven Settings, when it opens, then the 6 options show, none 
-is active and the right side is blank
-[31m[1mAssertionError[22m: expected <section ‚Ä¶(1)></section> to be null[39m
-
-[32m- Expected:[39m 
-null
-
-[31m+ Received:[39m 
-<section
-  class="settings-panel card"
-/>
-
-[36m [2m‚ùØ[22m src/pages/SettingsPages.test.jsx:[2m30:56[22m[39m
-    [90m 28| [39m    [35mconst[39m { container } [33m=[39m [34mrenderAt[39m([32m"/settings"[39m)[33m;[39m
-    [90m 29| [39m    [33mSETTINGS_SECTIONS[39m[33m.[39m[34mforEach[39m((s) [33m=>[39m 
-[34mexpect[39m([34misActive[39m(s[33m.[39mlabel))[33m.[39m[34mtoBe[39m([35mfa[39m‚Ä¶
-    [90m 30| [39m    [34mexpect[39m(container[33m.[39m[34mquerySelector[39m([32m".settings-panel"[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
-    [90m   | [39m                                                       [31m^[39m
-    [90m 31| [39m  })[33m;[39m
-    [90m 32| [39m
-
-[31m[2m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[1/1]‚éØ[22m[39m
-
-[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
-[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m9 passed[39m[22m[90m (10)[39m
-[2m   Start at [22m 14:02:59
-[2m   Duration [22m 3.81s[2m (transform 144ms, setup 334ms, collect 392ms, tests 331ms, environment 1.93s, prepare 251ms)[22m
-
-
-> lucidflow-frontend@0.1.0 test:run
-> vitest run src/components/Layout.test.jsx
-
-
-[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mC:/Users/reshm/Downloads/tasks/E7-08/lucidflow-frontend[39m
-
-node.exe : [90mstderr[2m | src/components/Layout.test.jsx[2m > [22m[2mApp shell[2m > [22m[2mGiven page /, then the logo, sidebar and top bar show
-At C:\Program Files\nodejs\npm.ps1:29 char:3
-+   & $NODE_EXE $NPM_CLI_JS $args
-+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: ([90mstderr[2m...nd top bar show:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
-[22m[39m‚ö†Ô∏è React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the 
-`v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
-‚ö†Ô∏è React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to 
-opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
-
- [31m‚ùØ[39m src/components/Layout.test.jsx [2m([22m[2m16 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[33m 394[2mms[22m[39m
-[31m   [31m√ó[31m Main menu: Remediation and Prevention[2m > [22mGiven the menu, then Remediation and Prevention show after Reports[90m 14[2mms[22m[31m[39m
-[31m     ‚Üí expected 'History' to be 'Remediation' // Object.is equality[39m
-[31m   [31m√ó[31m Main menu: Remediation and Prevention[2m > [22mGiven I click 'Remediation', then a static page opens with its title and "Planned for a later phase"[90m 48[2mms[22m[31m[39m
-[31m     ‚Üí Unable to find an accessible element with the role "link" and name "Remediation"
-
-Here are the accessible roles:
-
-  complementary:
-
-  Name "":
-  [36m<aside[31m
-    [33mclass[31m=[32m"sidebar no-print"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  img:
-
-  Name "LucidFlow - Every Click Flawless. Every Journey Compliant.":
-  [36m<img[31m
-    [33malt[31m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[31m
-    [33msrc[31m=[32m"/logo.png"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  navigation:
-
-  Name "":
-  [36m<nav />[31m
-
-  --------------------------------------------------
-  link:
-
-  Name "Home":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/"[31m
-  [36m/>[31m
-
-  Name "New scan":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/new-scan"[31m
-  [36m/>[31m
-
-  Name "Reports":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/reports"[31m
-  [36m/>[31m
-
-  Name "History":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/history"[31m
-  [36m/>[31m
-
-  Name "Schedule":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/schedule"[31m
-  [36m/>[31m
-
-  Name "Settings":
-  [36m<a[31m
-    [33maria-current[31m=[32m"page"[31m
-    [33mclass[31m=[32m"nav-item active"[31m
-    [33mhref[31m=[32m"/settings"[31m
-  [36m/>[31m
-
-  Name "Profile":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/profile"[31m
-  [36m/>[31m
-
-  Name "Organisation":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/organisation"[31m
-  [36m/>[31m
-
-  Name "Users and roles":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/users-and-roles"[31m
-  [36m/>[31m
-
-  Name "Licence":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/licence"[31m
-  [36m/>[31m
-
-  Name "Data and retention":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/data-and-retention"[31m
-  [36m/>[31m
-
-  Name "Notifications":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/notifications"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  banner:
-
-  Name "":
-  [36m<header[31m
-    [33mclass[31m=[32m"topbar no-print"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  heading:
-
-  Name "Settings":
-  [36m<h1 />[31m
-
-  --------------------------------------------------
-
-Ignored nodes: comments, script, style
-[36m<body>[31m
-  [36m<div>[31m
-    [36m<div[31m
-      [33mclass[31m=[32m"shell"[31m
-    [36m>[31m
-      [36m<aside[31m
-        [33mclass[31m=[32m"sidebar no-print"[31m
-      [36m>[31m
-        [36m<div[31m
-          [33mclass[31m=[32m"logo"[31m
-        [36m>[31m
-          [36m<img[31m
-            [33malt[31m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[31m
-            [33msrc[31m=[32m"/logo.png"[31m
-          [36m/>[31m
-        [36m</div>[31m
-        [36m<nav>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/"[31m
-          [36m>[31m
-            [0mHome[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/new-scan"[31m
-          [36m>[31m
-            [0mNew scan[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/reports"[31m
-          [36m>[31m
-            [0mReports[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/history"[31m
-          [36m>[31m
-            [0mHistory[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/schedule"[31m
-          [36m>[31m
-            [0mSchedule[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33maria-current[31m=[32m"page"[31m
-            [33mclass[31m=[32m"nav-item active"[31m
-            [33mhref[31m=[32m"/settings"[31m
-          [36m>[31m
-            [0mSettings[0m
-          [36m</a>[31m
-        [36m</nav>[31m
-      [36m</aside>[31m
-      [36m<div[31m
-        [33mclass[31m=[32m"main"[31m
-      [36m>[31m
-        [36m<header[31m
-          [33mclass[31m=[32m"topbar no-print"[31m
-        [36m>[31m
-          [36m<h1>[31m
-            [0mSettings[0m
-          [36m</h1>[31m
-          [36m<div[31m
-            [33mclass[31m=[32m"avatar"[31m
-          [36m/>[31m
-        [36m</header>[31m
-        [36m<div[31m
-          [33mclass[31m=[32m"content"[31m
-        [36m>[31m
-          [36m<div[31m
-            [33mclass[31m=[32m"settings-body"[31m
-          [36m>[31m
-            [36m<div[31m
-              [33mclass[31m=[32m"settings-menu card"[31m
-            [36m>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/profile"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[31m
-                  [36m/>[31m
-                  [36m<circle[31m
-                    [33mcx[31m=[32m"12"[31m
-                    [33mcy[31m=[32m"7"[31m
-                    [33mr[31m=[32m"4"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mProfile[0m
-                [36m</span>[31m
-              [36m</a>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/organisation"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M10 6h4M10 10h4M10 14h4M10 18h4"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mOrganisation[0m
-                [36m</span>[31m
-              [36m</a>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/users-and-roles"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"[31m
-                  [36m/>[31m
-                  [36m<circle[31m
-                    [33mcx[31m=[32m"9"[31m
-                    [33mcy[31m=[32m"7"[31m
-                    [33mr[31m=[32m"4"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M22 21v-2a4 4 0 0 0-3-3.87"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M16 3.13a4 4 0 0 1 0 7.75"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mUsers and roles[0m
-                [36m</span>[31m
-              [36m</a>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/licence"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M14 2v6h6M16 13H8M16 17H8M10 9H8"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mLicence[0m
-                [36m</span>[31m
-              [36m</a>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/data-and-retention"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<ellipse[31m
-                    [33mcx[31m=[32m"12"[31m
-                    [33mcy[31m=[32m"5"[31m
-                    [33mrx[31m=[32m"9"[31m
-                    [33mry[31m=[32m"3"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M3 5v14a9 3 0 0 0 18 0V5"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M3 12a9 3 0 0 0 18 0"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mData and retention[0m
-                [36m</span>[31m
-              [36m</a>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/notifications"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M10.3 21a1.94 1.94 0 0 0 3.4 0"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mNotifications[0m
-                [36m</span>[31m
-              [36m</a>[31m
-            [36m</div>[31m
-          [36m</div>[31m
-        [36m</div>[31m
-      [36m</div>[31m
-    [36m</div>[31m
-  [36m</div>[31m
-[36m</body>[31m[39m
-[31m   [31m√ó[31m Main menu: Remediation and Prevention[2m > [22mGiven I click 'Prevention', then a static page opens with its title and "Planned for a later phase"[90m 41[2mms[22m[31m[39m
-[31m     ‚Üí Unable to find an accessible element with the role "link" and name "Prevention"
-
-Here are the accessible roles:
-
-  complementary:
-
-  Name "":
-  [36m<aside[31m
-    [33mclass[31m=[32m"sidebar no-print"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  img:
-
-  Name "LucidFlow - Every Click Flawless. Every Journey Compliant.":
-  [36m<img[31m
-    [33malt[31m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[31m
-    [33msrc[31m=[32m"/logo.png"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  navigation:
-
-  Name "":
-  [36m<nav />[31m
-
-  --------------------------------------------------
-  link:
-
-  Name "Home":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/"[31m
-  [36m/>[31m
-
-  Name "New scan":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/new-scan"[31m
-  [36m/>[31m
-
-  Name "Reports":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/reports"[31m
-  [36m/>[31m
-
-  Name "History":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/history"[31m
-  [36m/>[31m
-
-  Name "Schedule":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/schedule"[31m
-  [36m/>[31m
-
-  Name "Settings":
-  [36m<a[31m
-    [33maria-current[31m=[32m"page"[31m
-    [33mclass[31m=[32m"nav-item active"[31m
-    [33mhref[31m=[32m"/settings"[31m
-  [36m/>[31m
-
-  Name "Profile":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/profile"[31m
-  [36m/>[31m
-
-  Name "Organisation":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/organisation"[31m
-  [36m/>[31m
-
-  Name "Users and roles":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/users-and-roles"[31m
-  [36m/>[31m
-
-  Name "Licence":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/licence"[31m
-  [36m/>[31m
-
-  Name "Data and retention":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/data-and-retention"[31m
-  [36m/>[31m
-
-  Name "Notifications":
-  [36m<a[31m
-    [33mclass[31m=[32m"settings-item"[31m
-    [33mhref[31m=[32m"/settings/notifications"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  banner:
-
-  Name "":
-  [36m<header[31m
-    [33mclass[31m=[32m"topbar no-print"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  heading:
-
-  Name "Settings":
-  [36m<h1 />[31m
-
-  --------------------------------------------------
-
-Ignored nodes: comments, script, style
-[36m<body>[31m
-  [36m<div>[31m
-    [36m<div[31m
-      [33mclass[31m=[32m"shell"[31m
-    [36m>[31m
-      [36m<aside[31m
-        [33mclass[31m=[32m"sidebar no-print"[31m
-      [36m>[31m
-        [36m<div[31m
-          [33mclass[31m=[32m"logo"[31m
-        [36m>[31m
-          [36m<img[31m
-            [33malt[31m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[31m
-            [33msrc[31m=[32m"/logo.png"[31m
-          [36m/>[31m
-        [36m</div>[31m
-        [36m<nav>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/"[31m
-          [36m>[31m
-            [0mHome[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/new-scan"[31m
-          [36m>[31m
-            [0mNew scan[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/reports"[31m
-          [36m>[31m
-            [0mReports[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/history"[31m
-          [36m>[31m
-            [0mHistory[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/schedule"[31m
-          [36m>[31m
-            [0mSchedule[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33maria-current[31m=[32m"page"[31m
-            [33mclass[31m=[32m"nav-item active"[31m
-            [33mhref[31m=[32m"/settings"[31m
-          [36m>[31m
-            [0mSettings[0m
-          [36m</a>[31m
-        [36m</nav>[31m
-      [36m</aside>[31m
-      [36m<div[31m
-        [33mclass[31m=[32m"main"[31m
-      [36m>[31m
-        [36m<header[31m
-          [33mclass[31m=[32m"topbar no-print"[31m
-        [36m>[31m
-          [36m<h1>[31m
-            [0mSettings[0m
-          [36m</h1>[31m
-          [36m<div[31m
-            [33mclass[31m=[32m"avatar"[31m
-          [36m/>[31m
-        [36m</header>[31m
-        [36m<div[31m
-          [33mclass[31m=[32m"content"[31m
-        [36m>[31m
-          [36m<div[31m
-            [33mclass[31m=[32m"settings-body"[31m
-          [36m>[31m
-            [36m<div[31m
-              [33mclass[31m=[32m"settings-menu card"[31m
-            [36m>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/profile"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[31m
-                  [36m/>[31m
-                  [36m<circle[31m
-                    [33mcx[31m=[32m"12"[31m
-                    [33mcy[31m=[32m"7"[31m
-                    [33mr[31m=[32m"4"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mProfile[0m
-                [36m</span>[31m
-              [36m</a>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/organisation"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M10 6h4M10 10h4M10 14h4M10 18h4"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mOrganisation[0m
-                [36m</span>[31m
-              [36m</a>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/users-and-roles"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"[31m
-                  [36m/>[31m
-                  [36m<circle[31m
-                    [33mcx[31m=[32m"9"[31m
-                    [33mcy[31m=[32m"7"[31m
-                    [33mr[31m=[32m"4"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M22 21v-2a4 4 0 0 0-3-3.87"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M16 3.13a4 4 0 0 1 0 7.75"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mUsers and roles[0m
-                [36m</span>[31m
-              [36m</a>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/licence"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M14 2v6h6M16 13H8M16 17H8M10 9H8"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mLicence[0m
-                [36m</span>[31m
-              [36m</a>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/data-and-retention"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<ellipse[31m
-                    [33mcx[31m=[32m"12"[31m
-                    [33mcy[31m=[32m"5"[31m
-                    [33mrx[31m=[32m"9"[31m
-                    [33mry[31m=[32m"3"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M3 5v14a9 3 0 0 0 18 0V5"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M3 12a9 3 0 0 0 18 0"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mData and retention[0m
-                [36m</span>[31m
-              [36m</a>[31m
-              [36m<a[31m
-                [33mclass[31m=[32m"settings-item"[31m
-                [33mhref[31m=[32m"/settings/notifications"[31m
-              [36m>[31m
-                [36m<svg[31m
-                  [33maria-hidden[31m=[32m"true"[31m
-                  [33mfill[31m=[32m"none"[31m
-                  [33mheight[31m=[32m"18"[31m
-                  [33mstroke[31m=[32m"currentColor"[31m
-                  [33mstroke-linecap[31m=[32m"round"[31m
-                  [33mstroke-linejoin[31m=[32m"round"[31m
-                  [33mstroke-width[31m=[32m"2"[31m
-                  [33mviewBox[31m=[32m"0 0 24 24"[31m
-                  [33mwidth[31m=[32m"18"[31m
-                [36m>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"[31m
-                  [36m/>[31m
-                  [36m<path[31m
-                    [33md[31m=[32m"M10.3 21a1.94 1.94 0 0 0 3.4 0"[31m
-                  [36m/>[31m
-                [36m</svg>[31m
-                [36m<span>[31m
-                  [0mNotifications[0m
-                [36m</span>[31m
-              [36m</a>[31m
-            [36m</div>[31m
-          [36m</div>[31m
-        [36m</div>[31m
-      [36m</div>[31m
-    [36m</div>[31m
-  [36m</div>[31m
-[36m</body>[31m[39m
-[31m   [31m√ó[31m Main menu: Remediation and Prevention[2m > [22mGiven a dummy page, then no real action is possible: every button is disabled and there are no inputs[90m 13[2mms[22m[31m[39m
-[31m     ‚Üí expected 5 to be +0 // Object.is equality[39m
-[31m   [31m√ó[31m Main menu: Remediation and Prevention[2m > [22mGiven a dummy page, then its menu item is shown as active[90m 64[2mms[22m[31m[39m
-[31m     ‚Üí Unable to find an accessible element with the role "link" and name "Remediation"
-
-Here are the accessible roles:
-
-  complementary:
-
-  Name "":
-  [36m<aside[31m
-    [33mclass[31m=[32m"sidebar no-print"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  img:
-
-  Name "LucidFlow - Every Click Flawless. Every Journey Compliant.":
-  [36m<img[31m
-    [33malt[31m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[31m
-    [33msrc[31m=[32m"/logo.png"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  navigation:
-
-  Name "":
-  [36m<nav />[31m
-
-  --------------------------------------------------
-  link:
-
-  Name "Home":
-  [36m<a[31m
-    [33maria-current[31m=[32m"page"[31m
-    [33mclass[31m=[32m"nav-item active"[31m
-    [33mhref[31m=[32m"/"[31m
-  [36m/>[31m
-
-  Name "New scan":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/new-scan"[31m
-  [36m/>[31m
-
-  Name "Reports":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/reports"[31m
-  [36m/>[31m
-
-  Name "History":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/history"[31m
-  [36m/>[31m
-
-  Name "Schedule":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/schedule"[31m
-  [36m/>[31m
-
-  Name "Settings":
-  [36m<a[31m
-    [33mclass[31m=[32m"nav-item"[31m
-    [33mhref[31m=[32m"/settings"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  banner:
-
-  Name "":
-  [36m<header[31m
-    [33mclass[31m=[32m"topbar no-print"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  heading:
-
-  Name "Start a scan":
-  [36m<h1 />[31m
-
-  Name "Recent scans":
-  [36m<h3[31m
-    [33mclass[31m=[32m"section"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  button:
-
-  Name "Page URLs":
-  [36m<button[31m
-    [33mclass[31m=[32m"on"[31m
-  [36m/>[31m
-
-  Name "Whole domain":
-  [36m<button[31m
-    [33mclass[31m=[32m""[31m
-  [36m/>[31m
-
-  Name "Upload from Excel":
-  [36m<button[31m
-    [33mclass[31m=[32m"link"[31m
-  [36m/>[31m
-
-  Name "Fill from previous findings":
-  [36m<button[31m
-    [33mclass[31m=[32m"link"[31m
-  [36m/>[31m
-
-  Name "Run scan":
-  [36m<button[31m
-    [33mclass[31m=[32m"btn primary"[31m
-    [33mdisabled[31m=[32m""[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  textbox:
-
-  Name "":
-  [36m<textarea[31m
-    [33mplaceholder[31m=[32m"https://www.example.com/page"[31m
-    [33mrows[31m=[32m"5"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  paragraph:
-
-  Name "":
-  [36m<p[31m
-    [33mclass[31m=[32m"muted"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  table:
-
-  Name "":
-  [36m<table[31m
-    [33mclass[31m=[32m"list"[31m
-  [36m/>[31m
-
-  --------------------------------------------------
-  rowgroup:
-
-  Name "":
-  [36m<tbody />[31m
-
-  --------------------------------------------------
-  row:
-
-  Name "www.abcinsurance.example 16 Oct 2026 Completed 4 potential dark patterns":
-  [36m<tr />[31m
-
-  Name "www.novafinance.example 14 Oct 2026 Needs review 7 potential dark patterns":
-  [36m<tr />[31m
-
-  Name "www.orbitcover.example 10 Oct 2026 Completed 2 potential dark patterns":
-  [36m<tr />[31m
-
-  --------------------------------------------------
-  cell:
-
-  Name "www.abcinsurance.example":
-  [36m<td />[31m
-
-  Name "16 Oct 2026":
-  [36m<td />[31m
-
-  Name "Completed":
-  [36m<td />[31m
-
-  Name "4 potential dark patterns":
-  [36m<td />[31m
-
-  Name "www.novafinance.example":
-  [36m<td />[31m
-
-  Name "14 Oct 2026":
-  [36m<td />[31m
-
-  Name "Needs review":
-  [36m<td />[31m
-
-  Name "7 potential dark patterns":
-  [36m<td />[31m
-
-  Name "www.orbitcover.example":
-  [36m<td />[31m
-
-  Name "10 Oct 2026":
-  [36m<td />[31m
-
-  Name "Completed":
-  [36m<td />[31m
-
-  Name "2 potential dark patterns":
-  [36m<td />[31m
-
-  --------------------------------------------------
-
-Ignored nodes: comments, script, style
-[36m<body>[31m
-  [36m<div>[31m
-    [36m<div[31m
-      [33mclass[31m=[32m"shell"[31m
-    [36m>[31m
-      [36m<aside[31m
-        [33mclass[31m=[32m"sidebar no-print"[31m
-      [36m>[31m
-        [36m<div[31m
-          [33mclass[31m=[32m"logo"[31m
-        [36m>[31m
-          [36m<img[31m
-            [33malt[31m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[31m
-            [33msrc[31m=[32m"/logo.png"[31m
-          [36m/>[31m
-        [36m</div>[31m
-        [36m<nav>[31m
-          [36m<a[31m
-            [33maria-current[31m=[32m"page"[31m
-            [33mclass[31m=[32m"nav-item active"[31m
-            [33mhref[31m=[32m"/"[31m
-          [36m>[31m
-            [0mHome[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/new-scan"[31m
-          [36m>[31m
-            [0mNew scan[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/reports"[31m
-          [36m>[31m
-            [0mReports[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/history"[31m
-          [36m>[31m
-            [0mHistory[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/schedule"[31m
-          [36m>[31m
-            [0mSchedule[0m
-          [36m</a>[31m
-          [36m<a[31m
-            [33mclass[31m=[32m"nav-item"[31m
-            [33mhref[31m=[32m"/settings"[31m
-          [36m>[31m
-            [0mSettings[0m
-          [36m</a>[31m
-        [36m</nav>[31m
-      [36m</aside>[31m
-      [36m<div[31m
-        [33mclass[31m=[32m"main"[31m
-      [36m>[31m
-        [36m<header[31m
-          [33mclass[31m=[32m"topbar no-print"[31m
-        [36m>[31m
-          [36m<h1>[31m
-            [0mStart a scan[0m
-          [36m</h1>[31m
-          [36m<div[31m
-            [33mclass[31m=[32m"avatar"[31m
-          [36m/>[31m
-        [36m</header>[31m
-        [36m<div[31m
-          [33mclass[31m=[32m"content narrow"[31m
-        [36m>[31m
-          [36m<div[31m
-            [33mclass[31m=[32m"card"[31m
-          [36m>[31m
-            [36m<div[31m
-              [33mclass[31m=[32m"tabs"[31m
-            [36m>[31m
-              [36m<button[31m
-                [33mclass[31m=[32m"on"[31m
-              [36m>[31m
-                [0mPage URLs[0m
-              [36m</button>[31m
-              [36m<button[31m
-                [33mclass[31m=[32m""[31m
-              [36m>[31m
-                [0mWhole domain[0m
-              [36m</button>[31m
-            [36m</div>[31m
-            [36m<label[31m
-              [33mclass[31m=[32m"label"[31m
-            [36m>[31m
-              [0mPage URLs[0m
-            [36m</label>[31m
-            [36m<textarea[31m
-              [33mplaceholder[31m=[32m"https://www.example.com/page"[31m
-              [33mrows[31m=[32m"5"[31m
-            [36m/>[31m
-            [36m<p[31m
-              [33mclass[31m=[32m"muted"[31m
-            [36m>[31m
-              [0mAdd one or more page URLs, separated by commas or new lines. Example: https://www.royalsundaram.in/copyright, https://www.royalsundaram.in/claims[0m
-            [36m</p>[31m
-            [36m<div[31m
-              [33mclass[31m=[32m"links"[31m
-            [36m>[31m
-              [36m<button[31m
-                [33mclass[31m=[32m"link"[31m
-              [36m>[31m
-                [0mUpload from Excel[0m
-              [36m</button>[31m
-              [36m<button[31m
-                [33mclass[31m=[32m"link"[31m
-              [36m>[31m
-                [0mFill from previous findings[0m
-              [36m</button>[31m
-            [36m</div>[31m
-            [36m<button[31m
-              [33mclass[31m=[32m"btn primary"[31m
-              [33mdisabled[31m=[32m""[31m
-            [36m>[31m
-              [0mRun scan[0m
-            [36m</button>[31m
-          [36m</div>[31m
-          [36m<h3[31m
-            [33mclass[31m=[32m"section"[31m
-          [36m>[31m
-            [0mRecent scans[0m
-          [36m</h3>[31m
-          [36m<table[31m
-            [33mclass[31m=[32m"list"[31m
-          [36m>[31m
-            [36m<tbody>[31m
-              [36m<tr>[31m
-                [36m<td>[31m
-                  [36m<b>[31m
-                    [0mwww.abcinsurance.example[0m
-                  [36m</b>[31m
-                [36m</td>[31m
-                [36m<td>[31m
-                  [0m16 Oct 2026[0m
-                [36m</td>[31m
-                [36m<td>[31m
-                  [36m<b>[31m
-                    [0mCompleted[0m
-                  [36m</b>[31m
-                [36m</td>[31m
-                [36m<td>[31m
-                  [0m4 potential dark patterns[0m
-                [36m</td>[31m
-              [36m</tr>[31m
-              [36m<tr>[31m
-                [36m<td>[31m
-                  [36m<b>[31m
-                    [0mwww.novafinance.example[0m
-                  [36m</b>[31m
-                [36m</td>[31m
-                [36m<td>[31m
-                  [0m14 Oct 2026[0m
-                [36m</td>[31m
-                [36m<td>[31m
-                  [36m<b>[31m
-                    [0mNeeds review[0m
-                  [36m</b>[31m
-                [36m</td>[31m
-                [36m<td>[31m
-                  [0m7 potential dark patterns[0m
-                [36m</td>[31m
-              [36m</tr>[31m
-              [36m<tr>[31m
-                [36m<td>[31m
-                  [36m<b>[31m
-                    [0mwww.orbitcover.example[0m
-                  [36m</b>[31m
-                [36m</td>[31m
-                [36m<td>[31m
-                  [0m10 Oct 2026[0m
-                [36m</td>[31m
-                [36m<td>[31m
-                  [36m<b>[31m
-                    [0mCompleted[0m
-                  [36m</b>[31m
-                [36m</td>[31m
-                [36m<td>[31m
-                  [0m2 potential dark patterns[0m
-                [36m</td>[31m
-              [36m</tr>[31m
-            [36m</tbody>[31m
-          [36m</table>[31m
-        [36m</div>[31m
-      [36m</div>[31m
-    [36m</div>[31m
-  [36m</div>[31m
-[36m</body>[31m[39m
-
-[31m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[1m[7m Failed Tests 5 [27m[22m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[39m
-
-[31m[1m[7m FAIL [27m[22m[39m src/components/Layout.test.jsx[2m > [22mMain menu: Remediation and Prevention[2m > [22mGiven the menu, then Remediation 
-and Prevention show after Reports
-[31m[1mAssertionError[22m: expected 'History' to be 'Remediation' // Object.is equality[39m
-
-Expected: [32m"Remediation"[39m
-Received: [31m"History"[39m
-
-[36m [2m‚ùØ[22m src/components/Layout.test.jsx:[2m79:27[22m[39m
-    [90m 77| [39m    [35mconst[39m labels [33m=[39m 
-[[33m...[39mcontainer[33m.[39m[34mquerySelectorAll[39m([32m".nav-item"[39m)][33m.[39m[34mmap[39m((e‚Ä¶
-    [90m 78| [39m    [35mconst[39m i [33m=[39m labels[33m.[39m[34mindexOf[39m([32m"Reports"[39m)[33m;[39m
-    [90m 79| [39m    [34mexpect[39m(labels[i [33m+[39m [34m1[39m])[33m.[39m[34mtoBe[39m([32m"Remediation"[39m)[33m;[39m
-    [90m   | [39m                          [31m^[39m
-    [90m 80| [39m    [34mexpect[39m(labels[i [33m+[39m [34m2[39m])[33m.[39m[34mtoBe[39m([32m"Prevention"[39m)[33m;[39m
-    [90m 81| [39m  })[33m;[39m
-
-[31m[2m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[1/5]‚éØ[22m[39m
-
-[31m[1m[7m FAIL [27m[22m[39m src/components/Layout.test.jsx[2m > [22mMain menu: Remediation and Prevention[2m > [22mGiven I click 'Remediation', then 
-a static page opens with its title and "Planned for a later phase"
-[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "link" and name "Remediation"
-
-Here are the accessible roles:
-
-  complementary:
-
-  Name "":
-  [36m<aside[39m
-    [33mclass[39m=[32m"sidebar no-print"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  img:
-
-  Name "LucidFlow - Every Click Flawless. Every Journey Compliant.":
-  [36m<img[39m
-    [33malt[39m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[39m
-    [33msrc[39m=[32m"/logo.png"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  navigation:
-
-  Name "":
-  [36m<nav />[39m
-
-  --------------------------------------------------
-  link:
-
-  Name "Home":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/"[39m
-  [36m/>[39m
-
-  Name "New scan":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/new-scan"[39m
-  [36m/>[39m
-
-  Name "Reports":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/reports"[39m
-  [36m/>[39m
-
-  Name "History":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/history"[39m
-  [36m/>[39m
-
-  Name "Schedule":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/schedule"[39m
-  [36m/>[39m
-
-  Name "Settings":
-  [36m<a[39m
-    [33maria-current[39m=[32m"page"[39m
-    [33mclass[39m=[32m"nav-item active"[39m
-    [33mhref[39m=[32m"/settings"[39m
-  [36m/>[39m
-
-  Name "Profile":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/profile"[39m
-  [36m/>[39m
-
-  Name "Organisation":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/organisation"[39m
-  [36m/>[39m
-
-  Name "Users and roles":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/users-and-roles"[39m
-  [36m/>[39m
-
-  Name "Licence":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/licence"[39m
-  [36m/>[39m
-
-  Name "Data and retention":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/data-and-retention"[39m
-  [36m/>[39m
-
-  Name "Notifications":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/notifications"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  banner:
-
-  Name "":
-  [36m<header[39m
-    [33mclass[39m=[32m"topbar no-print"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  heading:
-
-  Name "Settings":
-  [36m<h1 />[39m
-
-  --------------------------------------------------
-
-Ignored nodes: comments, script, style
-[36m<body>[39m
-  [36m<div>[39m
-    [36m<div[39m
-      [33mclass[39m=[32m"shell"[39m
-    [36m>[39m
-      [36m<aside[39m
-        [33mclass[39m=[32m"sidebar no-print"[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"logo"[39m
-        [36m>[39m
-          [36m<img[39m
-            [33malt[39m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[39m
-            [33msrc[39m=[32m"/logo.png"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<nav>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/"[39m
-          [36m>[39m
-            [0mHome[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/new-scan"[39m
-          [36m>[39m
-            [0mNew scan[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/reports"[39m
-          [36m>[39m
-            [0mReports[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/history"[39m
-          [36m>[39m
-            [0mHistory[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/schedule"[39m
-          [36m>[39m
-            [0mSchedule[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33maria-current[39m=[32m"page"[39m
-            [33mclass[39m=[32m"nav-item active"[39m
-            [33mhref[39m=[32m"/settings"[39m
-          [36m>[39m
-            [0mSettings[0m
-          [36m</a>[39m
-        [36m</nav>[39m
-      [36m</aside>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"main"[39m
-      [36m>[39m
-        [36m<header[39m
-          [33mclass[39m=[32m"topbar no-print"[39m
-        [36m>[39m
-          [36m<h1>[39m
-            [0mSettings[0m
-          [36m</h1>[39m
-          [36m<div[39m
-            [33mclass[39m=[32m"avatar"[39m
-          [36m/>[39m
-        [36m</header>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"content"[39m
-        [36m>[39m
-          [36m<div[39m
-            [33mclass[39m=[32m"settings-body"[39m
-          [36m>[39m
-            [36m<div[39m
-              [33mclass[39m=[32m"settings-menu card"[39m
-            [36m>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/profile"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
-                  [36m/>[39m
-                  [36m<circle[39m
-                    [33mcx[39m=[32m"12"[39m
-                    [33mcy[39m=[32m"7"[39m
-                    [33mr[39m=[32m"4"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mProfile[0m
-                [36m</span>[39m
-              [36m</a>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/organisation"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M10 6h4M10 10h4M10 14h4M10 18h4"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mOrganisation[0m
-                [36m</span>[39m
-              [36m</a>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/users-and-roles"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"[39m
-                  [36m/>[39m
-                  [36m<circle[39m
-                    [33mcx[39m=[32m"9"[39m
-                    [33mcy[39m=[32m"7"[39m
-                    [33mr[39m=[32m"4"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M22 21v-2a4 4 0 0 0-3-3.87"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M16 3.13a4 4 0 0 1 0 7.75"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mUsers and roles[0m
-                [36m</span>[39m
-              [36m</a>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/licence"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M14 2v6h6M16 13H8M16 17H8M10 9H8"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mLicence[0m
-                [36m</span>[39m
-              [36m</a>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/data-and-retention"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<ellipse[39m
-                    [33mcx[39m=[32m"12"[39m
-                    [33mcy[39m=[32m"5"[39m
-                    [33mrx[39m=[32m"9"[39m
-                    [33mry[39m=[32m"3"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M3 5v14a9 3 0 0 0 18 0V5"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M3 12a9 3 0 0 0 18 0"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mData and retention[0m
-                [36m</span>[39m
-              [36m</a>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/notifications"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M10.3 21a1.94 1.94 0 0 0 3.4 0"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mNotifications[0m
-                [36m</span>[39m
-              [36m</a>[39m
-            [36m</div>[39m
-          [36m</div>[39m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</div>[39m
-  [36m</div>[39m
-[36m</body>[39m
-[90m [2m‚ùØ[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
-[90m [2m‚ùØ[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
-[90m [2m‚ùØ[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
-[90m [2m‚ùØ[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
-[36m [2m‚ùØ[22m link src/components/Layout.test.jsx:[2m73:33[22m[39m
-    [90m 71| [39m      [33m<[39m[33m/[39m[33mMemoryRouter[39m[33m>[39m[33m,[39m
-    [90m 72| [39m    )[33m;[39m
-    [90m 73| [39m  [35mconst[39m link [33m=[39m (name) [33m=>[39m screen[33m.[39m[34mgetByRole[39m([32m"link"[39m[33m,[39m { name })[33m;[39m
-    [90m   | [39m                                [31m^[39m
-    [90m 74| [39m
-    [90m 75| [39m  [34mit[39m([32m"Given the menu, then Remediation and Prevention show after Repor[39m‚Ä¶
-[90m [2m‚ùØ[22m src/components/Layout.test.jsx:[2m87:23[22m[39m
-
-[31m[2m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[2/5]‚éØ[22m[39m
-
-[31m[1m[7m FAIL [27m[22m[39m src/components/Layout.test.jsx[2m > [22mMain menu: Remediation and Prevention[2m > [22mGiven I click 'Prevention', then 
-a static page opens with its title and "Planned for a later phase"
-[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "link" and name "Prevention"
-
-Here are the accessible roles:
-
-  complementary:
-
-  Name "":
-  [36m<aside[39m
-    [33mclass[39m=[32m"sidebar no-print"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  img:
-
-  Name "LucidFlow - Every Click Flawless. Every Journey Compliant.":
-  [36m<img[39m
-    [33malt[39m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[39m
-    [33msrc[39m=[32m"/logo.png"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  navigation:
-
-  Name "":
-  [36m<nav />[39m
-
-  --------------------------------------------------
-  link:
-
-  Name "Home":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/"[39m
-  [36m/>[39m
-
-  Name "New scan":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/new-scan"[39m
-  [36m/>[39m
-
-  Name "Reports":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/reports"[39m
-  [36m/>[39m
-
-  Name "History":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/history"[39m
-  [36m/>[39m
-
-  Name "Schedule":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/schedule"[39m
-  [36m/>[39m
-
-  Name "Settings":
-  [36m<a[39m
-    [33maria-current[39m=[32m"page"[39m
-    [33mclass[39m=[32m"nav-item active"[39m
-    [33mhref[39m=[32m"/settings"[39m
-  [36m/>[39m
-
-  Name "Profile":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/profile"[39m
-  [36m/>[39m
-
-  Name "Organisation":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/organisation"[39m
-  [36m/>[39m
-
-  Name "Users and roles":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/users-and-roles"[39m
-  [36m/>[39m
-
-  Name "Licence":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/licence"[39m
-  [36m/>[39m
-
-  Name "Data and retention":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/data-and-retention"[39m
-  [36m/>[39m
-
-  Name "Notifications":
-  [36m<a[39m
-    [33mclass[39m=[32m"settings-item"[39m
-    [33mhref[39m=[32m"/settings/notifications"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  banner:
-
-  Name "":
-  [36m<header[39m
-    [33mclass[39m=[32m"topbar no-print"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  heading:
-
-  Name "Settings":
-  [36m<h1 />[39m
-
-  --------------------------------------------------
-
-Ignored nodes: comments, script, style
-[36m<body>[39m
-  [36m<div>[39m
-    [36m<div[39m
-      [33mclass[39m=[32m"shell"[39m
-    [36m>[39m
-      [36m<aside[39m
-        [33mclass[39m=[32m"sidebar no-print"[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"logo"[39m
-        [36m>[39m
-          [36m<img[39m
-            [33malt[39m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[39m
-            [33msrc[39m=[32m"/logo.png"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<nav>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/"[39m
-          [36m>[39m
-            [0mHome[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/new-scan"[39m
-          [36m>[39m
-            [0mNew scan[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/reports"[39m
-          [36m>[39m
-            [0mReports[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/history"[39m
-          [36m>[39m
-            [0mHistory[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/schedule"[39m
-          [36m>[39m
-            [0mSchedule[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33maria-current[39m=[32m"page"[39m
-            [33mclass[39m=[32m"nav-item active"[39m
-            [33mhref[39m=[32m"/settings"[39m
-          [36m>[39m
-            [0mSettings[0m
-          [36m</a>[39m
-        [36m</nav>[39m
-      [36m</aside>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"main"[39m
-      [36m>[39m
-        [36m<header[39m
-          [33mclass[39m=[32m"topbar no-print"[39m
-        [36m>[39m
-          [36m<h1>[39m
-            [0mSettings[0m
-          [36m</h1>[39m
-          [36m<div[39m
-            [33mclass[39m=[32m"avatar"[39m
-          [36m/>[39m
-        [36m</header>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"content"[39m
-        [36m>[39m
-          [36m<div[39m
-            [33mclass[39m=[32m"settings-body"[39m
-          [36m>[39m
-            [36m<div[39m
-              [33mclass[39m=[32m"settings-menu card"[39m
-            [36m>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/profile"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
-                  [36m/>[39m
-                  [36m<circle[39m
-                    [33mcx[39m=[32m"12"[39m
-                    [33mcy[39m=[32m"7"[39m
-                    [33mr[39m=[32m"4"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mProfile[0m
-                [36m</span>[39m
-              [36m</a>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/organisation"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M10 6h4M10 10h4M10 14h4M10 18h4"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mOrganisation[0m
-                [36m</span>[39m
-              [36m</a>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/users-and-roles"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"[39m
-                  [36m/>[39m
-                  [36m<circle[39m
-                    [33mcx[39m=[32m"9"[39m
-                    [33mcy[39m=[32m"7"[39m
-                    [33mr[39m=[32m"4"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M22 21v-2a4 4 0 0 0-3-3.87"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M16 3.13a4 4 0 0 1 0 7.75"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mUsers and roles[0m
-                [36m</span>[39m
-              [36m</a>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/licence"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M14 2v6h6M16 13H8M16 17H8M10 9H8"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mLicence[0m
-                [36m</span>[39m
-              [36m</a>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/data-and-retention"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<ellipse[39m
-                    [33mcx[39m=[32m"12"[39m
-                    [33mcy[39m=[32m"5"[39m
-                    [33mrx[39m=[32m"9"[39m
-                    [33mry[39m=[32m"3"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M3 5v14a9 3 0 0 0 18 0V5"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M3 12a9 3 0 0 0 18 0"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mData and retention[0m
-                [36m</span>[39m
-              [36m</a>[39m
-              [36m<a[39m
-                [33mclass[39m=[32m"settings-item"[39m
-                [33mhref[39m=[32m"/settings/notifications"[39m
-              [36m>[39m
-                [36m<svg[39m
-                  [33maria-hidden[39m=[32m"true"[39m
-                  [33mfill[39m=[32m"none"[39m
-                  [33mheight[39m=[32m"18"[39m
-                  [33mstroke[39m=[32m"currentColor"[39m
-                  [33mstroke-linecap[39m=[32m"round"[39m
-                  [33mstroke-linejoin[39m=[32m"round"[39m
-                  [33mstroke-width[39m=[32m"2"[39m
-                  [33mviewBox[39m=[32m"0 0 24 24"[39m
-                  [33mwidth[39m=[32m"18"[39m
-                [36m>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"[39m
-                  [36m/>[39m
-                  [36m<path[39m
-                    [33md[39m=[32m"M10.3 21a1.94 1.94 0 0 0 3.4 0"[39m
-                  [36m/>[39m
-                [36m</svg>[39m
-                [36m<span>[39m
-                  [0mNotifications[0m
-                [36m</span>[39m
-              [36m</a>[39m
-            [36m</div>[39m
-          [36m</div>[39m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</div>[39m
-  [36m</div>[39m
-[36m</body>[39m
-[90m [2m‚ùØ[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
-[90m [2m‚ùØ[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
-[90m [2m‚ùØ[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
-[90m [2m‚ùØ[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
-[36m [2m‚ùØ[22m link src/components/Layout.test.jsx:[2m73:33[22m[39m
-    [90m 71| [39m      [33m<[39m[33m/[39m[33mMemoryRouter[39m[33m>[39m[33m,[39m
-    [90m 72| [39m    )[33m;[39m
-    [90m 73| [39m  [35mconst[39m link [33m=[39m (name) [33m=>[39m screen[33m.[39m[34mgetByRole[39m([32m"link"[39m[33m,[39m { name })[33m;[39m
-    [90m   | [39m                                [31m^[39m
-    [90m 74| [39m
-    [90m 75| [39m  [34mit[39m([32m"Given the menu, then Remediation and Prevention show after Repor[39m‚Ä¶
-[90m [2m‚ùØ[22m src/components/Layout.test.jsx:[2m87:23[22m[39m
-
-[31m[2m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[3/5]‚éØ[22m[39m
-
-[31m[1m[7m FAIL [27m[22m[39m src/components/Layout.test.jsx[2m > [22mMain menu: Remediation and Prevention[2m > [22mGiven a dummy page, then no real 
-action is possible: every button is disabled and there are no inputs
-[31m[1mAssertionError[22m: expected 5 to be +0 // Object.is equality[39m
-
-[32m- Expected[39m
-[31m+ Received[39m
-
-[32m- 0[39m
-[31m+ 5[39m
-
-[36m [2m‚ùØ[22m src/components/Layout.test.jsx:[2m99:30[22m[39m
-    [90m 97| [39m        [32m".content button:not([disabled]), .content input, .content sel[39m‚Ä¶
-    [90m 98| [39m      )[33m;[39m
-    [90m 99| [39m      [34mexpect[39m(enabled[33m.[39mlength)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
-    [90m   | [39m                             [31m^[39m
-    [90m100| [39m      [34munmount[39m()[33m;[39m
-    [90m101| [39m    })[33m;[39m
-[90m [2m‚ùØ[22m src/components/Layout.test.jsx:[2m94:11[22m[39m
-
-[31m[2m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[4/5]‚éØ[22m[39m
-
-[31m[1m[7m FAIL [27m[22m[39m src/components/Layout.test.jsx[2m > [22mMain menu: Remediation and Prevention[2m > [22mGiven a dummy page, then its menu 
-item is shown as active
-[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "link" and name "Remediation"
-
-Here are the accessible roles:
-
-  complementary:
-
-  Name "":
-  [36m<aside[39m
-    [33mclass[39m=[32m"sidebar no-print"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  img:
-
-  Name "LucidFlow - Every Click Flawless. Every Journey Compliant.":
-  [36m<img[39m
-    [33malt[39m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[39m
-    [33msrc[39m=[32m"/logo.png"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  navigation:
-
-  Name "":
-  [36m<nav />[39m
-
-  --------------------------------------------------
-  link:
-
-  Name "Home":
-  [36m<a[39m
-    [33maria-current[39m=[32m"page"[39m
-    [33mclass[39m=[32m"nav-item active"[39m
-    [33mhref[39m=[32m"/"[39m
-  [36m/>[39m
-
-  Name "New scan":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/new-scan"[39m
-  [36m/>[39m
-
-  Name "Reports":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/reports"[39m
-  [36m/>[39m
-
-  Name "History":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/history"[39m
-  [36m/>[39m
-
-  Name "Schedule":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/schedule"[39m
-  [36m/>[39m
-
-  Name "Settings":
-  [36m<a[39m
-    [33mclass[39m=[32m"nav-item"[39m
-    [33mhref[39m=[32m"/settings"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  banner:
-
-  Name "":
-  [36m<header[39m
-    [33mclass[39m=[32m"topbar no-print"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  heading:
-
-  Name "Start a scan":
-  [36m<h1 />[39m
-
-  Name "Recent scans":
-  [36m<h3[39m
-    [33mclass[39m=[32m"section"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  button:
-
-  Name "Page URLs":
-  [36m<button[39m
-    [33mclass[39m=[32m"on"[39m
-  [36m/>[39m
-
-  Name "Whole domain":
-  [36m<button[39m
-    [33mclass[39m=[32m""[39m
-  [36m/>[39m
-
-  Name "Upload from Excel":
-  [36m<button[39m
-    [33mclass[39m=[32m"link"[39m
-  [36m/>[39m
-
-  Name "Fill from previous findings":
-  [36m<button[39m
-    [33mclass[39m=[32m"link"[39m
-  [36m/>[39m
-
-  Name "Run scan":
-  [36m<button[39m
-    [33mclass[39m=[32m"btn primary"[39m
-    [33mdisabled[39m=[32m""[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  textbox:
-
-  Name "":
-  [36m<textarea[39m
-    [33mplaceholder[39m=[32m"https://www.example.com/page"[39m
-    [33mrows[39m=[32m"5"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  paragraph:
-
-  Name "":
-  [36m<p[39m
-    [33mclass[39m=[32m"muted"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  table:
-
-  Name "":
-  [36m<table[39m
-    [33mclass[39m=[32m"list"[39m
-  [36m/>[39m
-
-  --------------------------------------------------
-  rowgroup:
-
-  Name "":
-  [36m<tbody />[39m
-
-  --------------------------------------------------
-  row:
-
-  Name "www.abcinsurance.example 16 Oct 2026 Completed 4 potential dark patterns":
-  [36m<tr />[39m
-
-  Name "www.novafinance.example 14 Oct 2026 Needs review 7 potential dark patterns":
-  [36m<tr />[39m
-
-  Name "www.orbitcover.example 10 Oct 2026 Completed 2 potential dark patterns":
-  [36m<tr />[39m
-
-  --------------------------------------------------
-  cell:
-
-  Name "www.abcinsurance.example":
-  [36m<td />[39m
-
-  Name "16 Oct 2026":
-  [36m<td />[39m
-
-  Name "Completed":
-  [36m<td />[39m
-
-  Name "4 potential dark patterns":
-  [36m<td />[39m
-
-  Name "www.novafinance.example":
-  [36m<td />[39m
-
-  Name "14 Oct 2026":
-  [36m<td />[39m
-
-  Name "Needs review":
-  [36m<td />[39m
-
-  Name "7 potential dark patterns":
-  [36m<td />[39m
-
-  Name "www.orbitcover.example":
-  [36m<td />[39m
-
-  Name "10 Oct 2026":
-  [36m<td />[39m
-
-  Name "Completed":
-  [36m<td />[39m
-
-  Name "2 potential dark patterns":
-  [36m<td />[39m
-
-  --------------------------------------------------
-
-Ignored nodes: comments, script, style
-[36m<body>[39m
-  [36m<div>[39m
-    [36m<div[39m
-      [33mclass[39m=[32m"shell"[39m
-    [36m>[39m
-      [36m<aside[39m
-        [33mclass[39m=[32m"sidebar no-print"[39m
-      [36m>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"logo"[39m
-        [36m>[39m
-          [36m<img[39m
-            [33malt[39m=[32m"LucidFlow - Every Click Flawless. Every Journey Compliant."[39m
-            [33msrc[39m=[32m"/logo.png"[39m
-          [36m/>[39m
-        [36m</div>[39m
-        [36m<nav>[39m
-          [36m<a[39m
-            [33maria-current[39m=[32m"page"[39m
-            [33mclass[39m=[32m"nav-item active"[39m
-            [33mhref[39m=[32m"/"[39m
-          [36m>[39m
-            [0mHome[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/new-scan"[39m
-          [36m>[39m
-            [0mNew scan[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/reports"[39m
-          [36m>[39m
-            [0mReports[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/history"[39m
-          [36m>[39m
-            [0mHistory[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/schedule"[39m
-          [36m>[39m
-            [0mSchedule[0m
-          [36m</a>[39m
-          [36m<a[39m
-            [33mclass[39m=[32m"nav-item"[39m
-            [33mhref[39m=[32m"/settings"[39m
-          [36m>[39m
-            [0mSettings[0m
-          [36m</a>[39m
-        [36m</nav>[39m
-      [36m</aside>[39m
-      [36m<div[39m
-        [33mclass[39m=[32m"main"[39m
-      [36m>[39m
-        [36m<header[39m
-          [33mclass[39m=[32m"topbar no-print"[39m
-        [36m>[39m
-          [36m<h1>[39m
-            [0mStart a scan[0m
-          [36m</h1>[39m
-          [36m<div[39m
-            [33mclass[39m=[32m"avatar"[39m
-          [36m/>[39m
-        [36m</header>[39m
-        [36m<div[39m
-          [33mclass[39m=[32m"content narrow"[39m
-        [36m>[39m
-          [36m<div[39m
-            [33mclass[39m=[32m"card"[39m
-          [36m>[39m
-            [36m<div[39m
-              [33mclass[39m=[32m"tabs"[39m
-            [36m>[39m
-              [36m<button[39m
-                [33mclass[39m=[32m"on"[39m
-              [36m>[39m
-                [0mPage URLs[0m
-              [36m</button>[39m
-              [36m<button[39m
-                [33mclass[39m=[32m""[39m
-              [36m>[39m
-                [0mWhole domain[0m
-              [36m</button>[39m
-            [36m</div>[39m
-            [36m<label[39m
-              [33mclass[39m=[32m"label"[39m
-            [36m>[39m
-              [0mPage URLs[0m
-[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
-[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m11 passed[39m[22m[90m (16)[39m
-[2m   Start at [22m 11:13:18
-[2m   Duration [22m 2.68s[2m (transform 233ms, setup 131ms, collect 446ms, tests 394ms, environment 988ms, prepare 235ms)[22m
-
-            [36m</label>[39m
-            [36m<textarea[39m
-              [33mplaceholder[39m=[32m"https://www.example.com/page"[39m
-              [33mrows[39m=[32m"5"[39m
-            [36m/>[39m
-            [36m<p[39m
-              [33mclass[39m=[32m"muted"[39m
-            [36m>[39m
-              [0mAdd one or more page URLs, separated by commas or new lines. Example: https://www.royalsundaram.in/copyright, 
-https://www.royalsundaram.in/claims[0m
-            [36m</p>[39m
-            [36m<div[39m
-              [33mclass[39m=[32m"links"[39m
-            [36m>[39m
-              [36m<button[39m
-                [33mclass[39m=[32m"link"[39m
-              [36m>[39m
-                [0mUpload from Excel[0m
-              [36m</button>[39m
-              [36m<button[39m
-                [33mclass[39m=[32m"link"[39m
-              [36m>[39m
-                [0mFill from previous findings[0m
-              [36m</button>[39m
-            [36m</div>[39m
-            [36m<button[39m
-              [33mclass[39m=[32m"btn primary"[39m
-              [33mdisabled[39m=[32m""[39m
-            [36m>[39m
-              [0mRun scan[0m
-            [36m</button>[39m
-          [36m</div>[39m
-          [36m<h3[39m
-            [33mclass[39m=[32m"section"[39m
-          [36m>[39m
-            [0mRecent scans[0m
-          [36m</h3>[39m
-          [36m<table[39m
-            [33mclass[39m=[32m"list"[39m
-          [36m>[39m
-            [36m<tbody>[39m
-              [36m<tr>[39m
-                [36m<td>[39m
-                  [36m<b>[39m
-                    [0mwww.abcinsurance.example[0m
-                  [36m</b>[39m
-                [36m</td>[39m
-                [36m<td>[39m
-                  [0m16 Oct 2026[0m
-                [36m</td>[39m
-                [36m<td>[39m
-                  [36m<b>[39m
-                    [0mCompleted[0m
-                  [36m</b>[39m
-                [36m</td>[39m
-                [36m<td>[39m
-                  [0m4 potential dark patterns[0m
-                [36m</td>[39m
-              [36m</tr>[39m
-              [36m<tr>[39m
-                [36m<td>[39m
-                  [36m<b>[39m
-                    [0mwww.novafinance.example[0m
-                  [36m</b>[39m
-                [36m</td>[39m
-                [36m<td>[39m
-                  [0m14 Oct 2026[0m
-                [36m</td>[39m
-                [36m<td>[39m
-                  [36m<b>[39m
-                    [0mNeeds review[0m
-                  [36m</b>[39m
-                [36m</td>[39m
-                [36m<td>[39m
-                  [0m7 potential dark patterns[0m
-                [36m</td>[39m
-              [36m</tr>[39m
-              [36m<tr>[39m
-                [36m<td>[39m
-                  [36m<b>[39m
-                    [0mwww.orbitcover.example[0m
-                  [36m</b>[39m
-                [36m</td>[39m
-                [36m<td>[39m
-                  [0m10 Oct 2026[0m
-                [36m</td>[39m
-                [36m<td>[39m
-                  [36m<b>[39m
-                    [0mCompleted[0m
-                  [36m</b>[39m
-                [36m</td>[39m
-                [36m<td>[39m
-                  [0m2 potential dark patterns[0m
-                [36m</td>[39m
-              [36m</tr>[39m
-            [36m</tbody>[39m
-          [36m</table>[39m
-        [36m</div>[39m
-      [36m</div>[39m
-    [36m</div>[39m
-  [36m</div>[39m
-[36m</body>[39m
-[90m [2m‚ùØ[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
-[90m [2m‚ùØ[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
-[90m [2m‚ùØ[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
-[90m [2m‚ùØ[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
-[36m [2m‚ùØ[22m link src/components/Layout.test.jsx:[2m73:33[22m[39m
-    [90m 71| [39m      [33m<[39m[33m/[39m[33mMemoryRouter[39m[33m>[39m[33m,[39m
-    [90m 72| [39m    )[33m;[39m
-    [90m 73| [39m  [35mconst[39m link [33m=[39m (name) [33m=>[39m screen[33m.[39m[34mgetByRole[39m([32m"link"[39m[33m,[39m { name })[33m;[39m
-    [90m   | [39m                                [31m^[39m
-    [90m 74| [39m
-    [90m 75| [39m  [34mit[39m([32m"Given the menu, then Remediation and Prevention show after Repor[39m‚Ä¶
-[90m [2m‚ùØ[22m src/components/Layout.test.jsx:[2m107:14[22m[39m
-[90m [2m‚ùØ[22m src/components/Layout.test.jsx:[2m105:11[22m[39m
-
-[31m[2m‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ‚éØ[5/5]‚éØ[22m[39m
-
- 
- >   l u c i d f l o w - f r o n t e n d @ 0 . 1 . 0   t e s t : r u n  
- >   v i t e s t   r u n   s r c / p a g e s / H o m e . t e s t . j s x  
-  
-  
-  [ 1 m  [ 7 m  [ 3 6 m   R U N    [ 3 9 m  [ 2 7 m  [ 2 2 m    [ 3 6 m v 2 . 1 . 9    [ 3 9 m  [ 9 0 m C : / U s e r s / r e s h m / D o w n l o a d s / t a s k s / E 7 - 0 8 / l u c i d f l o w - f r o n t e n d  [ 3 9 m  
-  
- n o d e . e x e   :    [ 9 0 m s t d e r r  [ 2 m   |   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m  [ 2 m H o m e   s c r e e n  [ 2 m   >    [ 2 2 m  [ 2 m G i v e n   H o m e ,   t h e n   t w o   m o d e s   s h o w :   P a g e   U R L s   a n d   W h o l e   d o m a i n  
- A t   C : \ P r o g r a m   F i l e s \ n o d e j s \ n p m . p s 1 : 2 9   c h a r : 3  
- +       &   $ N O D E _ E X E   $ N P M _ C L I _ J S   $ a r g s  
- +       ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~  
-         +   C a t e g o r y I n f o                     :   N o t S p e c i f i e d :   (  [ 9 0 m s t d e r r  [ 2 m . . . n d   W h o l e   d o m a i n : S t r i n g )   [ ] ,   R e m o t e E x c e p t i o n  
-         +   F u l l y Q u a l i f i e d E r r o r I d   :   N a t i v e C o m m a n d E r r o r  
-    
-  [ 2 2 m  [ 3 9 m †&˛  R e a c t   R o u t e r   F u t u r e   F l a g   W a r n i n g :   R e a c t   R o u t e r   w i l l   b e g i n   w r a p p i n g   s t a t e   u p d a t e s   i n   ` R e a c t . s t a r t T r a n s i t i o n `   i n   v 7 .   Y o u   c a n   u s e   t h e    
- ` v 7 _ s t a r t T r a n s i t i o n `   f u t u r e   f l a g   t o   o p t - i n   e a r l y .   F o r   m o r e   i n f o r m a t i o n ,   s e e   h t t p s : / / r e a c t r o u t e r . c o m / v 6 / u p g r a d i n g / f u t u r e # v 7 _ s t a r t t r a n s i t i o n .  
- †&˛  R e a c t   R o u t e r   F u t u r e   F l a g   W a r n i n g :   R e l a t i v e   r o u t e   r e s o l u t i o n   w i t h i n   S p l a t   r o u t e s   i s   c h a n g i n g   i n   v 7 .   Y o u   c a n   u s e   t h e   ` v 7 _ r e l a t i v e S p l a t P a t h `   f u t u r e   f l a g   t o    
- o p t - i n   e a r l y .   F o r   m o r e   i n f o r m a t i o n ,   s e e   h t t p s : / / r e a c t r o u t e r . c o m / v 6 / u p g r a d i n g / f u t u r e # v 7 _ r e l a t i v e s p l a t p a t h .  
-  
-    [ 3 1 m o' [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x    [ 2 m (  [ 2 2 m  [ 2 m 2 1   t e s t s  [ 2 2 m  [ 2 m   |    [ 2 2 m  [ 3 1 m 1 2   f a i l e d  [ 3 9 m  [ 2 m )  [ 2 2 m  [ 3 3 m   2 7 8 4  [ 2 m m s  [ 2 2 m  [ 3 9 m  
-        [ 3 3 m  [ 2 m ' [ 2 2 m  [ 3 9 m   H o m e   s c r e e n  [ 2 m   >    [ 2 2 m G i v e n   a   v a l i d   p a g e   U R L   i s   e n t e r e d ,   t h e n   R u n   s c a n   i s   e n a b l e d    [ 3 3 m 6 2 3  [ 2 m m s  [ 2 2 m  [ 3 9 m  
-        [ 3 3 m  [ 2 m ' [ 2 2 m  [ 3 9 m   H o m e   s c r e e n  [ 2 m   >    [ 2 2 m G i v e n   a   d o m a i n   i n   P a g e   U R L s   m o d e ,   t h e n   R u n   s c a n   s t a y s   d i s a b l e d   a n d   a n   e r r o r   s h o w s    [ 3 3 m 4 0 1  [ 2 m m s  [ 2 2 m  [ 3 9 m  
-        [ 3 3 m  [ 2 m ' [ 2 2 m  [ 3 9 m   H o m e   s c r e e n  [ 2 m   >    [ 2 2 m G i v e n   a   p a g e   U R L   i n   W h o l e   d o m a i n   m o d e ,   t h e n   R u n   s c a n   s t a y s   d i s a b l e d    [ 3 3 m 6 8 9  [ 2 m m s  [ 2 2 m  [ 3 9 m  
-        [ 3 3 m  [ 2 m ' [ 2 2 m  [ 3 9 m   H o m e   s c r e e n  [ 2 m   >    [ 2 2 m G i v e n   a   v a l i d   U R L ,   w h e n   I   c l i c k   R u n   s c a n ,   t h e n   t h e   s c a n   p a g e   o p e n s    [ 3 3 m 7 0 6  [ 2 m m s  [ 2 2 m  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   I   c l i c k   F i l l   f r o m   p r e v i o u s   f i n d i n g s ,   t h e n   t h e   l a t e s t   s c a n   U R L   i s   i n   t h e   b o x  [ 9 0 m   1 6  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   ' '   t o   c o n t a i n   ' w w w . a b c i n s u r a n c e . e x a m p l e '  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t h e   p a g e ,   t h e n   t h e   f i l e   p i c k e r   a c c e p t s   o n l y   . x l s x   f i l e s  [ 9 0 m   4  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   I   c l i c k   U p l o a d   f r o m   E x c e l ,   t h e n   t h e   f i l e   p i c k e r   o p e n s  [ 9 0 m   5  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e   w i t h   3   U R L s ,   t h e n   a l l   3   a r e   i n   t h e   b o x  [ 9 0 m   2 6  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   h e a d e r   r o w   i n   t h e   f i l e ,   t h e n   t h e   h e a d e r   i s   s k i p p e d  [ 9 0 m   1 1  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e   w i t h   6 0   U R L s ,   t h e n   a l l   6 0   a r e   i n   t h e   b o x  [ 9 0 m   9  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t h e   s a m e   U R L   t w i c e   i n   t h e   f i l e ,   t h e n   i t   i s   a d d e d   o n c e  [ 9 0 m   7  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   h y p e r l i n k   c e l l ,   t h e n   t h e   l i n k   a d d r e s s   i s   u s e d  [ 9 0 m   1 1  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t e x t   a l r e a d y   i n   t h e   b o x ,   t h e n   t h e   E x c e l   U R L s   a r e   a d d e d   a f t e r   i t  [ 9 0 m   2 4  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   f i l e   t h a t   i s   n o t   . x l s x ,   t h e n   a   m e s s a g e   s h o w s   a n d   t h e   b o x   s t a y s   e m p t y  [ 9 0 m   3  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e   w i t h   n o   U R L s ,   t h e n   a   m e s s a g e   s h o w s  [ 9 0 m   6  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   . x l s x   f i l e   t h a t   i s   n o t   a   r e a l   E x c e l   f i l e ,   t h e n   a   m e s s a g e   s h o w s  [ 9 0 m   3  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  
-  [ 3 1 m Ø#Ø#Ø#Ø#Ø#Ø# [ 1 m  [ 7 m   F a i l e d   T e s t s   1 2    [ 2 7 m  [ 2 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø# [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   I   c l i c k   F i l l    
- f r o m   p r e v i o u s   f i n d i n g s ,   t h e n   t h e   l a t e s t   s c a n   U R L   i s   i n   t h e   b o x  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   ' '   t o   c o n t a i n   ' w w w . a b c i n s u r a n c e . e x a m p l e '  [ 3 9 m  
-  
-  [ 3 2 m -   E x p e c t e d  [ 3 9 m  
-  [ 3 1 m +   R e c e i v e d  [ 3 9 m  
-  
-  [ 3 2 m -   w w w . a b c i n s u r a n c e . e x a m p l e  [ 3 9 m  
-  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 1 6 : 2 5  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 1 4 |    [ 3 9 m          [ 3 4 m s e t u p  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 5 |    [ 3 9 m          [ 3 4 m p r e s s  [ 3 9 m (  [ 3 2 m " F i l l   f r o m   p r e v i o u s   f i n d i n g s "  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 6 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m (  [ 3 4 m b o x  [ 3 9 m ( )  [ 3 3 m .  [ 3 9 m v a l u e )  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o C o n t a i n  [ 3 9 m ( r e c e n t S c a n s [  [ 3 4 m 0  [ 3 9 m ]  [ 3 3 m .  [ 3 9 m d o m a i n )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                                  [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 1 7 |    [ 3 9 m     } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 8 |    [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 1 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t h e   p a g e ,   t h e n    
- t h e   f i l e   p i c k e r   a c c e p t s   o n l y   . x l s x   f i l e s  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 3 0 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 2 8 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   {   c o n t a i n e r   }    [ 3 3 m =  [ 3 9 m    [ 3 4 m s e t u p  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 2 9 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 3 0 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 3 1 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t  [ 3 3 m .  [ 3 9 m a c c e p t )  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o C o n t a i n  [ 3 9 m (  [ 3 2 m " . x l s x "  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 3 2 |    [ 3 9 m     } )  [ 3 3 m ;  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 2 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   I   c l i c k   U p l o a d    
- f r o m   E x c e l ,   t h e n   t h e   f i l e   p i c k e r   o p e n s  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 3 7 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 3 5 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   {   c o n t a i n e r   }    [ 3 3 m =  [ 3 9 m    [ 3 4 m s e t u p  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 3 6 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 3 7 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 3 8 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   s p y    [ 3 3 m =  [ 3 9 m   v i  [ 3 3 m .  [ 3 9 m  [ 3 4 m s p y O n  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m    [ 3 2 m " c l i c k "  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 3 9 |    [ 3 9 m          [ 3 4 m p r e s s  [ 3 9 m (  [ 3 2 m " U p l o a d   f r o m   E x c e l "  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 3 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e    
- w i t h   3   U R L s ,   t h e n   a l l   3   a r e   i n   t h e   b o x  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 4 5 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 4 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   h e a d e r   r o w   i n    
- t h e   f i l e ,   t h e n   t h e   h e a d e r   i s   s k i p p e d  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 5 5 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 5 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e    
- w i t h   6 0   U R L s ,   t h e n   a l l   6 0   a r e   i n   t h e   b o x  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 6 2 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 6 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t h e   s a m e   U R L    
- t w i c e   i n   t h e   f i l e ,   t h e n   i t   i s   a d d e d   o n c e  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 6 8 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 7 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   h y p e r l i n k    
- c e l l ,   t h e n   t h e   l i n k   a d d r e s s   i s   u s e d  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 7 4 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 8 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t e x t   a l r e a d y   i n    
- t h e   b o x ,   t h e n   t h e   E x c e l   U R L s   a r e   a d d e d   a f t e r   i t  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 8 1 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 9 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   f i l e   t h a t   i s    
- n o t   . x l s x ,   t h e n   a   m e s s a g e   s h o w s   a n d   t h e   b o x   s t a y s   e m p t y  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 8 8 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 1 0 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e    
- w i t h   n o   U R L s ,   t h e n   a   m e s s a g e   s h o w s  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 9 5 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 1 1 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   . x l s x   f i l e    
- t h a t   i s   n o t   a   r e a l   E x c e l   f i l e ,   t h e n   a   m e s s a g e   s h o w s  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 2 0 1 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 1 2 / 1 2 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 2 m   T e s t   F i l e s    [ 2 2 m    [ 1 m  [ 3 1 m 1   f a i l e d  [ 3 9 m  [ 2 2 m  [ 9 0 m   ( 1 )  [ 3 9 m  
-  [ 2 m             T e s t s    [ 2 2 m    [ 1 m  [ 3 1 m 1 2   f a i l e d  [ 3 9 m  [ 2 2 m  [ 2 m   |    [ 2 2 m  [ 1 m  [ 3 2 m 9   p a s s e d  [ 3 9 m  [ 2 2 m  [ 9 0 m   ( 2 1 )  [ 3 9 m  
-  [ 2 m       S t a r t   a t    [ 2 2 m   1 0 : 5 4 : 4 0  
-  [ 2 m       D u r a t i o n    [ 2 2 m   7 . 0 1 s  [ 2 m   ( t r a n s f o r m   1 2 4 m s ,   s e t u p   2 7 7 m s ,   c o l l e c t   1 . 6 0 s ,   t e s t s   2 . 7 8 s ,   e n v i r o n m e n t   1 . 7 0 s ,   p r e p a r e   2 6 8 m s )  [ 2 2 m  
-  
-  
- >   l u c i d f l o w - f r o n t e n d @ 0 . 1 . 0   t e s t : r u n  
- >   v i t e s t   r u n   s r c / p a g e s / H o m e . t e s t . j s x  
-  
-  
-  [ 1 m  [ 7 m  [ 3 6 m   R U N    [ 3 9 m  [ 2 7 m  [ 2 2 m    [ 3 6 m v 2 . 1 . 9    [ 3 9 m  [ 9 0 m C : / U s e r s / r e s h m / D o w n l o a d s / t a s k s / E 7 - 0 8 / l u c i d f l o w - f r o n t e n d  [ 3 9 m  
-  
- n o d e . e x e   :    [ 9 0 m s t d e r r  [ 2 m   |   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m  [ 2 m H o m e   s c r e e n  [ 2 m   >    [ 2 2 m  [ 2 m G i v e n   H o m e ,   t h e n   t w o   m o d e s   s h o w :   P a g e   U R L s   a n d   W h o l e   d o m a i n  
- A t   C : \ P r o g r a m   F i l e s \ n o d e j s \ n p m . p s 1 : 2 9   c h a r : 3  
- +       &   $ N O D E _ E X E   $ N P M _ C L I _ J S   $ a r g s  
- +       ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~  
-         +   C a t e g o r y I n f o                     :   N o t S p e c i f i e d :   (  [ 9 0 m s t d e r r  [ 2 m . . . n d   W h o l e   d o m a i n : S t r i n g )   [ ] ,   R e m o t e E x c e p t i o n  
-         +   F u l l y Q u a l i f i e d E r r o r I d   :   N a t i v e C o m m a n d E r r o r  
-    
-  [ 2 2 m  [ 3 9 m †&˛  R e a c t   R o u t e r   F u t u r e   F l a g   W a r n i n g :   R e a c t   R o u t e r   w i l l   b e g i n   w r a p p i n g   s t a t e   u p d a t e s   i n   ` R e a c t . s t a r t T r a n s i t i o n `   i n   v 7 .   Y o u   c a n   u s e   t h e    
- ` v 7 _ s t a r t T r a n s i t i o n `   f u t u r e   f l a g   t o   o p t - i n   e a r l y .   F o r   m o r e   i n f o r m a t i o n ,   s e e   h t t p s : / / r e a c t r o u t e r . c o m / v 6 / u p g r a d i n g / f u t u r e # v 7 _ s t a r t t r a n s i t i o n .  
- †&˛  R e a c t   R o u t e r   F u t u r e   F l a g   W a r n i n g :   R e l a t i v e   r o u t e   r e s o l u t i o n   w i t h i n   S p l a t   r o u t e s   i s   c h a n g i n g   i n   v 7 .   Y o u   c a n   u s e   t h e   ` v 7 _ r e l a t i v e S p l a t P a t h `   f u t u r e   f l a g   t o    
- o p t - i n   e a r l y .   F o r   m o r e   i n f o r m a t i o n ,   s e e   h t t p s : / / r e a c t r o u t e r . c o m / v 6 / u p g r a d i n g / f u t u r e # v 7 _ r e l a t i v e s p l a t p a t h .  
-  
-    [ 3 1 m o' [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x    [ 2 m (  [ 2 2 m  [ 2 m 2 1   t e s t s  [ 2 2 m  [ 2 m   |    [ 2 2 m  [ 3 1 m 1 3   f a i l e d  [ 3 9 m  [ 2 m )  [ 2 2 m  [ 3 3 m   2 8 5 7  [ 2 m m s  [ 2 2 m  [ 3 9 m  
-        [ 3 3 m  [ 2 m ' [ 2 2 m  [ 3 9 m   H o m e   s c r e e n  [ 2 m   >    [ 2 2 m G i v e n   a   v a l i d   p a g e   U R L   i s   e n t e r e d ,   t h e n   R u n   s c a n   i s   e n a b l e d    [ 3 3 m 6 4 9  [ 2 m m s  [ 2 2 m  [ 3 9 m  
-        [ 3 3 m  [ 2 m ' [ 2 2 m  [ 3 9 m   H o m e   s c r e e n  [ 2 m   >    [ 2 2 m G i v e n   a   d o m a i n   i n   P a g e   U R L s   m o d e ,   t h e n   R u n   s c a n   s t a y s   d i s a b l e d   a n d   a n   e r r o r   s h o w s    [ 3 3 m 4 7 4  [ 2 m m s  [ 2 2 m  [ 3 9 m  
-        [ 3 3 m  [ 2 m ' [ 2 2 m  [ 3 9 m   H o m e   s c r e e n  [ 2 m   >    [ 2 2 m G i v e n   a   p a g e   U R L   i n   W h o l e   d o m a i n   m o d e ,   t h e n   R u n   s c a n   s t a y s   d i s a b l e d    [ 3 3 m 7 0 3  [ 2 m m s  [ 2 2 m  [ 3 9 m  
-        [ 3 3 m  [ 2 m ' [ 2 2 m  [ 3 9 m   H o m e   s c r e e n  [ 2 m   >    [ 2 2 m G i v e n   a   v a l i d   U R L ,   w h e n   I   c l i c k   R u n   s c a n ,   t h e n   t h e   s c a n   p a g e   o p e n s    [ 3 3 m 6 4 3  [ 2 m m s  [ 2 2 m  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   I   c l i c k   F i l l   f r o m   p r e v i o u s   f i n d i n g s ,   t h e n   t h e   l a t e s t   s c a n   U R L   i s   i n   t h e   b o x  [ 9 0 m   2 4  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   ' '   t o   c o n t a i n   ' w w w . a b c i n s u r a n c e . e x a m p l e '  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   I   c l i c k   F i l l   f r o m   p r e v i o u s   f i n d i n g s   t w i c e ,   t h e n   t h e   U R L   i s   n o t   r e p e a t e d  [ 9 0 m   1 1  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   ' '   t o   c o n t a i n   ' w w w . a b c i n s u r a n c e . e x a m p l e '  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t h e   p a g e ,   t h e n   t h e   f i l e   p i c k e r   a c c e p t s   o n l y   . x l s x   f i l e s  [ 9 0 m   4  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   I   c l i c k   U p l o a d   f r o m   E x c e l ,   t h e n   t h e   f i l e   p i c k e r   o p e n s  [ 9 0 m   6  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e   w i t h   3   U R L s ,   t h e n   a l l   3   a r e   i n   t h e   b o x  [ 9 0 m   3 0  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   h e a d e r   r o w   i n   t h e   f i l e ,   t h e n   t h e   h e a d e r   i s   s k i p p e d  [ 9 0 m   1 0  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e   w i t h   6 0   U R L s ,   t h e n   a l l   6 0   a r e   i n   t h e   b o x  [ 9 0 m   9  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t h e   s a m e   U R L   t w i c e   i n   t h e   f i l e ,   t h e n   i t   i s   a d d e d   o n c e  [ 9 0 m   7  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   h y p e r l i n k   c e l l ,   t h e n   t h e   l i n k   a d d r e s s   i s   u s e d  [ 9 0 m   8  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t e x t   a l r e a d y   i n   t h e   b o x ,   t h e n   t h e   E x c e l   U R L s   a r e   a d d e d   a f t e r   i t  [ 9 0 m   1 2  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   f i l e   t h a t   i s   n o t   . x l s x ,   t h e n   a   m e s s a g e   s h o w s   a n d   t h e   b o x   s t a y s   e m p t y  [ 9 0 m   3  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e   w i t h   n o   U R L s ,   t h e n   a   m e s s a g e   s h o w s  [ 9 0 m   1 1  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 1 m        [ 3 1 m ◊  [ 3 1 m   H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   . x l s x   f i l e   t h a t   i s   n o t   a   r e a l   E x c e l   f i l e ,   t h e n   a   m e s s a g e   s h o w s  [ 9 0 m   3  [ 2 m m s  [ 2 2 m  [ 3 1 m  [ 3 9 m  
-  [ 3 1 m           í!  e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  
-  [ 3 1 m Ø#Ø#Ø#Ø#Ø#Ø# [ 1 m  [ 7 m   F a i l e d   T e s t s   1 3    [ 2 7 m  [ 2 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø# [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   I   c l i c k   F i l l    
- f r o m   p r e v i o u s   f i n d i n g s ,   t h e n   t h e   l a t e s t   s c a n   U R L   i s   i n   t h e   b o x  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   ' '   t o   c o n t a i n   ' w w w . a b c i n s u r a n c e . e x a m p l e '  [ 3 9 m  
-  
-  [ 3 2 m -   E x p e c t e d  [ 3 9 m  
-  [ 3 1 m +   R e c e i v e d  [ 3 9 m  
-  
-  [ 3 2 m -   w w w . a b c i n s u r a n c e . e x a m p l e  [ 3 9 m  
-  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 1 6 : 2 5  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 1 4 |    [ 3 9 m          [ 3 4 m s e t u p  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 5 |    [ 3 9 m          [ 3 4 m p r e s s  [ 3 9 m (  [ 3 2 m " F i l l   f r o m   p r e v i o u s   f i n d i n g s "  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 6 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m (  [ 3 4 m b o x  [ 3 9 m ( )  [ 3 3 m .  [ 3 9 m v a l u e )  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o C o n t a i n  [ 3 9 m ( r e c e n t S c a n s [  [ 3 4 m 0  [ 3 9 m ]  [ 3 3 m .  [ 3 9 m d o m a i n )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                                  [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 1 7 |    [ 3 9 m     } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 8 |    [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 1 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   I   c l i c k   F i l l    
- f r o m   p r e v i o u s   f i n d i n g s   t w i c e ,   t h e n   t h e   U R L   i s   n o t   r e p e a t e d  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   ' '   t o   c o n t a i n   ' w w w . a b c i n s u r a n c e . e x a m p l e '  [ 3 9 m  
-  
-  [ 3 2 m -   E x p e c t e d  [ 3 9 m  
-  [ 3 1 m +   R e c e i v e d  [ 3 9 m  
-  
-  [ 3 2 m -   w w w . a b c i n s u r a n c e . e x a m p l e  [ 3 9 m  
-  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 2 3 : 2 5  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 2 1 |    [ 3 9 m          [ 3 4 m p r e s s  [ 3 9 m (  [ 3 2 m " F i l l   f r o m   p r e v i o u s   f i n d i n g s "  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 2 2 |    [ 3 9 m          [ 3 4 m p r e s s  [ 3 9 m (  [ 3 2 m " F i l l   f r o m   p r e v i o u s   f i n d i n g s "  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 2 3 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m (  [ 3 4 m b o x  [ 3 9 m ( )  [ 3 3 m .  [ 3 9 m v a l u e )  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o C o n t a i n  [ 3 9 m ( r e c e n t S c a n s [  [ 3 4 m 0  [ 3 9 m ]  [ 3 3 m .  [ 3 9 m d o m a i n )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                                  [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 2 4 |    [ 3 9 m          
-  [ 3 4 m e x p e c t  [ 3 9 m (  [ 3 4 m b o x  [ 3 9 m ( )  [ 3 3 m .  [ 3 9 m v a l u e  [ 3 3 m .  [ 3 9 m  [ 3 4 m s p l i t  [ 3 9 m (  [ 3 2 m " , "  [ 3 9 m ) )  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o H a v e L e n g t h  [ 3 9 m (  [ 3 4 m 1  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 2 5 |    [ 3 9 m     } )  [ 3 3 m ;  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 2 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t h e   p a g e ,   t h e n    
- t h e   f i l e   p i c k e r   a c c e p t s   o n l y   . x l s x   f i l e s  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 3 1 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 2 9 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   {   c o n t a i n e r   }    [ 3 3 m =  [ 3 9 m    [ 3 4 m s e t u p  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 3 0 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 3 1 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 3 2 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t  [ 3 3 m .  [ 3 9 m a c c e p t )  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o C o n t a i n  [ 3 9 m (  [ 3 2 m " . x l s x "  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 3 3 |    [ 3 9 m     } )  [ 3 3 m ;  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 3 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   I   c l i c k   U p l o a d    
- f r o m   E x c e l ,   t h e n   t h e   f i l e   p i c k e r   o p e n s  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 3 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 3 6 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   {   c o n t a i n e r   }    [ 3 3 m =  [ 3 9 m    [ 3 4 m s e t u p  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 3 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 3 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 3 9 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   s p y    [ 3 3 m =  [ 3 9 m   v i  [ 3 3 m .  [ 3 9 m  [ 3 4 m s p y O n  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m    [ 3 2 m " c l i c k "  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 4 0 |    [ 3 9 m          [ 3 4 m p r e s s  [ 3 9 m (  [ 3 2 m " U p l o a d   f r o m   E x c e l "  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 4 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e    
- w i t h   3   U R L s ,   t h e n   a l l   3   a r e   i n   t h e   b o x  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 4 6 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 5 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   h e a d e r   r o w   i n    
- t h e   f i l e ,   t h e n   t h e   h e a d e r   i s   s k i p p e d  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 5 6 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 6 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e    
- w i t h   6 0   U R L s ,   t h e n   a l l   6 0   a r e   i n   t h e   b o x  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 6 3 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 7 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t h e   s a m e   U R L    
- t w i c e   i n   t h e   f i l e ,   t h e n   i t   i s   a d d e d   o n c e  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 6 9 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 8 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   h y p e r l i n k    
- c e l l ,   t h e n   t h e   l i n k   a d d r e s s   i s   u s e d  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 7 5 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 9 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   t e x t   a l r e a d y   i n    
- t h e   b o x ,   t h e n   t h e   E x c e l   U R L s   a r e   a d d e d   a f t e r   i t  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 8 2 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 1 0 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   f i l e   t h a t   i s    
- n o t   . x l s x ,   t h e n   a   m e s s a g e   s h o w s   a n d   t h e   b o x   s t a y s   e m p t y  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 8 9 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 1 1 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a n   E x c e l   f i l e    
- w i t h   n o   U R L s ,   t h e n   a   m e s s a g e   s h o w s  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 9 6 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 1 2 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 1 m  [ 7 m   F A I L    [ 2 7 m  [ 2 2 m  [ 3 9 m   s r c / p a g e s / H o m e . t e s t . j s x  [ 2 m   >    [ 2 2 m H o m e :   F i l l   f r o m   p r e v i o u s   f i n d i n g s   a n d   U p l o a d   f r o m   E x c e l  [ 2 m   >    [ 2 2 m G i v e n   a   . x l s x   f i l e    
- t h a t   i s   n o t   a   r e a l   E x c e l   f i l e ,   t h e n   a   m e s s a g e   s h o w s  
-  [ 3 1 m  [ 1 m A s s e r t i o n E r r o r  [ 2 2 m :   e x p e c t e d   n u l l   n o t   t o   b e   n u l l  [ 3 9 m  
-  [ 3 6 m    [ 2 m o' [ 2 2 m   p i c k   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 1 0 8 : 2 3  [ 2 2 m  [ 3 9 m  
-          [ 9 0 m 1 0 6 |    [ 3 9 m         f i l e  [ 3 3 m .  [ 3 9 m a r r a y B u f f e r    [ 3 3 m =  [ 3 9 m    [ 3 5 m a s y n c  [ 3 9 m   ( )    [ 3 3 m = >  [ 3 9 m   c o n t e n t  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 7 |    [ 3 9 m          [ 3 5 m c o n s t  [ 3 9 m   i n p u t    [ 3 3 m =  [ 3 9 m   c o n t a i n e r  [ 3 3 m .  [ 3 9 m  [ 3 4 m q u e r y S e l e c t o r  [ 3 9 m (  [ 3 2 m ' i n p u t [ t y p e = " f i l e " ] '  [ 3 9 m )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 0 8 |    [ 3 9 m          [ 3 4 m e x p e c t  [ 3 9 m ( i n p u t )  [ 3 3 m .  [ 3 9 m n o t  [ 3 3 m .  [ 3 9 m  [ 3 4 m t o B e N u l l  [ 3 9 m ( )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m       |    [ 3 9 m                                              [ 3 1 m ^  [ 3 9 m  
-          [ 9 0 m 1 0 9 |    [ 3 9 m         f i r e E v e n t  [ 3 3 m .  [ 3 9 m  [ 3 4 m c h a n g e  [ 3 9 m ( i n p u t  [ 3 3 m ,  [ 3 9 m   {   t a r g e t  [ 3 3 m :  [ 3 9 m   {   f i l e s  [ 3 3 m :  [ 3 9 m   [ f i l e ]   }   } )  [ 3 3 m ;  [ 3 9 m  
-          [ 9 0 m 1 1 0 |    [ 3 9 m     }  
-  [ 9 0 m    [ 2 m o' [ 2 2 m   s r c / p a g e s / H o m e . t e s t . j s x :  [ 2 m 2 0 2 : 5  [ 2 2 m  [ 3 9 m  
-  
-  [ 3 1 m  [ 2 m Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#Ø#[ 1 3 / 1 3 ] Ø# [ 2 2 m  [ 3 9 m  
-  
-  [ 2 m   T e s t   F i l e s    [ 2 2 m    [ 1 m  [ 3 1 m 1   f a i l e d  [ 3 9 m  [ 2 2 m  [ 9 0 m   ( 1 )  [ 3 9 m  
-  [ 2 m             T e s t s    [ 2 2 m    [ 1 m  [ 3 1 m 1 3   f a i l e d  [ 3 9 m  [ 2 2 m  [ 2 m   |    [ 2 2 m  [ 1 m  [ 3 2 m 8   p a s s e d  [ 3 9 m  [ 2 2 m  [ 9 0 m   ( 2 1 )  [ 3 9 m  
-  [ 2 m       S t a r t   a t    [ 2 2 m   1 0 : 5 6 : 3 6  
-  [ 2 m       D u r a t i o n    [ 2 2 m   5 . 6 0 s  [ 2 m   ( t r a n s f o r m   7 9 m s ,   s e t u p   1 1 7 m s ,   c o l l e c t   9 8 8 m s ,   t e s t s   2 . 8 6 s ,   e n v i r o n m e n t   9 7 0 m s ,   p r e p a r e   2 0 0 m s )  [ 2 2 m  
-  
- 

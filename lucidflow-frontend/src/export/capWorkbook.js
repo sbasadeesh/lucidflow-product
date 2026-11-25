@@ -42,7 +42,12 @@ const font = (overrides = {}) => ({
   ...overrides,
 });
 
-const ROW_HEIGHT = 30; // placeholder text wraps to 2 lines
+// Rough row height so wrapped text is not cut off
+function estimateRowHeight(cap) {
+  const lines = cap.action.reduce((sum, a) => sum + Math.ceil(a.length / 40), 0);
+  return Math.max(30, lines * 12 + 6);
+}
+
 // ---------- sheet sections ----------
 
 function setColumnWidths(sheet) {
@@ -106,7 +111,7 @@ function styleDataCell(cell, col) {
 function addDataRows(sheet, caps) {
   caps.forEach((cap, i) => {
     const row = sheet.getRow(HEADER_ROW + 1 + i);
-        row.height = ROW_HEIGHT;
+    row.height = estimateRowHeight(cap);
 
     CAP_COLUMNS.forEach((col, c) => {
       const cell = row.getCell(FIRST_COLUMN + c);

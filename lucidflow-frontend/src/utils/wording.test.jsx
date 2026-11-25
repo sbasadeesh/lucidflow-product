@@ -7,16 +7,15 @@ import { buildCapWorkbook } from "../export/capWorkbook.js";
 import { buildReport } from "../data.js";
 import { checkWording } from "./wording.js";
 
-// TODO: mock scenarios eppadi edukkirom nu capWorkbook.test.js la paarunga, adhe maadhiri
 const scenarios = Object.values(mock.scenarios ?? mock);
 const reportOf = (s) => s.report ?? s;
 
-// PDF text = ella pages oda text
 function pdfTextOf(report) {
+  const pages = getPages(report);
   const { container } = render(
     <>
-      {getPages(report).map((page, i) => (
-        <Sheet key={i} n={i + 1}>
+      {pages.map((page, n) => (
+        <Sheet key={n} n={n + 1}>
           {page}
         </Sheet>
       ))}
@@ -25,7 +24,6 @@ function pdfTextOf(report) {
   return container.textContent;
 }
 
-// Excel text = sheet la ella cells oda text
 function excelTextOf(report) {
   const sheet = buildCapWorkbook(ExcelJS, report).getWorksheet("Corrective action plan");
   const parts = [];

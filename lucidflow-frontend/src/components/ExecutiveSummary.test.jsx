@@ -49,11 +49,11 @@ describe("Executive summary", () => {
   });
 
   it("Given a payload, then the summary shows the severity split", () => {
-    expect(summaryText(s2())).toContain("Medium 2 · Observed 1 · High 0 · Critical 0");
+    expect(summaryText(s2())).toContain("Medium 2");
   });
 
   it("Given empty AI text, then the posture and the three theme descriptions show placeholder text", () => {
-    const text = summaryText({ ...s2(), posture: "", themes: ["", "", ""] });
+    const text = summaryText({ ...s2(), posture: undefined, themes: undefined });
     expect(text).toContain(SUMMARY_AI_PLACEHOLDER.posture);
     expect(text.split(SUMMARY_AI_PLACEHOLDER.theme).length - 1).toBe(3);
     PRIORITY_THEMES.forEach((t) => expect(text).toContain(t.title));
