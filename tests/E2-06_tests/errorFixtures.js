@@ -80,7 +80,7 @@ async function startSite() {
 // ---------------------------------------------------------------------------
 async function startEngine() {
     const port = await freePort();
-    const root = path.resolve(__dirname, "..", "..", ".."); // the folder with server.js
+    const root = path.resolve(__dirname, "..", ".."); // the folder with server.js
 
     const child = spawn(process.execPath, ["server.js"], {
         cwd: root,

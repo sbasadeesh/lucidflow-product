@@ -97,7 +97,7 @@ async function startSite() {
 
 async function startEngine(env = {}) {
     const port = await freePort();
-    const root = path.resolve(__dirname, "..", "..", "..");
+    const root = path.resolve(__dirname, "..", "..");
     const clean = { ...process.env };
     delete clean.LF_OVERLAY_OBSERVATION;
     delete clean.LF_OVERLAY_OBSERVATION_WINDOW_MS;
