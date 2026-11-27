@@ -93,37 +93,19 @@ The original P0 plan proposes Python, Playwright, pytest, pytest-cov, and Stream
 
 Do not assume prototype functionality is implemented in this repository.
 
-## Suggested repository structure
+## Repository structure
 
-The following is a proposal, not a list of existing files:
-
-```text
-.
-├── README.md
-├── docs/                 # Architecture, scope, testing, and review evidence
-├── src/                  # Product implementation; adapt to the approved stack
-├── tests/                # Unit, component, integration, and acceptance tests
-├── fixtures/             # Controlled HTML, payloads, and expected outcomes
-├── config/               # Approved configuration and thresholds
-└── .github/              # PR templates and CI workflows
-```
-
-If the approved architecture uses separate frontend and backend folders, document that structure rather than creating a parallel unused `src/` implementation.
+The active layout is documented in [docs/REPO_STRUCTURE.md](docs/REPO_STRUCTURE.md). Summary: `backend/src/` (scan engine), `frontend/` (UI), `packages/schema-contract/` (JSON schema validators), `tests/E2-*_tests/` (Node regressions), root `package.json` for backend tests and `npm start`.
 
 ## Getting started
 
-This repository does not yet contain a runnable application, dependency manifest, or verified startup commands.
+From the repository root (see `docs/REPO_STRUCTURE.md` for detail):
 
-Initial setup work:
+1. `npm ci` and `npx playwright install chromium` if needed.
+2. `npm start` — backend (`backend/src/server.js`, default port 5000).
+3. `npm test` — backend regression suite wired in root `package.json`.
 
-1. Confirm the P0 scope and active technology stack.
-2. Add and agree the shared schema, example payloads, and semantic validators.
-3. Establish fixture naming and expected-result conventions.
-4. Add dependency manifests, environment documentation, and a safe example configuration.
-5. Configure automated tests, lint checks, and CI.
-6. Document verified installation, test, and startup commands here.
-
-Do not add guessed commands or claim setup is complete before verifying it.
+Frontend: `cd frontend && npm ci && npm run dev`. Schema package: `cd packages/schema-contract && pip install -r requirements.txt && pytest -q`.
 
 ## Development workflow
 
