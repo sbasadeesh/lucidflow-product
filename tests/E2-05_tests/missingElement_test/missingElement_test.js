@@ -5,7 +5,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const { runStateScript } = require("../../stateScriptRunner");
+const { runStateScript } = require("../../../stateScriptRunner");
 const { launchBrowser, makeTmpDir, removeDir } = require("../fixture");
 const { startFixtureServer, FAST } = require("../scriptFixtures");
 

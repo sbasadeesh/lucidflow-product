@@ -39,19 +39,19 @@ jobs:
           echo "Tested revision: ${{ steps.pr-head.outputs.sha }}"
           echo ""
           echo "=== E2-02 Test Files ==="
-          find E2-02_tests -type f -name '*_test.js' | sort
+          find tests/E2-02_tests -type f -name '*_test.js' | sort
           echo ""
           echo "=== E2-04 Test Files ==="
-          find E2-04_tests -type d -name '*_test' | sort
+          find tests/E2-04_tests -type d -name '*_test' | sort
           echo ""
           echo "=== E2-07 Test Files ==="
-          find E2-07_tests -type f -name '*_test.js' | sort
+          find tests/E2-07_tests -type f -name '*_test.js' | sort
           echo ""
           echo "=== E2-10 Test Files ==="
-          find E2-10_tests -type f -name '*_test.js' 2>/dev/null | sort || true
+          find tests/E2-10_tests -type f -name '*_test.js' 2>/dev/null | sort || true
           echo ""
           echo "=== E2-11 Test Files ==="
-          find E2-11_tests -type f -name '*_test.js' 2>/dev/null | sort || true
+          find tests/E2-11_tests -type f -name '*_test.js' 2>/dev/null | sort || true
 
       - name: Run E2-02 tests (new feature)
         timeout-minutes: 2
@@ -60,16 +60,16 @@ jobs:
 
       - name: Run E2-04 tests (regression)
         timeout-minutes: 2
-        run: node --test E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js E2-04_tests/maskVolatile_test/maskVolatile_test.js E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js 2>&1 | tee e2-04-output.log
+        run: node --test tests/E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js tests/E2-04_tests/maskVolatile_test/maskVolatile_test.js tests/E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js tests/E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js 2>&1 | tee e2-04-output.log
         continue-on-error: false
 
       - name: Run E2-07 guard tests (regression)
         timeout-minutes: 2
-        run: node --test E2-07_tests/mutation_test.js E2-07_tests/real_endpoint_test.js 2>&1 | tee e2-07-output.log
+        run: node --test tests/E2-07_tests/mutation_test.js tests/E2-07_tests/real_endpoint_test.js 2>&1 | tee e2-07-output.log
         continue-on-error: false
 
       - name: Run E2-10 readiness tests
-        if: hashFiles('E2-10_tests/readiness_test/readiness_test.js') != ''
+        if: hashFiles('tests/E2-10_tests/readiness_test/readiness_test.js') != ''
         timeout-minutes: 3
         shell: bash
         run: |
@@ -77,7 +77,7 @@ jobs:
           npm run test:e2-10 2>&1 | tee e2-10-output.log
 
       - name: Run E2-11 context matrix tests
-        if: hashFiles('E2-11_tests/context_matrix_test.js') != ''
+        if: hashFiles('tests/E2-11_tests/context_matrix_test.js') != ''
         timeout-minutes: 3
         shell: bash
         run: |
@@ -160,16 +160,16 @@ jobs:
           echo "Integration tree (uncommitted): ${{ steps.merge-integration.outputs.tree }}"
           echo ""
           echo "=== E2-02 Test Files ==="
-          find E2-02_tests -type f -name '*_test.js' | sort || echo "E2-02 tests not found (expected on main without PR)"
+          find tests/E2-02_tests -type f -name '*_test.js' | sort || echo "E2-02 tests not found (expected on main without PR)"
           echo ""
           echo "=== E2-04 Test Files ==="
-          find E2-04_tests -type d -name '*_test' | sort
+          find tests/E2-04_tests -type d -name '*_test' | sort
           echo ""
           echo "=== E2-07 Test Files ==="
-          find E2-07_tests -type f -name '*_test.js' | sort
+          find tests/E2-07_tests -type f -name '*_test.js' | sort
           echo ""
           echo "=== E2-10 Test Files ==="
-          find E2-10_tests -type f -name '*_test.js' 2>/dev/null | sort || true
+          find tests/E2-10_tests -type f -name '*_test.js' 2>/dev/null | sort || true
 
       - name: Run E2-02 on integration
         timeout-minutes: 2
@@ -178,16 +178,16 @@ jobs:
 
       - name: Run E2-04 on integration
         timeout-minutes: 2
-        run: node --test E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js E2-04_tests/maskVolatile_test/maskVolatile_test.js E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js 2>&1 | tee e2-04-integration.log
+        run: node --test tests/E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js tests/E2-04_tests/maskVolatile_test/maskVolatile_test.js tests/E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js tests/E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js 2>&1 | tee e2-04-integration.log
         continue-on-error: false
 
       - name: Run E2-07 on integration
         timeout-minutes: 2
-        run: node --test E2-07_tests/mutation_test.js E2-07_tests/real_endpoint_test.js 2>&1 | tee e2-07-integration.log
+        run: node --test tests/E2-07_tests/mutation_test.js tests/E2-07_tests/real_endpoint_test.js 2>&1 | tee e2-07-integration.log
         continue-on-error: false
 
       - name: Run E2-10 readiness tests on integration
-        if: hashFiles('E2-10_tests/readiness_test/readiness_test.js') != ''
+        if: hashFiles('tests/E2-10_tests/readiness_test/readiness_test.js') != ''
         timeout-minutes: 3
         shell: bash
         run: |
@@ -195,7 +195,7 @@ jobs:
           npm run test:e2-10 2>&1 | tee e2-10-integration.log
 
       - name: Run E2-11 context matrix tests on integration
-        if: hashFiles('E2-11_tests/context_matrix_test.js') != ''
+        if: hashFiles('tests/E2-11_tests/context_matrix_test.js') != ''
         timeout-minutes: 3
         shell: bash
         run: |

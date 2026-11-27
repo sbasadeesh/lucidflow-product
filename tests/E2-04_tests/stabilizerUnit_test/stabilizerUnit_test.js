@@ -11,8 +11,8 @@ const {
     installDeterministicEnvironment,
     compareImages,
     cleanSelectors,
-} = require("../../screenshotStabilizer");
-const config = require("../../stabilizer.config");
+} = require("../../../screenshotStabilizer");
+const config = require("../../../stabilizer.config");
 const { launchBrowser, makeTmpDir, removeDir, VIEWPORT } = require("../fixture");
 const { animatedHtml, volatileHtml, openHtml } = require("../stabilizerFixtures");
 

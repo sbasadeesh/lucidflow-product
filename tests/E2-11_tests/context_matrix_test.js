@@ -1,7 +1,7 @@
 const { describe, it, before, after } = require("node:test");
 const assert = require("node:assert");
 const { chromium } = require("playwright");
-const { analyzeContexts } = require("../context_analyzer/context_analyzer");
+const { analyzeContexts } = require("../../context_analyzer/context_analyzer");
 const { startServers } = require("./fixture");
 
 describe("E2-11: Shadow DOM, iframe, and Canvas Matrix", () => {

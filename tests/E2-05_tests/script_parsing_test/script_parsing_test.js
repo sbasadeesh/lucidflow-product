@@ -3,8 +3,8 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const { parseScript, ScriptError } = require("../../stateScriptRunner");
-const config = require("../../stateScript.config");
+const { parseScript, ScriptError } = require("../../../stateScriptRunner");
+const config = require("../../../stateScript.config");
 
 let hasYaml = true;
 try { require("js-yaml"); } catch { hasYaml = false; }

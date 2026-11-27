@@ -21,7 +21,7 @@ const { execSync, execFileSync, spawn } = require("child_process");
 let fixtureServer;
 let fixtureUrl;
 
-const repoRoot = path.join(__dirname, "..");
+const repoRoot = path.join(__dirname, "..", "..");
 const originalServerPath = path.join(repoRoot, "server.js");
 const nodeModulesPath = path.join(repoRoot, "node_modules");
 let worktreeDir;

@@ -7,8 +7,8 @@ const assert = require("node:assert/strict");
 const fs = require("fs");
 const path = require("path");
 
-const { stabilizePage, compareImages } = require("../../screenshotStabilizer");
-const config = require("../../stabilizer.config");
+const { stabilizePage, compareImages } = require("../../../screenshotStabilizer");
+const config = require("../../../stabilizer.config");
 const { launchBrowser, makeTmpDir, removeDir } = require("../fixture");
 const { animatedHtml, openHtml } = require("../stabilizerFixtures");
 

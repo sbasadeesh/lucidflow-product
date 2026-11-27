@@ -9,8 +9,8 @@ const path = require("path");
 const { spawn } = require("child_process");
 const http = require("http");
 
-const { readScan } = require("../screenshotModule");
-const { SCANS_DIR: scansDir, SCREENSHOTS_DIR: screenshotDir } = require("../paths");
+const { readScan } = require("../../screenshotModule");
+const { SCANS_DIR: scansDir, SCREENSHOTS_DIR: screenshotDir } = require("../../paths");
 
 let serverProc = null;
 let fixtureProc = null;
@@ -47,7 +47,7 @@ test.before(async () => {
 
     // Start E2-03 server
     console.log("[AC4] Starting E2-03 server on localhost:5000...");
-    serverProc = spawn("node", [path.join(__dirname, "..", "server.js")], {
+    serverProc = spawn("node", [path.join(__dirname, "..", "..", "server.js")], {
         stdio: ["ignore", "pipe", "pipe"],
         detached: false,
         env: { ...process.env, NODE_ENV: "test" },

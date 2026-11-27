@@ -2,7 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const http = require("http");
 const { chromium } = require("playwright");
-const { checkSecurityGuards } = require("../../security-guard/securityGuard");
+const { checkSecurityGuards } = require("../../../security-guard/securityGuard");
 
 let browser, server, baseUrl;
 

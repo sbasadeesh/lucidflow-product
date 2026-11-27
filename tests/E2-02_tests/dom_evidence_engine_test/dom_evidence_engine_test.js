@@ -10,7 +10,7 @@ const path = require("path");
 const { startEngines, normalizedLog } = require("../../E2-09_tests/fixture");
 const { startSite, markersIn } = require("../fixture");
 
-const ROOT = path.resolve(__dirname, "..", "..");
+const ROOT = path.resolve(__dirname, "..", "..", "..");
 const SCANS = path.join(ROOT, "scans");
 const ACK = "retention-unapproved-local-only";
 

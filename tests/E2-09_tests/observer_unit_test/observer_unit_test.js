@@ -4,8 +4,8 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const {
     createOverlayObserver, matchIdentity, overlayIdOf, formatDiagnostics, END_REASONS,
-} = require("../../overlayObservation/overlayObserver");
-const { resolveConfig } = require("../../overlayObservation/overlayObservation.config");
+} = require("../../../overlayObservation/overlayObserver");
+const { resolveConfig } = require("../../../overlayObservation/overlayObservation.config");
 
 const RECORD_KEYS = ["dismissedAt", "method", "observationEndedAt", "observedForMs", "overlayId", "phase",
     "reason", "recurrenceObservedAt", "state", "windowMs"].sort();

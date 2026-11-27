@@ -7,8 +7,8 @@ const assert = require("node:assert/strict");
 const path = require("path");
 const sharp = require("sharp");
 
-const { takeFullPage } = require("../../screenshotModule");
-const { stabilizePage } = require("../../screenshotStabilizer");
+const { takeFullPage } = require("../../../screenshotModule");
+const { stabilizePage } = require("../../../screenshotStabilizer");
 const { launchBrowser, makeTmpDir, removeDir } = require("../fixture");
 const { openHtml } = require("../stabilizerFixtures");
 

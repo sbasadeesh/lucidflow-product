@@ -14,8 +14,8 @@ const path = require("path");
 // These tests exercise the INTERNAL implementation, which takes the repository root as an explicit
 // argument so that it can point at a disposable fixture. The production entry point
 // (cleanup.js) never accepts a repository root; see cleanup_public_api_test.js.
-const core = require("../../Provenance & cleanUp/cleanupCore");
-const production = require("../../Provenance & cleanUp/cleanup");
+const core = require("../../../Provenance & cleanUp/cleanupCore");
+const production = require("../../../Provenance & cleanUp/cleanup");
 
 function cleanupEphemeralArtifacts(targets, opts = {}) {
     const { repoRoot, ...rest } = opts;
@@ -384,7 +384,7 @@ test("the internal implementation requires an explicit repository root and rejec
 
 test("the default configuration uses a temporary root strictly inside the real repository", () => {
     const cfg = production.validateCleanupConfig({});
-    const repo = fs.realpathSync.native(path.resolve(__dirname, "..", ".."));
+    const repo = fs.realpathSync.native(path.resolve(__dirname, "..", "..", ".."));
     assert.equal(path.dirname(cfg.tempRootReal).toLowerCase(), repo.toLowerCase());
     assert.notEqual(cfg.tempRootReal.toLowerCase(), repo.toLowerCase());
     assert.equal(cfg.maxAgeDays, 7);

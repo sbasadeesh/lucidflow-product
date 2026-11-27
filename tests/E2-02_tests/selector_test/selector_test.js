@@ -5,8 +5,8 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const capture = require("../../capture");
-const { captureStyles } = require("../../DOMcapture");
+const capture = require("../../../capture");
+const { captureStyles } = require("../../../DOMcapture");
 const { startFixtureServer, expected } = require("../fixture");
 
 let site;

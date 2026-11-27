@@ -5,8 +5,8 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const { stabilizePage, compareImages } = require("../../screenshotStabilizer");
-const config = require("../../stabilizer.config");
+const { stabilizePage, compareImages } = require("../../../screenshotStabilizer");
+const config = require("../../../stabilizer.config");
 const { launchBrowser } = require("../fixture");
 const { volatileHtml, openHtml } = require("../stabilizerFixtures");
 

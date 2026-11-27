@@ -9,7 +9,7 @@ const assert = require("node:assert/strict");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-const production = require("../../Provenance & cleanUp/cleanup");
+const production = require("../../../Provenance & cleanUp/cleanup");
 
 const DAY = 24 * 60 * 60 * 1000;
 const fixtures = [];
@@ -65,6 +65,6 @@ test("the production module exposes only the production entry points", () => {
 
 test("the production default configuration is inside the module's own repository (validated, not run)", () => {
     const cfg = production.validateCleanupConfig({});
-    const repo = fs.realpathSync.native(path.resolve(__dirname, "..", ".."));
+    const repo = fs.realpathSync.native(path.resolve(__dirname, "..", "..", ".."));
     assert.equal(path.dirname(cfg.tempRootReal).toLowerCase(), repo.toLowerCase());
 });
