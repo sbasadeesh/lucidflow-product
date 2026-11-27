@@ -24,7 +24,7 @@ const os = require("os");
 const path = require("path");
 const config = require("./provenance.config");
 
-const REPO_ROOT = path.resolve(__dirname, "..");
+const REPO_ROOT = path.resolve(__dirname, "..", "..", "..", "..");
 const DAY_MS = 24 * 60 * 60 * 1000;
 const BASE_ELIGIBLE = /^tmp-[A-Za-z0-9._-]+$/;              // approved naming rule; not configurable
 const BASE_PROTECTED = ["scans", "screenshots"];           // always protected; not removable

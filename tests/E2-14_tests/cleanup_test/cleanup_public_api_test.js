@@ -9,7 +9,7 @@ const assert = require("node:assert/strict");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-const production = require("../../../Provenance & cleanUp/cleanup");
+const production = require("../../../backend/src/modules/provenance/cleanup");
 
 const DAY = 24 * 60 * 60 * 1000;
 const fixtures = [];

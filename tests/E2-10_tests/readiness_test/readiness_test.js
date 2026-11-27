@@ -1,7 +1,7 @@
 const { describe, it, before, after } = require("node:test");
 const assert = require("node:assert");
 const { chromium } = require("playwright");
-const { waitForReadiness } = require("../../../screenshotModule");
+const { waitForReadiness } = require("../../../backend/src/capture/screenshotModule");
 const { startServer } = require("../fixture");
 
 describe("E2-10: Dynamic Readiness & Lazy Capture", () => {

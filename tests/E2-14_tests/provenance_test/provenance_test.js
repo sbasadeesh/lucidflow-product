@@ -7,7 +7,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const pkg = require("../../../package.json");
-const { generateProvenance, resolveCodeRevision, UNAVAILABLE } = require("../../../Provenance & cleanUp/provenance");
+const { generateProvenance, resolveCodeRevision, UNAVAILABLE } = require("../../../backend/src/modules/provenance/provenance");
 
 const REAL_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.33 Safari/537.36";
 const SHA = "0123456789abcdef0123456789abcdef01234567";

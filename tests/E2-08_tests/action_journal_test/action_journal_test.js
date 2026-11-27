@@ -2,8 +2,8 @@
 // See docs/state-fingerprint-and-action-journal.md.
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { buildActionJournal } = require("../../../actionJournal/actionJournal");
-const { runStateScript } = require("../../../stateScriptRunner");
+const { buildActionJournal } = require("../../../backend/src/modules/actionJournal/actionJournal");
+const { runStateScript } = require("../../../backend/src/capture/stateScriptRunner");
 const { launchBrowser, openHtml, makeTmpDir, removeDir } = require("../fixture");
 
 let browser;

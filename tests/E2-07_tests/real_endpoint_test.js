@@ -15,7 +15,7 @@ const http = require("http");
 const path = require("path");
 const fs = require("fs");
 const { spawn } = require("child_process");
-const { SCREENSHOTS_DIR } = require("../../paths");
+const { SCREENSHOTS_DIR } = require("../../backend/src/config/paths");
 
 let fixtureServer;
 let engineProcess;
@@ -203,7 +203,7 @@ test.before(async (t) => {
             const port = tempServer.address().port;
             tempServer.close(() => {
                 engineProcess = spawn("node", 
-                    [path.join(__dirname, "..", "..", "server.js")],
+                    [path.join(__dirname, "..", "..", "backend", "src", "server.js")],
                     {
                         stdio: ["ignore", "pipe", "pipe"],
                         env: { ...process.env, PORT: port }

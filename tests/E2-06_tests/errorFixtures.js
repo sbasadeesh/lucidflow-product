@@ -82,7 +82,7 @@ async function startEngine() {
     const port = await freePort();
     const root = path.resolve(__dirname, "..", ".."); // the folder with server.js
 
-    const child = spawn(process.execPath, ["server.js"], {
+    const child = spawn(process.execPath, ["backend/src/server.js"], {
         cwd: root,
         env: { ...process.env, PORT: String(port) },
         stdio: ["ignore", "pipe", "pipe"],

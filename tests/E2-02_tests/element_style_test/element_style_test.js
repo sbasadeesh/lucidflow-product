@@ -7,8 +7,8 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-const capture = require("../../../capture");            // E2-01: renders the page
-const { captureState } = require("../../../DOMcapture");
+const capture = require("../../../backend/src/capture/capture");            // E2-01: renders the page
+const { captureState } = require("../../../backend/src/capture/DOMcapture");
 const { startFixtureServer, expected } = require("../fixture");
 
 let site;

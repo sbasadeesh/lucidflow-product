@@ -17,7 +17,7 @@
 // --------------------------------------------------
 
 const path = require("path");
-const defaults = require("./stateScript.config");
+const defaults = require("../config/stateScript.config");
 
 class ScriptError extends Error {
     constructor(message) {

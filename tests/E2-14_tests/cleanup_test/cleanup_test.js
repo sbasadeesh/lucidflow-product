@@ -14,8 +14,8 @@ const path = require("path");
 // These tests exercise the INTERNAL implementation, which takes the repository root as an explicit
 // argument so that it can point at a disposable fixture. The production entry point
 // (cleanup.js) never accepts a repository root; see cleanup_public_api_test.js.
-const core = require("../../../Provenance & cleanUp/cleanupCore");
-const production = require("../../../Provenance & cleanUp/cleanup");
+const core = require("../../../backend/src/modules/provenance/cleanupCore");
+const production = require("../../../backend/src/modules/provenance/cleanup");
 
 function cleanupEphemeralArtifacts(targets, opts = {}) {
     const { repoRoot, ...rest } = opts;

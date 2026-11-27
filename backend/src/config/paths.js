@@ -1,6 +1,6 @@
 const path = require("path");
 
-const REPO_ROOT = __dirname;
+const REPO_ROOT = path.resolve(__dirname, "..", "..", "..");
 const SCANS_DIR = path.join(REPO_ROOT, "scans");
 const SCREENSHOTS_DIR = path.join(REPO_ROOT, "screenshots");
 const SNAPSHOTS_DIR = path.join(REPO_ROOT, "snapshots");

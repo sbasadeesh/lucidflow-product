@@ -8,8 +8,8 @@ const assert = require("node:assert/strict");
 const fs = require("fs");
 const path = require("path");
 
-const { runStateScript } = require("../../../stateScriptRunner");
-const { compareImages } = require("../../../screenshotStabilizer");
+const { runStateScript } = require("../../../backend/src/capture/stateScriptRunner");
+const { compareImages } = require("../../../backend/src/capture/screenshotStabilizer");
 const { launchBrowser, makeTmpDir, removeDir } = require("../fixture");
 const { startFixtureServer, FAST } = require("../scriptFixtures");
 

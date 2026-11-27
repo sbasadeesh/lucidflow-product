@@ -19,8 +19,8 @@
 
 const crypto = require("crypto");
 const defaults = require("./stateFingerprint.config");
-const scriptDefaults = require("../stateScript.config");
-const { fieldDescriptor, isSensitiveField } = require("../stateScriptRunner");
+const scriptDefaults = require("../../config/stateScript.config");
+const { fieldDescriptor, isSensitiveField } = require("../../capture/stateScriptRunner");
 
 const FINGERPRINT_VERSION = 1;
 const CONTROLS = "input, textarea, select";

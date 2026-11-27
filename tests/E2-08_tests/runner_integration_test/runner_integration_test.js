@@ -4,8 +4,8 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("fs");
 const path = require("path");
-const { getStateFingerprint } = require("../../../stateFingerprinter/stateFingerprinter");
-const { runStateScript } = require("../../../stateScriptRunner");
+const { getStateFingerprint } = require("../../../backend/src/modules/stateFingerprinter/stateFingerprinter");
+const { runStateScript } = require("../../../backend/src/capture/stateScriptRunner");
 const { launchBrowser, openHtml, makeTmpDir, removeDir } = require("../fixture");
 
 let browser;

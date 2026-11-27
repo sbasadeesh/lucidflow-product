@@ -2,8 +2,8 @@
 // PROPOSED contract: docs/overlay-recurrence-observation.md
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { snapshotOverlays, identifyTarget } = require("../../../overlayObservation/overlaySnapshot");
-const { matchIdentity, overlayIdOf } = require("../../../overlayObservation/overlayObserver");
+const { snapshotOverlays, identifyTarget } = require("../../../backend/src/modules/overlayObservation/overlaySnapshot");
+const { matchIdentity, overlayIdOf } = require("../../../backend/src/modules/overlayObservation/overlayObserver");
 const { launchBrowser, openHtml, overlay, PRIVATE_TEXT } = require("../fixture");
 
 let browser;

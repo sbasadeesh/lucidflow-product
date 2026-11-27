@@ -2,9 +2,9 @@
 // See docs/state-fingerprint-and-action-journal.md for the supported signals and rules.
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { getStateFingerprint } = require("../../../stateFingerprinter/stateFingerprinter");
-const { isSensitiveField } = require("../../../stateScriptRunner");
-const scriptConfig = require("../../../stateScript.config");
+const { getStateFingerprint } = require("../../../backend/src/modules/stateFingerprinter/stateFingerprinter");
+const { isSensitiveField } = require("../../../backend/src/capture/stateScriptRunner");
+const scriptConfig = require("../../../backend/src/config/stateScript.config");
 const { launchBrowser, openHtml } = require("../fixture");
 
 let browser;

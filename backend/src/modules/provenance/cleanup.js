@@ -10,7 +10,7 @@
 const path = require("path");
 const core = require("./cleanupCore");
 
-const REPO_ROOT = path.resolve(__dirname, "..");
+const REPO_ROOT = path.resolve(__dirname, "..", "..", "..", "..");
 const ALLOWED_OPTIONS = new Set(["tempRoot", "maxAgeDays", "eligibleFilePattern", "protectedDirs"]);
 
 function checkOptions(options) {

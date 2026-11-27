@@ -7,8 +7,8 @@ const assert = require("node:assert/strict");
 const fs = require("fs");
 const path = require("path");
 
-const { runStateScript } = require("../../../stateScriptRunner");
-const config = require("../../../stateScript.config");
+const { runStateScript } = require("../../../backend/src/capture/stateScriptRunner");
+const config = require("../../../backend/src/config/stateScript.config");
 const { launchBrowser, makeTmpDir, removeDir } = require("../fixture");
 const { startFixtureServer, FAST } = require("../scriptFixtures");
 

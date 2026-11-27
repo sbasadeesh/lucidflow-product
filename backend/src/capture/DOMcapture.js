@@ -16,7 +16,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const defaults = require("./DOMcapture.config");
+const defaults = require("../config/DOMcapture.config");
 
 const firstLine = (text) => String(text || "").split("\n")[0].trim();
 

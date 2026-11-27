@@ -12,18 +12,18 @@ const path = require("path");
 const { chromium } = require("playwright");
 
 const { startSite, markersIn } = require("../fixture");
-const { runStateScript } = require("../../../stateScriptRunner");
+const { runStateScript } = require("../../../backend/src/capture/stateScriptRunner");
 
 function mod() {
     try {
-        return require("../../../domEvidence/domEvidence");
+        return require("../../../backend/src/modules/domEvidence/domEvidence");
     } catch (e) {
         assert.fail(`domEvidence module is not available: ${String(e.message).split("\n")[0]}`);
     }
 }
 function schema() {
     try {
-        return require("../../../domEvidence/domEvidence.schema");
+        return require("../../../backend/src/modules/domEvidence/domEvidence.schema");
     } catch (e) {
         assert.fail(`domEvidence schema is not available: ${String(e.message).split("\n")[0]}`);
     }

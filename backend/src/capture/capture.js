@@ -22,7 +22,7 @@
 // --------------------------------------------------
 
 const { chromium } = require("playwright");
-const defaults = require("./capture.config");
+const defaults = require("../config/capture.config");
 
 class RenderError extends Error {
     constructor(code, message, httpStatus) {

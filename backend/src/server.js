@@ -3,7 +3,7 @@ const cors = require("cors");
 const { chromium } = require("playwright");
 const path = require("path");
 const fs = require("fs");
-const { SCANS_DIR, SCREENSHOTS_DIR } = require("./paths");
+const { SCANS_DIR, SCREENSHOTS_DIR } = require("./config/paths");
 const {
     scrollToLoadContent,
     takeFullPage,
@@ -15,26 +15,26 @@ const {
     readScan,
     buildRawObservationManifest,   // [E2-04]
     waitForReadiness,
-} = require("./screenshotModule");
+} = require("./capture/screenshotModule");
 const {
     stabilizePage,
     installDeterministicEnvironment,
     compareImages,
     captureRawObservation,         // [E2-04]
-} = require("./screenshotStabilizer");
-const stabilizerConfig = require("./stabilizer.config");
-const { runStateScript, parseScript, ScriptError } = require("./stateScriptRunner");
-const stateScriptConfig = require("./stateScript.config");
-const { checkSecurityGuards } = require("./security-guard/securityGuard");
+} = require("./capture/screenshotStabilizer");
+const stabilizerConfig = require("./config/stabilizer.config");
+const { runStateScript, parseScript, ScriptError } = require("./capture/stateScriptRunner");
+const stateScriptConfig = require("./config/stateScript.config");
+const { checkSecurityGuards } = require("./modules/security-guard/securityGuard");
 // [E2-09, proposed contract] read-only overlay recurrence observation; off by default,
 // stdout diagnostics only (docs/overlay-recurrence-observation.md)
-const overlayObservationConfig = require("./overlayObservation/overlayObservation.config");
-const { createOverlayObserver, formatDiagnostics } = require("./overlayObservation/overlayObserver");
-const { snapshotOverlays, identifyTarget } = require("./overlayObservation/overlaySnapshot");
-const { analyzeContexts } = require("./context_analyzer/context_analyzer");
+const overlayObservationConfig = require("./modules/overlayObservation/overlayObservation.config");
+const { createOverlayObserver, formatDiagnostics } = require("./modules/overlayObservation/overlayObserver");
+const { snapshotOverlays, identifyTarget } = require("./modules/overlayObservation/overlaySnapshot");
+const { analyzeContexts } = require("./modules/context_analyzer/context_analyzer");
 // [E2-02] DOM/style evidence prototype: allowlisted structural/style JSON (off by default)
 const domEvidence = (() => {
-    try { return require("./domEvidence/domEvidence"); } catch { return null; }
+    try { return require("./modules/domEvidence/domEvidence"); } catch { return null; }
 })();
 
 const app = express();

@@ -5,10 +5,10 @@
 const os = require("os");
 const path = require("path");
 const { execFileSync } = require("child_process");
-const pkg = require("../package.json");
+const pkg = require("../../../../package.json");
 
 const UNAVAILABLE = "unavailable";
-const REPO_ROOT = path.resolve(__dirname, "..");
+const REPO_ROOT = path.resolve(__dirname, "..", "..", "..", "..");
 const SHA_RE = /^[0-9a-f]{40}$/i;
 
 function text(value) {

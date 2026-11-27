@@ -22,7 +22,7 @@ let fixtureServer;
 let fixtureUrl;
 
 const repoRoot = path.join(__dirname, "..", "..");
-const originalServerPath = path.join(repoRoot, "server.js");
+const originalServerPath = path.join(repoRoot, "backend", "src", "server.js");
 const nodeModulesPath = path.join(repoRoot, "node_modules");
 let worktreeDir;
 let worktreeServerPath;
@@ -47,7 +47,7 @@ test.before(async (t) => {
         throw new Error(`Failed to create git worktree: ${err.message}`);
     }
     
-    worktreeServerPath = path.join(worktreeDir, "server.js");
+    worktreeServerPath = path.join(worktreeDir, "backend", "src", "server.js");
     
     // Capture the clean worktree server.js content for use across mutations
     cleanOriginal = fs.readFileSync(worktreeServerPath, "utf8");

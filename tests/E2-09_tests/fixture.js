@@ -101,7 +101,7 @@ async function startEngine(env = {}) {
     const clean = { ...process.env };
     delete clean.LF_OVERLAY_OBSERVATION;
     delete clean.LF_OVERLAY_OBSERVATION_WINDOW_MS;
-    const child = spawn(process.execPath, ["server.js"], {
+    const child = spawn(process.execPath, ["backend/src/server.js"], {
         cwd: root,
         env: { ...clean, ...env, PORT: String(port) },
         stdio: ["ignore", "pipe", "pipe"],

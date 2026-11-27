@@ -3,7 +3,7 @@
 // throws, and records each call on standard output, so the engine tests can prove that
 // observation failures (note, visibility note, poll, output) cannot change a scan.
 const path = require("path");
-const observerModule = require(path.join(__dirname, "..", "..", "overlayObservation", "overlayObserver"));
+const observerModule = require(path.join(__dirname, "..", "..", "backend", "src", "modules", "overlayObservation", "overlayObserver"));
 
 const call = (name) => process.stdout.write(`[stub-observer-call] ${name}\n`);
 const boom = (name) => () => { call(name); throw new Error(`stub ${name} failure`); };

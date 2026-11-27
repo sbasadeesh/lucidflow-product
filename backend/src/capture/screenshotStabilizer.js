@@ -9,7 +9,7 @@
 // All numbers come from stabilizer.config.js
 // --------------------------------------------------
 
-const defaults = require("./stabilizer.config");
+const defaults = require("../config/stabilizer.config");
 
 const STYLE_ID = "__stabilizer_style__";
 const MASK_CLASS = "__stabilizer_mask__";
