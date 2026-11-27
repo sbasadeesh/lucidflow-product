@@ -14,7 +14,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const sharp = require("sharp");
 
-const { startEngine, runScript, scanPage } = require("../../E2-09_tests/fixture");
+const { startEngine, runScript, scanPage } = require("../../overlay-observation/fixture");
 const {
     startSite,
     waitFor,

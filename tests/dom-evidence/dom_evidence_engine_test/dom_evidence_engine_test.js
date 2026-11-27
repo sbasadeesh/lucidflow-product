@@ -7,7 +7,7 @@ const assert = require("node:assert/strict");
 const fs = require("fs");
 const path = require("path");
 
-const { startEngines, normalizedLog } = require("../../E2-09_tests/fixture");
+const { startEngines, normalizedLog } = require("../../overlay-observation/fixture");
 const { startSite, markersIn } = require("../fixture");
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");

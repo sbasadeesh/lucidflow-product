@@ -1,28 +1,30 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "backend/src/server.js",
-  "scripts": {
-    "start": "node backend/src/server.js",
-    "test": "node --test --test-concurrency=3 tests/E2-01_tests/render_contract_test/render_contract_test.js tests/E2-03_tests/ac4-server-integration.test.js tests/E2-03_tests/element_crop_test/element_crop_test.js tests/E2-03_tests/full_page/full_page_test.js tests/E2-03_tests/lazy_loaded_content_test/lazy_loaded_content_test.js tests/E2-03_tests/scan_metrics_test/scan_metrices_test.js tests/E2-06_tests/could_not_assess_test/could_not_assess_test.js tests/E2-06_tests/http_status_test/http_status_test.js tests/E2-06_tests/redirect_test/redirect_test.js tests/E2-05_tests/script_parsing_test/script_parsing_test.js tests/E2-05_tests/missingElement_test/missingElement_test.js tests/E2-05_tests/state_cap_test/state_cap_test.js tests/E2-05_tests/state_script_order_test/state_script_order_test.js tests/E2-14_tests/provenance_test/provenance_test.js tests/E2-14_tests/cleanup_test/cleanup_test.js tests/E2-14_tests/cleanup_test/cleanup_public_api_test.js tests/E2-08_tests/fingerprint_test/fingerprint_test.js tests/E2-08_tests/action_journal_test/action_journal_test.js tests/E2-08_tests/runner_integration_test/runner_integration_test.js tests/E2-09_tests/observer_unit_test/observer_unit_test.js tests/E2-09_tests/overlay_snapshot_test/overlay_snapshot_test.js tests/E2-09_tests/engine_observation_test/engine_observation_test.js",
-    "test:e2-01": "node --test tests/E2-01_tests/render_contract_test/render_contract_test.js",
-    "test:e2-09": "node --test tests/E2-09_tests/observer_unit_test/observer_unit_test.js tests/E2-09_tests/overlay_snapshot_test/overlay_snapshot_test.js tests/E2-09_tests/engine_observation_test/engine_observation_test.js",
-    "test:e2-08": "node --test tests/E2-08_tests/fingerprint_test/fingerprint_test.js tests/E2-08_tests/action_journal_test/action_journal_test.js tests/E2-08_tests/runner_integration_test/runner_integration_test.js",
-    "test:e2-14": "node --test tests/E2-14_tests/provenance_test/provenance_test.js tests/E2-14_tests/cleanup_test/cleanup_test.js tests/E2-14_tests/cleanup_test/cleanup_public_api_test.js",
-    "test:e2-05": "node --test tests/E2-05_tests/script_parsing_test/script_parsing_test.js tests/E2-05_tests/missingElement_test/missingElement_test.js tests/E2-05_tests/state_cap_test/state_cap_test.js tests/E2-05_tests/state_script_order_test/state_script_order_test.js",
-    "test:e2-03": "node --test tests/E2-03_tests/ac4-server-integration.test.js tests/E2-03_tests/element_crop_test/element_crop_test.js tests/E2-03_tests/full_page/full_page_test.js tests/E2-03_tests/lazy_loaded_content_test/lazy_loaded_content_test.js tests/E2-03_tests/scan_metrics_test/scan_metrices_test.js",
-    "test:e2-02": "node --test tests/E2-02_tests/dom_evidence_unit_test/dom_evidence_unit_test.js tests/E2-02_tests/dom_evidence_engine_test/dom_evidence_engine_test.js",
-    "test:e2-10": "node --test tests/E2-10_tests/readiness_test/readiness_test.js",
-    "test:e2-11": "node --test tests/E2-11_tests/context_matrix_test.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.3.0",
-    "playwright": "^1.64.1",
-    "sharp": "^0.35.5"
-  }
+    "name":  "backend",
+    "version":  "1.0.0",
+    "description":  "",
+    "main":  "backend/src/server.js",
+    "scripts":  {
+                    "start":  "node backend/src/server.js",
+                    "test":  "node --test --test-concurrency=3 tests/render-contract/render_contract_test/render_contract_test.js tests/server-integration/ac4-server-integration.test.js tests/screenshot-capture/element_crop_test/element_crop_test.js tests/screenshot-capture/full_page/full_page_test.js tests/screenshot-capture/lazy_loaded_content_test/lazy_loaded_content_test.js tests/screenshot-capture/scan_metrics_test/scan_metrices_test.js tests/error-handling/could_not_assess_test/could_not_assess_test.js tests/error-handling/http_status_test/http_status_test.js tests/error-handling/redirect_test/redirect_test.js tests/state-scripts/script_parsing_test/script_parsing_test.js tests/state-scripts/missingElement_test/missingElement_test.js tests/state-scripts/state_cap_test/state_cap_test.js tests/state-scripts/state_script_order_test/state_script_order_test.js tests/provenance/provenance_test/provenance_test.js tests/provenance/cleanup_test/cleanup_test.js tests/provenance/cleanup_test/cleanup_public_api_test.js tests/state-fingerprint/fingerprint_test/fingerprint_test.js tests/state-fingerprint/action_journal_test/action_journal_test.js tests/state-fingerprint/runner_integration_test/runner_integration_test.js tests/overlay-observation/observer_unit_test/observer_unit_test.js tests/overlay-observation/overlay_snapshot_test/overlay_snapshot_test.js tests/overlay-observation/engine_observation_test/engine_observation_test.js",
+                    "test:e2-01":  "node --test tests/render-contract/render_contract_test/render_contract_test.js",
+                    "test:e2-09":  "node --test tests/overlay-observation/observer_unit_test/observer_unit_test.js tests/overlay-observation/overlay_snapshot_test/overlay_snapshot_test.js tests/overlay-observation/engine_observation_test/engine_observation_test.js",
+                    "test:e2-08":  "node --test tests/state-fingerprint/fingerprint_test/fingerprint_test.js tests/state-fingerprint/action_journal_test/action_journal_test.js tests/state-fingerprint/runner_integration_test/runner_integration_test.js",
+                    "test:e2-14":  "node --test tests/provenance/provenance_test/provenance_test.js tests/provenance/cleanup_test/cleanup_test.js tests/provenance/cleanup_test/cleanup_public_api_test.js",
+                    "test:e2-05":  "node --test tests/state-scripts/script_parsing_test/script_parsing_test.js tests/state-scripts/missingElement_test/missingElement_test.js tests/state-scripts/state_cap_test/state_cap_test.js tests/state-scripts/state_script_order_test/state_script_order_test.js",
+                    "test:e2-03":  "node --test tests/server-integration/ac4-server-integration.test.js tests/screenshot-capture/element_crop_test/element_crop_test.js tests/screenshot-capture/full_page/full_page_test.js tests/screenshot-capture/lazy_loaded_content_test/lazy_loaded_content_test.js tests/screenshot-capture/scan_metrics_test/scan_metrices_test.js",
+                    "test:e2-02":  "node --test tests/dom-evidence/dom_evidence_unit_test/dom_evidence_unit_test.js tests/dom-evidence/dom_evidence_engine_test/dom_evidence_engine_test.js",
+                    "test:e2-10":  "node --test tests/readiness/readiness_test/readiness_test.js",
+                    "test:e2-11":  "node --test tests/context-matrix/context_matrix_test.js"
+                },
+    "keywords":  [
+
+                 ],
+    "author":  "",
+    "license":  "ISC",
+    "dependencies":  {
+                         "cors":  "^2.8.6",
+                         "express":  "^5.3.0",
+                         "playwright":  "^1.64.1",
+                         "sharp":  "^0.35.5"
+                     }
 }
