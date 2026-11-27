@@ -42,7 +42,7 @@ jobs:
           npx playwright --version
           echo ""
           echo "=== E2-04 Test File Discovery ==="
-          DISCOVERED=$(find tests/E2-04_tests -type f -name '*_test.js' | sort)
+          DISCOVERED=$(find tests/screenshot-stability -type f -name '*_test.js' | sort)
           if [ -z "$DISCOVERED" ]; then
             echo "FAILURE: No E2-04 test files discovered"
             exit 1
@@ -57,7 +57,7 @@ jobs:
       - name: Run E2-04 tests on PR head
         timeout-minutes: 5
         run: |
-          node --test tests/E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js tests/E2-04_tests/maskVolatile_test/maskVolatile_test.js tests/E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js tests/E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js 2>&1 | tee test-output.log
+          node --test tests/screenshot-stability/stableBetweenRuns_test/stableBetweenRuns_test.js tests/screenshot-stability/maskVolatile_test/maskVolatile_test.js tests/screenshot-stability/stabilizerUnit_test/stabilizerUnit_test.js tests/screenshot-stability/fullPageFloating_test/fullPageFloatingElement_test.js 2>&1 | tee test-output.log
           exit_code=${PIPESTATUS[0]}
           echo "Test exit code: $exit_code"
           exit $exit_code
@@ -76,10 +76,10 @@ jobs:
         with:
           name: e2-04-pr-head-artifacts
           path: |
-            tests/E2-04_tests/**/screenshots/
-            tests/E2-04_tests/**/diff_images/
-            tests/E2-04_tests/**/test-output/
-            tests/E2-04_tests/**/logs/
+            tests/screenshot-stability/**/screenshots/
+            tests/screenshot-stability/**/diff_images/
+            tests/screenshot-stability/**/test-output/
+            tests/screenshot-stability/**/logs/
           retention-days: 30
 
   test-integration-with-main:
@@ -138,7 +138,7 @@ jobs:
           echo "Integration tree (uncommitted): ${{ steps.merge-integration.outputs.tree }}"
           echo ""
           echo "=== E2-04 Test File Discovery ==="
-          DISCOVERED=$(find tests/E2-04_tests -type f -name '*_test.js' | sort)
+          DISCOVERED=$(find tests/screenshot-stability -type f -name '*_test.js' | sort)
           if [ -z "$DISCOVERED" ]; then
             echo "FAILURE: No E2-04 test files discovered"
             exit 1
@@ -150,7 +150,7 @@ jobs:
       - name: Run E2-04 tests on integration candidate
         timeout-minutes: 5
         run: |
-          node --test tests/E2-04_tests/stableBetweenRuns_test/stableBetweenRuns_test.js tests/E2-04_tests/maskVolatile_test/maskVolatile_test.js tests/E2-04_tests/stabilizerUnit_test/stabilizerUnit_test.js tests/E2-04_tests/fullPageFloating_test/fullPageFloatingElement_test.js 2>&1 | tee e2-04-test-output.log
+          node --test tests/screenshot-stability/stableBetweenRuns_test/stableBetweenRuns_test.js tests/screenshot-stability/maskVolatile_test/maskVolatile_test.js tests/screenshot-stability/stabilizerUnit_test/stabilizerUnit_test.js tests/screenshot-stability/fullPageFloating_test/fullPageFloatingElement_test.js 2>&1 | tee e2-04-test-output.log
           exit_code=${PIPESTATUS[0]}
           echo "E2-04 test exit code: $exit_code"
           exit $exit_code
@@ -179,8 +179,9 @@ jobs:
         with:
           name: e2-04-integration-artifacts
           path: |
-            tests/E2-04_tests/**/screenshots/
-            tests/E2-04_tests/**/diff_images/
-            tests/E2-04_tests/**/test-output/
-            tests/E2-04_tests/**/logs/
+            tests/screenshot-stability/**/screenshots/
+            tests/screenshot-stability/**/diff_images/
+            tests/screenshot-stability/**/test-output/
+            tests/screenshot-stability/**/logs/
           retention-days: 30
+
