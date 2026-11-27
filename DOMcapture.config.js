@@ -1,8 +1,11 @@
 // Settings for domCapture (E2-02).
 // All numbers, limits and defaults live here, not in the code.
 
+const path = require("path");
+const { SNAPSHOTS_DIR } = require("./paths");
+
 module.exports = {
-    folder: "snapshots",          // where the DOM and style files are saved (next to server.js)
+    folder: path.basename(SNAPSHOTS_DIR), // where the DOM and style files are saved (next to server.js)
 
     // what is left out of the saved DOM so the file stays readable (the live page is never changed)
     stripScripts: true,           // <script> elements (tracking, tag managers, framework code) are not saved

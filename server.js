@@ -3,6 +3,7 @@ const cors = require("cors");
 const { chromium } = require("playwright");
 const path = require("path");
 const fs = require("fs");
+const { SCANS_DIR, SCREENSHOTS_DIR } = require("./paths");
 const {
     scrollToLoadContent,
     takeFullPage,
@@ -186,8 +187,8 @@ const AVOID_REGEX = /(\bpay\b|payment|submit|log ?out|sign ?out|delete|cancel|co
 const SENSITIVE_REGEX =
     /(mobile|phone|\btel\b|contact\s?(no|number)|\botp\b|one[\s-]?time|vehicle|registration|reg\.?\s?(no|number)|number\s?plate|licen[cs]e|\brc\b|\bpan\b|aadhaar|aadhar|card\s?number|\bcvv\b|\bcvc\b|expiry|password|passcode|account\s?(no|number)|\bifsc\b|\bssn\b|passport|chassis|engine\s?(no|number))/i;
 
-const scansDir = path.join(__dirname, "scans");
-const screenshotDir = path.join(__dirname, "screenshots");
+const scansDir = SCANS_DIR;
+const screenshotDir = SCREENSHOTS_DIR;
 fs.mkdirSync(screenshotDir, { recursive: true });
 
 app.use(cors());

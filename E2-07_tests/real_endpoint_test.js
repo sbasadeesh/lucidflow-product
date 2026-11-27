@@ -15,6 +15,7 @@ const http = require("http");
 const path = require("path");
 const fs = require("fs");
 const { spawn } = require("child_process");
+const { SCREENSHOTS_DIR } = require("../paths");
 
 let fixtureServer;
 let engineProcess;
@@ -500,7 +501,7 @@ test("E2-07-REAL-5: Retrieve and validate screenshot evidence", async (t) => {
     }
     
     // Verify screenshot evidence
-    const screenshotPath = path.join(__dirname, "../screenshots", path.basename(response.body.screenshotUrl));
+    const screenshotPath = path.join(SCREENSHOTS_DIR, path.basename(response.body.screenshotUrl));
     
     assert(fs.existsSync(screenshotPath), "Screenshot file should exist");
     

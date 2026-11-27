@@ -10,11 +10,10 @@ const { spawn } = require("child_process");
 const http = require("http");
 
 const { readScan } = require("../screenshotModule");
+const { SCANS_DIR: scansDir, SCREENSHOTS_DIR: screenshotDir } = require("../paths");
 
 let serverProc = null;
 let fixtureProc = null;
-const scansDir = path.join(__dirname, "..", "scans");
-const screenshotDir = path.join(__dirname, "..", "screenshots");
 const PORT = 5000;
 const FIXTURE_PORT = 8765;
 
