@@ -125,7 +125,6 @@ function Cover({ r }) {
 
 function Summary({ r }) {
   const colors = ["var(--text)", "var(--secondary)", "var(--secondary)", "var(--success)"];
-  const max = Math.max(...r.distribution.map((d) => d.count), 1);
 
   return (
     <div>
